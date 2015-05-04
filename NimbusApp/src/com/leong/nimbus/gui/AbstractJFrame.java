@@ -22,11 +22,15 @@ public abstract class AbstractJFrame extends JFrame
     public AbstractJFrame()
     {
         Tools.logit("AbstractJFrame.ctor(null)");
+
+        myInit();
     }
 
     public AbstractJFrame(String title)
     {
         Tools.logit("AbstractJFrame.ctor(title='"+title+"')");
+
+        myInit();
 
         setTitle(title);
     }
@@ -62,12 +66,19 @@ public abstract class AbstractJFrame extends JFrame
         setVisible(true);
     }
 
-    // to initialize the GUI form
-    public boolean initForm1()
+    protected boolean myInit()
     {
-        Tools.logit("AbstractJFrame.initForm()");
+        initFrame();
+        initVars();
 
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        return true;
+    }
+
+    // to initialize the GUI form
+    public boolean initFrame()
+    {
+        Tools.logit("AbstractJFrame.initFrame()");
+
         addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
@@ -93,5 +104,5 @@ public abstract class AbstractJFrame extends JFrame
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // to initialize the member variables
-    public abstract boolean init();
+    public abstract boolean initVars();
 }
