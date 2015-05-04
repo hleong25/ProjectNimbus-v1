@@ -6,8 +6,12 @@
 package com.leong.nimbus.mainapp;
 
 import com.leong.nimbus.clouds.google.drive.GDriveController;
+import com.leong.nimbus.clouds.google.drive.GDriveDialog;
 import com.leong.nimbus.clouds.google.drive.GDriveFrame;
 import com.leong.nimbus.utils.Tools;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,10 +27,10 @@ public class MainGuiApp
         Tools.logit("MainGuiApp");
 
         {
-            GDriveFrame gdriveFrame = new GDriveFrame();
+            GDriveDialog gdriveFrame = new GDriveDialog();
             Tools.logit("GDrive.run()");
             gdriveFrame.run();
-            Tools.logit("GDrive.run()");
+            Tools.logit("GDrive.run() done");
         }
 
         Tools.logit("exit");
