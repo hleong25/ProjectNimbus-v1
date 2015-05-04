@@ -5,6 +5,8 @@
  */
 package com.leong.nimbus.utils;
 
+import com.leong.nimbus.utils.Logger.Level;
+
 /**
  *
  * @author henry
@@ -13,9 +15,9 @@ public class Tools
 {
     public static void logit(String msg)
     {
-        System.out.println(msg);
+        Logger.msg(Level.INFO, msg);
     }
-    
+
     public static void logit(StringBuffer msg)
     {
         Tools.logit(msg.toString());
