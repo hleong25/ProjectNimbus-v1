@@ -14,10 +14,15 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.ChildList;
+import com.google.api.services.drive.model.ChildReference;
+import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Tools;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -114,6 +119,44 @@ public class GDriveModel implements ICloudModel
                 .build();
 
         return true;
+    }
+
+    public List<File> getFiles(String path)
+    {
+        List<File> list = new LinkedList<File>();
+
+        try
+        {
+            Drive.Children.List request = m_service.children().list(path);
+
+            do {
+                try {
+                    ChildList children = request.execute();
+
+                    for (ChildReference child : children.getItems()) {
+
+                        File file = m_service.files().get(child.getId()).execute();
+
+                        if (file.getLabels().getTrashed()) continue;
+
+                        list.add(file);
+
+                    }
+                    request.setPageToken(children.getNextPageToken());
+                } catch (IOException e) {
+                    System.out.println("An error occurred: " + e);
+                    request.setPageToken(null);
+                }
+            } while (request.getPageToken() != null &&
+                    request.getPageToken().length() > 0);
+
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 }

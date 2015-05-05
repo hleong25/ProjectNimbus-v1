@@ -5,11 +5,15 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
+import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 /**
@@ -62,5 +66,29 @@ public class GDriveController implements ICloudController
         Tools.logit("Auth code is "+authCode);
 
         return m_model.login(authCode);
+    }
+
+    public List<File> getFiles(String pathID)
+    {
+        List<File> files =  m_model.getFiles(pathID);
+
+        Collections.sort(files, new Comparator<File>()
+        {
+            @Override
+            public int compare(File f1, File f2)
+            {
+                boolean f1_isdir = f1.getMimeType().equals("application/vnd.google-apps.folder");
+                boolean f2_isdir = f2.getMimeType().equals("application/vnd.google-apps.folder");
+
+                if (f1_isdir ^ f2_isdir)
+                {
+                    return f1_isdir ? -1 : 1;
+                }
+
+                return f1.getTitle().compareTo(f2.getTitle());
+            }
+        });
+
+        return files;
     }
 }

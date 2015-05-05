@@ -5,13 +5,8 @@
  */
 package com.leong.nimbus.mainapp;
 
-import com.leong.nimbus.clouds.google.drive.GDriveController;
 import com.leong.nimbus.clouds.google.drive.GDriveDialog;
-import com.leong.nimbus.clouds.google.drive.GDriveFrame;
 import com.leong.nimbus.utils.Tools;
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

@@ -5,8 +5,17 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
+import com.google.api.services.drive.model.File;
+import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.gui.AbstractJDialog;
+import com.leong.nimbus.gui.WrapLayout;
+import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.components.IFileItem;
 import com.leong.nimbus.utils.Tools;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.util.List;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -20,9 +29,8 @@ public class GDriveDialog extends AbstractJDialog
      */
     public GDriveDialog()
     {
-        //super();
         initComponents();
-        //m_gdrive = new GDriveController();
+
     }
 
     /**
@@ -36,6 +44,8 @@ public class GDriveDialog extends AbstractJDialog
     {
 
         btnConnect = new javax.swing.JButton();
+        pnlScroll = new javax.swing.JScrollPane();
+        pnlFiles = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Google Drive");
@@ -50,6 +60,17 @@ public class GDriveDialog extends AbstractJDialog
         });
         getContentPane().add(btnConnect, java.awt.BorderLayout.PAGE_START);
 
+        pnlScroll.setMinimumSize(new java.awt.Dimension(400, 300));
+        pnlScroll.setPreferredSize(new java.awt.Dimension(400, 300));
+
+        pnlFiles.setBackground(new java.awt.Color(255, 255, 255));
+        WrapLayout wraplayout = new WrapLayout(FlowLayout.LEADING);
+        wraplayout.setAlignOnBaseline(true);
+        pnlFiles.setLayout(wraplayout);
+        pnlScroll.setViewportView(pnlFiles);
+
+        getContentPane().add(pnlScroll, java.awt.BorderLayout.CENTER);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -62,6 +83,8 @@ public class GDriveDialog extends AbstractJDialog
         }
 
         m_gdrive.login();
+
+        showFiles("0B1wA27jOA84eUThBVXQ0TDlPTDQ");
     }//GEN-LAST:event_btnConnectActionPerformed
 
     /**
@@ -124,6 +147,8 @@ public class GDriveDialog extends AbstractJDialog
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
+    private javax.swing.JPanel pnlFiles;
+    private javax.swing.JScrollPane pnlScroll;
     // End of variables declaration//GEN-END:variables
 
     private GDriveController m_gdrive;
@@ -135,5 +160,28 @@ public class GDriveDialog extends AbstractJDialog
         m_gdrive = new GDriveController();
 
         return true;
+    }
+
+    protected void showFiles(String pathID)
+    {
+        List<File> files = m_gdrive.getFiles(pathID);
+
+        Color bgcolor = pnlFiles.getBackground();
+
+        // remove all items first
+        pnlFiles.removeAll();
+
+        for (File file : files)
+        {
+            //pnl.addMouseListener(new GoogleDriveFileItemPanelMouseListener(file));
+            FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
+
+            pnl.setBackground(bgcolor);
+
+            pnlFiles.add(pnl);
+        }
+
+        pnlFiles.revalidate();
+
     }
 }
