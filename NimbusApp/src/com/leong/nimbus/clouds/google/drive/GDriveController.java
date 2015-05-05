@@ -77,8 +77,8 @@ public class GDriveController implements ICloudController
             @Override
             public int compare(File f1, File f2)
             {
-                boolean f1_isdir = f1.getMimeType().equals("application/vnd.google-apps.folder");
-                boolean f2_isdir = f2.getMimeType().equals("application/vnd.google-apps.folder");
+                boolean f1_isdir = f1.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER);
+                boolean f2_isdir = f2.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER);
 
                 if (f1_isdir ^ f2_isdir)
                 {

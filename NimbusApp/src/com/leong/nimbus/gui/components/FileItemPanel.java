@@ -26,7 +26,7 @@ public class FileItemPanel extends javax.swing.JPanel
         lblIcon.setIcon(m_item.getIcon());
         lblIcon.setText(null);
 
-        lblLabel.setText(getHtmlLabel());
+        lblLabel.setText(getHtmlLabel(m_item.getLabel()));
     }
 
     /**
@@ -48,14 +48,14 @@ public class FileItemPanel extends javax.swing.JPanel
         lblIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblIcon.setText("icon");
         lblIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 2, 0));
+        lblIcon.setMaximumSize(new java.awt.Dimension(96, 32));
+        lblIcon.setMinimumSize(new java.awt.Dimension(96, 32));
+        lblIcon.setPreferredSize(new java.awt.Dimension(96, 32));
         add(lblIcon, java.awt.BorderLayout.CENTER);
 
         lblLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblLabel.setText("label");
         lblLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        lblLabel.setMaximumSize(new java.awt.Dimension(80, 15));
-        lblLabel.setMinimumSize(new java.awt.Dimension(80, 15));
-        lblLabel.setPreferredSize(new java.awt.Dimension(80, 15));
         add(lblLabel, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -72,10 +72,9 @@ public class FileItemPanel extends javax.swing.JPanel
         return m_item;
     }
 
-    protected String getHtmlLabel()
+    protected String getHtmlLabel(String str)
     {
         final int max_width = getSize().width;
-        String str = m_item.getLabel();
 
         return "<html><body style='text-align:center; width:"+Integer.toString(max_width)+"px'><p>"+str+"</p></body></html>";
     }

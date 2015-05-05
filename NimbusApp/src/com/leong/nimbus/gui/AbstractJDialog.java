@@ -7,13 +7,8 @@ package com.leong.nimbus.gui;
 
 import com.leong.nimbus.utils.Tools;
 import java.awt.Window;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -60,29 +55,21 @@ public abstract class AbstractJDialog extends JDialog
             }
         };
 
-        if (false)
+        try
         {
-            Tools.logit("AbstractJDialog.run() EventQueue.invokeLater(run)");
-            SwingUtilities.invokeLater(run);
+            Tools.logit("AbstractJDialog.run() EventQueue.invokeAndWait(run)");
+            java.awt.EventQueue.invokeAndWait(run);
+            //SwingUtilities.invokeAndWait(run);
         }
-        else
+        catch (InterruptedException ex)
         {
-            try
-            {
-        Tools.logit("AbstractJDialog.run() EventQueue.invokeAndWait(run)");
-                //java.awt.EventQueue.invokeAndWait(run);
-                SwingUtilities.invokeAndWait(run);
-            }
-            catch (InterruptedException ex)
-            {
-                //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-                Tools.logit("AbstractJDialog.run() InterruptedException: "+ex.toString());
-            }
-            catch (InvocationTargetException ex)
-            {
-                //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-                Tools.logit("AbstractJDialog.run() InvocationTargetException: "+ex.toString());
-            }
+            //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("AbstractJDialog.run() InterruptedException: "+ex.toString());
+        }
+        catch (InvocationTargetException ex)
+        {
+            //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("AbstractJDialog.run() InvocationTargetException: "+ex.toString());
         }
     }
 
@@ -106,18 +93,6 @@ public abstract class AbstractJDialog extends JDialog
         Tools.logit("AbstractJDialog.initFrame()");
 
         setModal(true);
-
-        //setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-        //addWindowListener(new WindowAdapter()
-        //{
-        //    public void windowClosing(WindowEvent e)
-        //    {
-        //        Tools.logit("AbstractJDialog.windowClosing()");
-        //        action_windowOnClosing();
-        //        dispose();
-        //    }
-        //});
 
         return true;
     }

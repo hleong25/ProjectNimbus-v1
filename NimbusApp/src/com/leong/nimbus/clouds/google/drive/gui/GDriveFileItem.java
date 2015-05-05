@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.google.drive.gui;
 
 import com.google.api.services.drive.model.File;
+import com.leong.nimbus.clouds.google.drive.GDriveConstants;
 import com.leong.nimbus.gui.components.IFileItem;
 import com.leong.nimbus.utils.Tools;
 import javax.swing.ImageIcon;
@@ -16,8 +17,6 @@ import javax.swing.ImageIcon;
  */
 public class GDriveFileItem implements IFileItem
 {
-    public final String MIME_TYPE_FOLDER = "application/vnd.google-apps.folder";
-
     protected File m_item;
 
     public GDriveFileItem(File item)
@@ -32,7 +31,7 @@ public class GDriveFileItem implements IFileItem
 
         Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
 
-        if (m_item.getMimeType().equals(MIME_TYPE_FOLDER))
+        if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER))
         {
             path = "resources/icons/icon-dir.png";
         }

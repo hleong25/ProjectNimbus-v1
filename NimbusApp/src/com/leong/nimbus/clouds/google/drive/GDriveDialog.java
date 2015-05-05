@@ -7,15 +7,15 @@ package com.leong.nimbus.clouds.google.drive;
 
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
+import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseListener;
 import com.leong.nimbus.gui.AbstractJDialog;
 import com.leong.nimbus.gui.WrapLayout;
+import com.leong.nimbus.gui.components.DefaultFileItem;
 import com.leong.nimbus.gui.components.FileItemPanel;
-import com.leong.nimbus.gui.components.IFileItem;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.List;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -30,7 +30,6 @@ public class GDriveDialog extends AbstractJDialog
     public GDriveDialog()
     {
         initComponents();
-
     }
 
     /**
@@ -84,7 +83,7 @@ public class GDriveDialog extends AbstractJDialog
 
         m_gdrive.login();
 
-        showFiles("0B1wA27jOA84eUThBVXQ0TDlPTDQ");
+        showFiles(GDriveConstants.FOLDER_ROOT);
     }//GEN-LAST:event_btnConnectActionPerformed
 
     /**
@@ -164,6 +163,8 @@ public class GDriveDialog extends AbstractJDialog
 
     protected void showFiles(String pathID)
     {
+        Tools.logit("showFiles("+pathID+")");
+
         List<File> files = m_gdrive.getFiles(pathID);
 
         Color bgcolor = pnlFiles.getBackground();
@@ -173,10 +174,18 @@ public class GDriveDialog extends AbstractJDialog
 
         for (File file : files)
         {
-            //pnl.addMouseListener(new GoogleDriveFileItemPanelMouseListener(file));
             FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
 
             pnl.setBackground(bgcolor);
+
+            pnl.addMouseListener(new GDriveFileItemPanelMouseListener(file)
+            {
+                @Override
+                public void onOpenFolder(File item)
+                {
+                    showFiles(item.getId());
+                }
+            });
 
             pnlFiles.add(pnl);
         }
