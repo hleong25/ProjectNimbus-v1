@@ -191,6 +191,7 @@ public class GDriveDialog extends AbstractJDialog
         }
 
         pnlFiles.revalidate();
+        pnlFiles.repaint();
 
     }
 }
