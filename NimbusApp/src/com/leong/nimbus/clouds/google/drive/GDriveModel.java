@@ -21,8 +21,10 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Tools;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,9 +42,13 @@ public class GDriveModel implements ICloudModel
     private GoogleAuthorizationCodeFlow m_flow = null;
     private Drive m_service = null;
 
+    private Map<String, List<File>> m_cachedFiles;
+
     public GDriveModel()
     {
         Tools.logit("GDriveModel.ctor()");
+
+        m_cachedFiles = new HashMap<>();
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
@@ -139,6 +145,12 @@ public class GDriveModel implements ICloudModel
 
     public List<File> getFiles(String path)
     {
+        if (m_cachedFiles.containsKey(path))
+        {
+            Tools.logit("Cache hit '"+path+"'");
+            return m_cachedFiles.get(path);
+        }
+
         List<File> list = new LinkedList<File>();
 
         try
@@ -166,6 +178,7 @@ public class GDriveModel implements ICloudModel
             } while (request.getPageToken() != null &&
                     request.getPageToken().length() > 0);
 
+            m_cachedFiles.put(path, list);
 
         } catch (IOException e)
         {
