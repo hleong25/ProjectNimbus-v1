@@ -68,6 +68,24 @@ public class GDriveController implements ICloudController
         return m_model.login(authCode);
     }
 
+    public File getParentFile(String fileID)
+    {
+        File file = getFile(fileID);
+
+        if (!file.getParents().isEmpty())
+        {
+            String parentID = file.getParents().get(0).getId();
+            return getFile(parentID);
+        }
+
+        return null;
+    }
+
+    public File getFile(String fileID)
+    {
+        return m_model.getFile(fileID);
+    }
+
     public List<File> getFiles(String pathID)
     {
         List<File> files =  m_model.getFiles(pathID);

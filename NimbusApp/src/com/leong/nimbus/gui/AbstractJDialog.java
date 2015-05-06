@@ -29,7 +29,7 @@ public abstract class AbstractJDialog extends JDialog
 
         Tools.logit("AbstractJDialog.ctor(window)");
 
-        myInit();
+        //myInit();
     }
 
     public void setTitle(String title)
@@ -79,23 +79,23 @@ public abstract class AbstractJDialog extends JDialog
         setVisible(true);
     }
 
-    protected boolean myInit()
-    {
-        initFrame();
-        initVars();
+    //protected boolean myInit()
+    //{
+    //    initFrame();
+    //    initVars();
 
-        return true;
-    }
+    //    return true;
+    //}
 
-    // to initialize the GUI form
-    public boolean initFrame()
-    {
-        Tools.logit("AbstractJDialog.initFrame()");
+    //// to initialize the GUI form
+    //public boolean initFrame()
+    //{
+    //    Tools.logit("AbstractJDialog.initFrame()");
 
-        setModal(true);
+    //    setModal(true);
 
-        return true;
-    }
+    //    return true;
+    //}
 
     protected void action_windowOnClosing()
     {
@@ -109,5 +109,5 @@ public abstract class AbstractJDialog extends JDialog
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // to initialize the member variables
-    public abstract boolean initVars();
+    //public abstract boolean initVars();
 }

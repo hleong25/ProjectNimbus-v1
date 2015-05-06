@@ -79,6 +79,12 @@ public class FileItemPanel extends javax.swing.JPanel
         return "<html><body style='text-align:center; width:"+Integer.toString(max_width)+"px'><p>"+str+"</p></body></html>";
     }
 
+
+    public void setLabel(String label)
+    {
+        lblLabel.setText(getHtmlLabel(label));
+    }
+
     @Override
     public Component.BaselineResizeBehavior getBaselineResizeBehavior() {
         return Component.BaselineResizeBehavior.CONSTANT_ASCENT;

@@ -9,12 +9,13 @@ import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseListener;
 import com.leong.nimbus.gui.AbstractJDialog;
+import com.leong.nimbus.gui.BusyTaskCursor;
 import com.leong.nimbus.gui.WrapLayout;
-import com.leong.nimbus.gui.components.DefaultFileItem;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,6 +31,8 @@ public class GDriveDialog extends AbstractJDialog
     public GDriveDialog()
     {
         initComponents();
+
+        m_bgcolor = pnlFiles.getBackground();
     }
 
     /**
@@ -81,7 +84,14 @@ public class GDriveDialog extends AbstractJDialog
             return;
         }
 
-        m_gdrive.login();
+        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                m_gdrive.login();
+            }
+        });
 
         showFiles(GDriveConstants.FOLDER_ROOT);
     }//GEN-LAST:event_btnConnectActionPerformed
@@ -150,43 +160,72 @@ public class GDriveDialog extends AbstractJDialog
     private javax.swing.JScrollPane pnlScroll;
     // End of variables declaration//GEN-END:variables
 
-    private GDriveController m_gdrive;
+    private final GDriveController m_gdrive = new GDriveController();
+    private Color m_bgcolor;
 
-    @Override
-    public boolean initVars()
+    //@Override
+    //public boolean initVars()
+    //{
+    //    Tools.logit("GDriveDialog.initVars()");
+
+    //    m_bgcolor = pnlFiles.getBackground();
+
+    //    return true;
+    //}
+
+    protected FileItemPanel createFileItemPanel(final File file)
     {
-        Tools.logit("GDriveDialog.initVars()");
-        m_gdrive = new GDriveController();
+        FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
 
-        return true;
+        pnl.setBackground(m_bgcolor);
+
+        pnl.addMouseListener(new GDriveFileItemPanelMouseListener(file)
+        {
+            @Override
+            public void onOpenFolder(File item)
+            {
+                showFiles(item.getId());
+            }
+        });
+
+        return pnl;
     }
 
-    protected void showFiles(String pathID)
+    protected void showFiles(final String pathID)
     {
         Tools.logit("showFiles("+pathID+")");
 
-        List<File> files = m_gdrive.getFiles(pathID);
+        final List<File> files = new LinkedList<>();
 
-        Color bgcolor = pnlFiles.getBackground();
+        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                files.addAll(m_gdrive.getFiles(pathID));
+            }
+        });
 
         // remove all items first
         pnlFiles.removeAll();
 
+        // show parent link
+        {
+            File parentFile = m_gdrive.getParentFile(pathID);
+
+            if (parentFile != null)
+            {
+                FileItemPanel pnl = createFileItemPanel(parentFile);
+
+                pnl.setLabel("..");
+
+                pnlFiles.add(pnl);
+            }
+        }
+
         for (File file : files)
         {
-            FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
-
-            pnl.setBackground(bgcolor);
-
-            pnl.addMouseListener(new GDriveFileItemPanelMouseListener(file)
-            {
-                @Override
-                public void onOpenFolder(File item)
-                {
-                    showFiles(item.getId());
-                }
-            });
-
+            FileItemPanel pnl = createFileItemPanel(file);
             pnlFiles.add(pnl);
         }
 

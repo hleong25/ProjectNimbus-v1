@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -119,6 +121,20 @@ public class GDriveModel implements ICloudModel
                 .build();
 
         return true;
+    }
+
+    public File getFile(String fileID)
+    {
+        try
+        {
+            return m_service.files().get(fileID).execute();
+        }
+        catch (IOException ex)
+        {
+            //Logger.getLogger(GDriveModel.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public List<File> getFiles(String path)
