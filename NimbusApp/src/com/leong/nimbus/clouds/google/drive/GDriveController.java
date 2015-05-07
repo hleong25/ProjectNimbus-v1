@@ -13,7 +13,9 @@ import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,13 +24,19 @@ import javax.swing.JOptionPane;
  */
 public class GDriveController implements ICloudController
 {
-    private GDriveModel m_model = null;
+    private final GDriveModel m_model;
+
+    private final Map<String, List<File>> m_cachedListFiles;
+    private final Map<String, File> m_cachedFiles;
 
     public GDriveController()
     {
         Tools.logit("GDriveController.ctor()");
 
         m_model = new GDriveModel();
+
+        m_cachedListFiles = new HashMap<>();
+        m_cachedFiles = new HashMap<>();
     }
 
     public boolean login()
@@ -83,12 +91,41 @@ public class GDriveController implements ICloudController
 
     public File getFile(String fileID)
     {
-        return m_model.getFile(fileID);
+        if (fileID.equals(GDriveConstants.FOLDER_ROOT))
+        {
+            fileID = m_model.getRootID();
+        }
+
+        if (m_cachedFiles.containsKey(fileID))
+        {
+            Tools.logit("GDriveController.getFile() Cache hit '"+fileID+"'");
+            return m_cachedFiles.get(fileID);
+        }
+
+        File file = m_model.getFile(fileID);
+
+        if (!Tools.isNullOrEmpty(fileID) && (file != null))
+        {
+            m_cachedFiles.put(fileID, file);
+        }
+
+        return file;
     }
 
-    public List<File> getFiles(String pathID)
+    public List<File> getFiles(String fileID)
     {
-        List<File> files =  m_model.getFiles(pathID);
+        if (fileID.equals(GDriveConstants.FOLDER_ROOT))
+        {
+            fileID = m_model.getRootID();
+        }
+
+        if (m_cachedListFiles.containsKey(fileID))
+        {
+            Tools.logit("GDriveController.getFiles() Cache hit '"+fileID+"'");
+            return m_cachedListFiles.get(fileID);
+        }
+
+        List<File> files =  m_model.getFiles(fileID);
 
         Collections.sort(files, new Comparator<File>()
         {
@@ -106,6 +143,8 @@ public class GDriveController implements ICloudController
                 return f1.getTitle().compareTo(f2.getTitle());
             }
         });
+
+        m_cachedListFiles.put(fileID, files);
 
         return files;
     }

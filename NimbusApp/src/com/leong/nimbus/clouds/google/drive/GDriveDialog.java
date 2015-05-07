@@ -197,31 +197,32 @@ public class GDriveDialog extends AbstractJDialog
 
         final List<File> files = new LinkedList<>();
 
+        // remove all items first
+        pnlFiles.removeAll();
+
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
             @Override
             public void run()
             {
+                // show parent link
+                {
+                    File parentFile = m_gdrive.getParentFile(pathID);
+
+                    if (parentFile != null)
+                    {
+                        FileItemPanel pnl = createFileItemPanel(parentFile);
+
+                        pnl.setLabel("..");
+
+                        pnlFiles.add(pnl);
+                    }
+                }
+
+                // get all files in this folder
                 files.addAll(m_gdrive.getFiles(pathID));
             }
         });
-
-        // remove all items first
-        pnlFiles.removeAll();
-
-        // show parent link
-        {
-            File parentFile = m_gdrive.getParentFile(pathID);
-
-            if (parentFile != null)
-            {
-                FileItemPanel pnl = createFileItemPanel(parentFile);
-
-                pnl.setLabel("..");
-
-                pnlFiles.add(pnl);
-            }
-        }
 
         for (File file : files)
         {

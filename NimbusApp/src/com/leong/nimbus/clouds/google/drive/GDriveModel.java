@@ -22,10 +22,8 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Tools;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -33,21 +31,19 @@ import java.util.Map;
  */
 public class GDriveModel implements ICloudModel
 {
-    private static String CLIENT_ID = "377040850517-vc3hbqvqqct5svp9nrdagrhg2v06v0o2.apps.googleusercontent.com";
-    private static String CLIENT_SECRET = "-ezNN3hvssAwm6Ewgmrg69pI";
+    private static final String CLIENT_ID = "377040850517-vc3hbqvqqct5svp9nrdagrhg2v06v0o2.apps.googleusercontent.com";
+    private static final String CLIENT_SECRET = "-ezNN3hvssAwm6Ewgmrg69pI";
 
-    private static String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
 
-    private GoogleAuthorizationCodeFlow m_flow = null;
-    private Drive m_service = null;
+    private final GoogleAuthorizationCodeFlow m_flow;
+    private Drive m_service;
 
-    private Map<String, List<File>> m_cachedFiles;
+    private String m_rootID;
 
     public GDriveModel()
     {
         Tools.logit("GDriveModel.ctor()");
-
-        m_cachedFiles = new HashMap<>();
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
@@ -128,6 +124,29 @@ public class GDriveModel implements ICloudModel
         return true;
     }
 
+    public String getRootID()
+    {
+        if (!Tools.isNullOrEmpty(m_rootID))
+        {
+            return m_rootID;
+        }
+
+        try
+        {
+            About about = m_service.about().get().execute();
+
+            m_rootID = about.getRootFolderId();
+
+            Tools.logit("RootID = "+m_rootID);
+        }
+        catch (IOException ex)
+        {
+            Tools.logit("Failed to get root ID. "+ex.toString());
+        }
+
+        return m_rootID;
+    }
+
     public File getFile(String fileID)
     {
         try
@@ -142,35 +161,13 @@ public class GDriveModel implements ICloudModel
         return null;
     }
 
-    public List<File> getFiles(String path)
+    public List<File> getFiles(String fileID)
     {
-        if (path.equals(GDriveConstants.FOLDER_ROOT))
-        {
-            try
-            {
-                About about = m_service.about().get().execute();
-
-                path = about.getRootFolderId();
-
-                Tools.logit("Root ID = "+path);
-            }
-            catch (IOException ex)
-            {
-                Tools.logit("Failed to get root ID. "+ex.toString());
-            }
-        }
-
-        if (m_cachedFiles.containsKey(path))
-        {
-            Tools.logit("Cache hit '"+path+"'");
-            return m_cachedFiles.get(path);
-        }
-
-        List<File> list = new LinkedList<>();
+        final List<File> list = new LinkedList<>();
 
         try
         {
-            Drive.Children.List request = m_service.children().list(path);
+            Drive.Children.List request = m_service.children().list(fileID);
 
             do {
                 try {
@@ -192,8 +189,6 @@ public class GDriveModel implements ICloudModel
                 }
             } while (request.getPageToken() != null &&
                     request.getPageToken().length() > 0);
-
-            m_cachedFiles.put(path, list);
 
         } catch (IOException e)
         {

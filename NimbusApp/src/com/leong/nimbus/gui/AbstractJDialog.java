@@ -76,6 +76,7 @@ public abstract class AbstractJDialog extends JDialog
     protected void do_run()
     {
         //pack();
+        setModal(true);
         setVisible(true);
     }
 
