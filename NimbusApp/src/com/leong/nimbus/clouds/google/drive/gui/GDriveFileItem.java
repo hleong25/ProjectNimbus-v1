@@ -53,6 +53,7 @@ public class GDriveFileItem implements IFileItem
         }
         else
         {
+            Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
             path = "resources/icons/google/drive-64.png";
         }
 
