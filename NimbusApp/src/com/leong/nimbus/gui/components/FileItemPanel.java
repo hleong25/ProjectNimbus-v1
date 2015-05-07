@@ -48,9 +48,9 @@ public class FileItemPanel extends javax.swing.JPanel
         lblIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblIcon.setText("icon");
         lblIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 2, 0));
-        lblIcon.setMaximumSize(new java.awt.Dimension(96, 32));
-        lblIcon.setMinimumSize(new java.awt.Dimension(96, 32));
-        lblIcon.setPreferredSize(new java.awt.Dimension(96, 32));
+        lblIcon.setMaximumSize(new java.awt.Dimension(96, 64));
+        lblIcon.setMinimumSize(new java.awt.Dimension(96, 64));
+        lblIcon.setPreferredSize(new java.awt.Dimension(96, 64));
         add(lblIcon, java.awt.BorderLayout.CENTER);
 
         lblLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

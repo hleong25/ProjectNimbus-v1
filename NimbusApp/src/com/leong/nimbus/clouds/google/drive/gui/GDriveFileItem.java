@@ -29,16 +29,34 @@ public class GDriveFileItem implements IFileItem
     {
         String path;
 
-        Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
+        //Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
 
-        if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER))
+        if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_DOCUMENT))
         {
-            path = "resources/icons/icon-dir.png";
+            path = "resources/icons/google/docs-64.png";
+        }
+        else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER))
+        {
+            path = "resources/icons/google/Close-Folder-icon-64.png";
+        }
+        else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_PRESENTATION))
+        {
+            path = "resources/icons/google/presentations-64.png";
+        }
+        else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_SPREADSHEET))
+        {
+            path = "resources/icons/google/spreadsheets-64.png";
+        }
+        else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_VIDEO))
+        {
+            path = "resources/icons/google/video-64.gif";
         }
         else
         {
-            path = "resources/icons/icon-file.png";
+            path = "resources/icons/google/drive-64.png";
         }
+
+        //Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType()+" Icon="+path);
 
         ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(path));
 

@@ -14,6 +14,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.About;
 import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
@@ -25,8 +26,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -145,13 +144,29 @@ public class GDriveModel implements ICloudModel
 
     public List<File> getFiles(String path)
     {
+        if (path.equals(GDriveConstants.FOLDER_ROOT))
+        {
+            try
+            {
+                About about = m_service.about().get().execute();
+
+                path = about.getRootFolderId();
+
+                Tools.logit("Root ID = "+path);
+            }
+            catch (IOException ex)
+            {
+                Tools.logit("Failed to get root ID. "+ex.toString());
+            }
+        }
+
         if (m_cachedFiles.containsKey(path))
         {
             Tools.logit("Cache hit '"+path+"'");
             return m_cachedFiles.get(path);
         }
 
-        List<File> list = new LinkedList<File>();
+        List<File> list = new LinkedList<>();
 
         try
         {
