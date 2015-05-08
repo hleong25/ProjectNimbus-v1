@@ -7,14 +7,25 @@ package com.leong.nimbus.gui;
 
 import com.leong.nimbus.utils.Tools;
 import java.awt.Window;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import javax.swing.JDialog;
 
 /**
  *
  * @author henry
  */
-public abstract class AbstractJDialog extends JDialog
+public abstract class AbstractJDialog
+    extends JDialog
+    implements DropTargetListener
 {
     public AbstractJDialog()
     {
@@ -80,24 +91,6 @@ public abstract class AbstractJDialog extends JDialog
         setVisible(true);
     }
 
-    //protected boolean myInit()
-    //{
-    //    initFrame();
-    //    initVars();
-
-    //    return true;
-    //}
-
-    //// to initialize the GUI form
-    //public boolean initFrame()
-    //{
-    //    Tools.logit("AbstractJDialog.initFrame()");
-
-    //    setModal(true);
-
-    //    return true;
-    //}
-
     protected void action_windowOnClosing()
     {
         Tools.logit("AbstractJDialog.action_windowOnClosing()");
@@ -105,10 +98,80 @@ public abstract class AbstractJDialog extends JDialog
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Interfaces
+    // Implements DropTargetListener
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // to initialize the member variables
-    //public abstract boolean initVars();
+    @Override
+    public void dragEnter(DropTargetDragEvent dtde)
+    {
+
+    }
+
+    @Override
+    public void dragOver(DropTargetDragEvent dtde)
+    {
+    }
+
+    @Override
+    public void dropActionChanged(DropTargetDragEvent dtde)
+    {
+    }
+
+    @Override
+    public void dragExit(DropTargetEvent dte)
+    {
+    }
+
+    @Override
+    public void drop(DropTargetDropEvent dtde)
+    {
+        Tools.logit("AbstractJDialog.drop()");
+
+        // Accept copy drops
+        dtde.acceptDrop(DnDConstants.ACTION_COPY);
+
+        // Get the transfer which can provide the dropped item data
+        Transferable transferable = dtde.getTransferable();
+
+        // Get the data formats of the dropped item
+        DataFlavor[] flavors = transferable.getTransferDataFlavors();
+
+        // Loop through the flavors
+        for (DataFlavor flavor : flavors)
+        {
+            try
+            {
+                // If the drop items are files
+                if (flavor.isFlavorJavaFileListType())
+                {
+                    // Get all of the dropped files
+                    List files = (List) transferable.getTransferData(flavor);
+
+                    onDropAction(files);
+
+                    //// Loop them through
+                    //for (Object obj : files)
+                    //{
+                    //    File file = (File) obj;
+
+                    //    // Print out the file path
+                    //    System.out.println("File path is '" + file.getPath() + "'.");
+
+                    //}
+                }
+            }
+            catch (Exception e)
+            {
+                // Print out the error stack
+                e.printStackTrace();
+
+            }
+        }
+
+        // Inform that the drop is complete
+        dtde.dropComplete(true);
+    }
+
+    protected abstract boolean onDropAction(List objs);
 }

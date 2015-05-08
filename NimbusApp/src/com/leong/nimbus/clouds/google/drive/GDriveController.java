@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.utils.Tools;
@@ -147,5 +148,11 @@ public class GDriveController implements ICloudController
         m_cachedListFiles.put(fileID, files);
 
         return files;
+    }
+
+    public File uploadLocalFile(java.io.File content, MediaHttpUploaderProgressListener progressListener)
+    {
+        File uploadedFile = m_model.uploadLocalFile(content, progressListener);
+        return uploadedFile;
     }
 }

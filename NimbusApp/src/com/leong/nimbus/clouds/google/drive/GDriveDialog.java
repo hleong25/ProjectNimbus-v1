@@ -5,6 +5,8 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
+import com.google.api.client.googleapis.media.MediaHttpUploader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseListener;
@@ -15,6 +17,8 @@ import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.dnd.DropTarget;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +28,6 @@ import java.util.List;
  */
 public class GDriveDialog extends AbstractJDialog
 {
-
     /**
      * Creates new form GDriveDialog
      */
@@ -33,6 +36,8 @@ public class GDriveDialog extends AbstractJDialog
         initComponents();
 
         m_bgcolor = pnlFiles.getBackground();
+
+        new DropTarget(pnlFiles, this);
     }
 
     /**
@@ -78,81 +83,18 @@ public class GDriveDialog extends AbstractJDialog
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
     {//GEN-HEADEREND:event_btnConnectActionPerformed
-        if (m_gdrive == null)
-        {
-            Tools.logit("GDriveDialog.btnConnectActionPerformed gdrive=null");
-            return;
-        }
-
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
             @Override
             public void run()
             {
-                m_gdrive.login();
-            }
-        });
-
-        showFiles(GDriveConstants.FOLDER_ROOT);
-    }//GEN-LAST:event_btnConnectActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[])
-    {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try
-        {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-            {
-                if ("Nimbus".equals(info.getName()))
+                if (m_gdrive.login())
                 {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+                    showFiles(GDriveConstants.FOLDER_ROOT);
                 }
             }
-        }
-        catch (ClassNotFoundException ex)
-        {
-            java.util.logging.Logger.getLogger(GDriveDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (InstantiationException ex)
-        {
-            java.util.logging.Logger.getLogger(GDriveDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (IllegalAccessException ex)
-        {
-            java.util.logging.Logger.getLogger(GDriveDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (javax.swing.UnsupportedLookAndFeelException ex)
-        {
-            java.util.logging.Logger.getLogger(GDriveDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                GDriveDialog dialog = new GDriveDialog(); //new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter()
-                {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e)
-                    {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
         });
-    }
+    }//GEN-LAST:event_btnConnectActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
@@ -161,17 +103,7 @@ public class GDriveDialog extends AbstractJDialog
     // End of variables declaration//GEN-END:variables
 
     private final GDriveController m_gdrive = new GDriveController();
-    private Color m_bgcolor;
-
-    //@Override
-    //public boolean initVars()
-    //{
-    //    Tools.logit("GDriveDialog.initVars()");
-
-    //    m_bgcolor = pnlFiles.getBackground();
-
-    //    return true;
-    //}
+    private final Color m_bgcolor;
 
     protected FileItemPanel createFileItemPanel(final File file)
     {
@@ -193,7 +125,7 @@ public class GDriveDialog extends AbstractJDialog
 
     protected void showFiles(final String pathID)
     {
-        Tools.logit("showFiles("+pathID+")");
+        Tools.logit("GDriveDialog.showFiles("+pathID+")");
 
         final List<File> files = new LinkedList<>();
 
@@ -233,5 +165,44 @@ public class GDriveDialog extends AbstractJDialog
         pnlFiles.revalidate();
         pnlFiles.repaint();
 
+    }
+
+    @Override
+    protected boolean onDropAction(List objs)
+    {
+        Tools.logit("GDriveDialog.onDropAction()");
+
+        // Loop them through
+        for (Object obj : objs)
+        {
+            java.io.File file = (java.io.File) obj;
+
+            // Print out the file path
+            Tools.logit("File path is '" + file.getPath() + "'.");
+
+            m_gdrive.uploadLocalFile(file, new MediaHttpUploaderProgressListener()
+            {
+                @Override
+                public void progressChanged(MediaHttpUploader mhu) throws IOException
+                {
+                    switch (mhu.getUploadState()) {
+                        case INITIATION_STARTED:
+                            Tools.logit("Initiation has started!");
+                            break;
+                        case INITIATION_COMPLETE:
+                            Tools.logit("Initiation is complete!");
+                            break;
+                        case MEDIA_IN_PROGRESS:
+                            Tools.logit("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
+                            break;
+                        case MEDIA_COMPLETE:
+                            Tools.logit("Upload is complete!");
+                    }
+                }
+            });
+
+        }
+
+        return true;
     }
 }

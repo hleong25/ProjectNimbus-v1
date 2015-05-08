@@ -8,7 +8,9 @@ package com.leong.nimbus.clouds.google.drive;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -20,10 +22,17 @@ import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Tools;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -196,6 +205,55 @@ public class GDriveModel implements ICloudModel
         }
 
         return list;
+    }
+
+    public File uploadLocalFile(java.io.File content, MediaHttpUploaderProgressListener progressListener)
+    {
+        // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
+        // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
+
+        Tools.logit("GDriveModel.uploadLocalFile()");
+
+        try
+        {
+            InputStream input = new BufferedInputStream(new FileInputStream(content));
+            String mimeType = URLConnection.guessContentTypeFromStream(input);
+
+            Tools.logit("MimeType="+mimeType);
+
+            File metadata = new File();
+            metadata.setTitle(content.getName());
+            metadata.setMimeType(mimeType);
+            metadata.setFileSize(content.length());
+
+            // set parent...
+            
+            InputStreamContent mediaContent = new InputStreamContent(mimeType, input);
+
+            mediaContent.setLength(content.length());
+
+            Drive.Files.Insert request = m_service.files().insert(metadata, mediaContent);
+            request.getMediaHttpUploader().setProgressListener(progressListener);
+
+            Tools.logit("Start uploading file");
+            File uploadedFile = request.execute();
+
+            Tools.logit("Uploaded file");
+
+            return uploadedFile;
+        }
+        catch (FileNotFoundException ex)
+        {
+            //Logger.getLogger(GDriveModel.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("Failed to upload local file: "+ex.toString());
+        }
+        catch (IOException ex)
+        {
+            //Logger.getLogger(GDriveModel.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("Failed to upload local file: "+ex.toString());
+        }
+
+        return null;
     }
 
 }
