@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.google.drive;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
@@ -233,7 +234,9 @@ public class GDriveModel implements ICloudModel
             mediaContent.setLength(content.length());
 
             Drive.Files.Insert request = m_service.files().insert(metadata, mediaContent);
-            request.getMediaHttpUploader().setProgressListener(progressListener);
+            request.getMediaHttpUploader()
+                .setChunkSize(2*MediaHttpUploader.MINIMUM_CHUNK_SIZE)
+                .setProgressListener(progressListener);
 
             Tools.logit("Start uploading file");
             File uploadedFile = request.execute();
