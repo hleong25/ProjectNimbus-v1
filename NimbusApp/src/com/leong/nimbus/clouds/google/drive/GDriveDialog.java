@@ -37,8 +37,6 @@ public class GDriveDialog extends AbstractJDialog
         initComponents();
 
         m_bgcolor = pnlFiles.getBackground();
-
-        new DropTarget(pnlFiles, this);
     }
 
     /**
@@ -105,6 +103,9 @@ public class GDriveDialog extends AbstractJDialog
             {
                 if (m_gdrive.login())
                 {
+                    // setup drag and drop once logged in
+                    new DropTarget(pnlFiles, GDriveDialog.this);
+
                     showFiles(GDriveConstants.FOLDER_ROOT, true);
                 }
             }
