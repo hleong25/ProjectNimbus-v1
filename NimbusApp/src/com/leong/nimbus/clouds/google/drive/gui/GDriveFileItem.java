@@ -31,7 +31,12 @@ public class GDriveFileItem implements IFileItem
 
         //Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
 
-        if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_DOCUMENT))
+        if (m_item.getMimeType() == null)
+        {
+            Tools.logit("Item="+m_item.getTitle()+" Mime=(null)");
+            path = "resources/icons/google/drive-64.png";
+        }
+        else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_DOCUMENT))
         {
             path = "resources/icons/google/docs-64.png";
         }

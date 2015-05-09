@@ -27,6 +27,8 @@ public class FileItemPanel extends javax.swing.JPanel
         lblIcon.setText(null);
 
         lblLabel.setText(getHtmlLabel(m_item.getLabel()));
+
+        progbar.setVisible(false);
     }
 
     /**
@@ -41,6 +43,7 @@ public class FileItemPanel extends javax.swing.JPanel
 
         lblIcon = new javax.swing.JLabel();
         lblLabel = new javax.swing.JLabel();
+        progbar = new javax.swing.JProgressBar();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         setLayout(new java.awt.BorderLayout());
@@ -57,12 +60,14 @@ public class FileItemPanel extends javax.swing.JPanel
         lblLabel.setText("label");
         lblLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         add(lblLabel, java.awt.BorderLayout.SOUTH);
+        add(progbar, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lblIcon;
     private javax.swing.JLabel lblLabel;
+    private javax.swing.JProgressBar progbar;
     // End of variables declaration//GEN-END:variables
 
     protected IFileItem m_item;
@@ -79,10 +84,20 @@ public class FileItemPanel extends javax.swing.JPanel
         return "<html><body style='text-align:center; width:"+Integer.toString(max_width)+"px'><p>"+str+"</p></body></html>";
     }
 
-
     public void setLabel(String label)
     {
         lblLabel.setText(getHtmlLabel(label));
+    }
+
+    public void showProgress(boolean isVisible)
+    {
+        progbar.setVisible(isVisible);
+    }
+
+    public void setProgress(int value)
+    {
+        //Tools.logit("Progress: "+value);
+        progbar.setValue(value);
     }
 
     @Override

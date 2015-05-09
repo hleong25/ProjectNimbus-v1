@@ -207,15 +207,46 @@ public class GDriveDialog extends AbstractJDialog
 
         final String parentID = m_gdrive.getCurrentPathID();
 
-        // Loop them through
+        class FileHolder
+        {
+            public java.io.File content;
+            public File metadata;
+            public FileItemPanel pnl;
+        }
+
+        List<FileHolder> uploadFiles = new LinkedList<>();
+
         for (Object obj : objs)
         {
-            java.io.File file = (java.io.File) obj;
+            final java.io.File content = (java.io.File) obj;
+            final File metadata = m_gdrive.generateMetadata(parentID, content);
+            final FileItemPanel pnl = createFileItemPanel(metadata);
 
+            pnl.showProgress(true);
+
+            FileHolder holder = new FileHolder();
+            holder.content = content;
+            holder.metadata = metadata;
+            holder.pnl = pnl;
+
+            uploadFiles.add(holder);
+
+            // show the new item being added
+            pnlFiles.add(pnl);
+            pnlFiles.revalidate();
+
+            responsiveTaskUI();
+        }
+
+        // Loop them through
+        for (FileHolder holder : uploadFiles)
+        {
             // Print out the file path
-            Tools.logit("File path is '" + file.getPath() + "'.");
+            Tools.logit("File path is '" + holder.content.getPath() + "'.");
 
-            m_gdrive.uploadLocalFile(parentID, file, new MediaHttpUploaderProgressListener()
+            final FileItemPanel pnl = holder.pnl;
+
+            m_gdrive.uploadLocalFile(holder.metadata, holder.content, new MediaHttpUploaderProgressListener()
             {
                 @Override
                 public void progressChanged(MediaHttpUploader mhu) throws IOException
@@ -229,9 +260,14 @@ public class GDriveDialog extends AbstractJDialog
                             break;
                         case MEDIA_IN_PROGRESS:
                             Tools.logit("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
+                            pnl.setProgress((int)(mhu.getProgress()*100.0));
+                            responsiveTaskUI();
                             break;
                         case MEDIA_COMPLETE:
                             Tools.logit("Upload is complete!");
+                            pnl.setProgress(100);
+                            responsiveTaskUI();
+                            break;
                     }
                 }
             });

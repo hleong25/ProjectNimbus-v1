@@ -14,7 +14,6 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.JDialog;
@@ -96,6 +95,22 @@ public abstract class AbstractJDialog
         Tools.logit("AbstractJDialog.action_windowOnClosing()");
     }
 
+    protected void responsiveTaskUI()
+    {
+        // this call should be from another thread so the UI can be responsive
+        // refer to class ResponsiveTaskUI
+        try
+        {
+            // suspend this thread via sleep() and yeild control to other threads
+            Thread.sleep(10);
+        }
+        catch (InterruptedException ex)
+        {
+            //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("AbstractJDialog.responsiveTaskUI() Thread.sleep() error: "+ex);
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Implements DropTargetListener
@@ -146,19 +161,16 @@ public abstract class AbstractJDialog
                 if (flavor.isFlavorJavaFileListType())
                 {
                     // Get all of the dropped files
-                    List files = (List) transferable.getTransferData(flavor);
+                    final List files = (List) transferable.getTransferData(flavor);
 
-                    onDropAction(files);
-
-                    //// Loop them through
-                    //for (Object obj : files)
-                    //{
-                    //    File file = (File) obj;
-
-                    //    // Print out the file path
-                    //    System.out.println("File path is '" + file.getPath() + "'.");
-
-                    //}
+                    ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            onDropAction(files);
+                        }
+                    });
                 }
             }
             catch (Exception e)

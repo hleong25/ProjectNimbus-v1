@@ -23,11 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -175,23 +172,31 @@ public class GDriveController implements ICloudController
         return m_currentPathID;
     }
 
-    public File uploadLocalFile(String parentID, java.io.File content, MediaHttpUploaderProgressListener progressListener)
+    public File generateMetadata(String parentID, java.io.File content)
+    {
+        String mimeType = URLConnection.guessContentTypeFromName(content.getName());
+
+        Tools.logit("GDriveController.generateMetadata() File="+content.getName()+" Mime="+mimeType);
+
+        ParentReference parent = new ParentReference();
+        parent.setId(parentID);
+
+        File metadata = new File();
+        metadata.setTitle(content.getName());
+        metadata.setFileSize(content.length());
+        metadata.setMimeType(mimeType);
+        metadata.setParents(Arrays.asList(parent));
+
+        return metadata;
+    }
+
+    public File uploadLocalFile(File metadata, java.io.File content, MediaHttpUploaderProgressListener progressListener)
     {
         InputStream input = null;
 
         try
         {
             input = new BufferedInputStream(new FileInputStream(content));
-            String mimeType = URLConnection.guessContentTypeFromName(content.getName());
-
-            ParentReference parent = new ParentReference();
-            parent.setId(parentID);
-
-            File metadata = new File();
-            metadata.setTitle(content.getName());
-            metadata.setFileSize(content.length());
-            metadata.setMimeType(mimeType);
-            metadata.setParents(Arrays.asList(parent));
 
             File uploadedFile = m_model.uploadLocalFile(metadata, input, progressListener);
             return uploadedFile;
