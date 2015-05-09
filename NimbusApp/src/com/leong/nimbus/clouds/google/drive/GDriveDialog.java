@@ -18,6 +18,7 @@ import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.dnd.DropTarget;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,6 +75,20 @@ public class GDriveDialog extends AbstractJDialog
         WrapLayout wraplayout = new WrapLayout(FlowLayout.LEADING);
         wraplayout.setAlignOnBaseline(true);
         pnlFiles.setLayout(wraplayout);
+        pnlFiles.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                pnlFilesMouseClicked(evt);
+            }
+        });
+        pnlFiles.addKeyListener(new java.awt.event.KeyAdapter()
+        {
+            public void keyReleased(java.awt.event.KeyEvent evt)
+            {
+                pnlFilesKeyReleased(evt);
+            }
+        });
         pnlScroll.setViewportView(pnlFiles);
 
         getContentPane().add(pnlScroll, java.awt.BorderLayout.CENTER);
@@ -90,11 +105,27 @@ public class GDriveDialog extends AbstractJDialog
             {
                 if (m_gdrive.login())
                 {
-                    showFiles(GDriveConstants.FOLDER_ROOT);
+                    showFiles(GDriveConstants.FOLDER_ROOT, true);
                 }
             }
         });
     }//GEN-LAST:event_btnConnectActionPerformed
+
+    private void pnlFilesKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlFilesKeyReleased
+    {//GEN-HEADEREND:event_pnlFilesKeyReleased
+        //Tools.logit("GDriveDialog.pnlFilesKeyReleased() keycode="+evt.getKeyCode());
+        if (evt.getKeyCode() == KeyEvent.VK_F5)
+        {
+            Tools.logit("GDriveDialog.pnlFilesKeyReleased() F5");
+            String currentPathID = m_gdrive.getCurrentPathID();
+            showFiles(currentPathID, true);
+        }
+    }//GEN-LAST:event_pnlFilesKeyReleased
+
+    private void pnlFilesMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_pnlFilesMouseClicked
+    {//GEN-HEADEREND:event_pnlFilesMouseClicked
+        pnlFiles.requestFocusInWindow();
+    }//GEN-LAST:event_pnlFilesMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
@@ -116,14 +147,14 @@ public class GDriveDialog extends AbstractJDialog
             @Override
             public void onOpenFolder(File item)
             {
-                showFiles(item.getId());
+                showFiles(item.getId(), false);
             }
         });
 
         return pnl;
     }
 
-    protected void showFiles(final String pathID)
+    protected void showFiles(final String pathID, final boolean forceRefresh)
     {
         Tools.logit("GDriveDialog.showFiles("+pathID+")");
 
@@ -152,7 +183,7 @@ public class GDriveDialog extends AbstractJDialog
                 }
 
                 // get all files in this folder
-                files.addAll(m_gdrive.getFiles(pathID));
+                files.addAll(m_gdrive.getFiles(pathID, forceRefresh));
             }
         });
 
@@ -165,12 +196,16 @@ public class GDriveDialog extends AbstractJDialog
         pnlFiles.revalidate();
         pnlFiles.repaint();
 
+        // for keyreleased to work properly
+        pnlFiles.requestFocusInWindow();
     }
 
     @Override
     protected boolean onDropAction(List objs)
     {
         Tools.logit("GDriveDialog.onDropAction()");
+
+        final String parentID = m_gdrive.getCurrentPathID();
 
         // Loop them through
         for (Object obj : objs)
@@ -180,7 +215,7 @@ public class GDriveDialog extends AbstractJDialog
             // Print out the file path
             Tools.logit("File path is '" + file.getPath() + "'.");
 
-            m_gdrive.uploadLocalFile(file, new MediaHttpUploaderProgressListener()
+            m_gdrive.uploadLocalFile(parentID, file, new MediaHttpUploaderProgressListener()
             {
                 @Override
                 public void progressChanged(MediaHttpUploader mhu) throws IOException
@@ -200,8 +235,9 @@ public class GDriveDialog extends AbstractJDialog
                     }
                 }
             });
-
         }
+
+        showFiles(parentID, true);
 
         return true;
     }

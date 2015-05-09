@@ -60,6 +60,10 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pnlFilesMouseClicked"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="pnlFilesKeyReleased"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="WrapLayout wraplayout = new WrapLayout(FlowLayout.LEADING);&#xa;wraplayout.setAlignOnBaseline(true);&#xa;pnlFiles.setLayout(wraplayout);"/>
           </AuxValues>
