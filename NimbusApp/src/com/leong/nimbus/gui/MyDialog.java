@@ -5,6 +5,8 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
+import com.leong.nimbus.mainapp.PickCloudDialog;
 import com.leong.nimbus.utils.Tools;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -18,21 +20,24 @@ import java.util.List;
  *
  * @author henry
  */
-public abstract class AbstractDialog extends javax.swing.JDialog
+public class MyDialog extends javax.swing.JDialog
 {
+    protected PickCloudDialog m_picker;
     protected DropTargetAdapter m_dropTarget;
 
-    public AbstractDialog()
+    public MyDialog()
     {
         this(null);
     }
 
-    public AbstractDialog(java.awt.Frame parent)
+    public MyDialog(java.awt.Frame parent)
     {
         super(parent);
-        initComponents();
+        //initComponents();
 
-        Tools.logit("AbstractDialog.ctor(window)");
+        Tools.logit("MyDialog.ctor(window)");
+
+        //setJMenuBar(mnuBar);
 
         m_dropTarget = new DropTargetAdapter()
         {
@@ -42,6 +47,17 @@ public abstract class AbstractDialog extends javax.swing.JDialog
                 action_drop(dtde);
             }
         };
+    }
+
+    protected void super_initComponents()
+    {
+        initComponents();
+        setJMenuBar(mnuBar);
+    }
+
+    public void setCloudPicker(PickCloudDialog picker)
+    {
+        m_picker = picker;
     }
 
     /**
@@ -54,7 +70,25 @@ public abstract class AbstractDialog extends javax.swing.JDialog
     private void initComponents()
     {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        mnuBar = new javax.swing.JMenuBar();
+        mnuNimbus = new javax.swing.JMenu();
+        mnuNewCloud = new javax.swing.JMenuItem();
+
+        mnuNimbus.setText("Nimbus");
+
+        mnuNewCloud.setText("New Cloud");
+        mnuNewCloud.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                mnuNewCloudActionPerformed(evt);
+            }
+        });
+        mnuNimbus.add(mnuNewCloud);
+
+        mnuBar.add(mnuNimbus);
+
+        setJMenuBar(mnuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -64,13 +98,26 @@ public abstract class AbstractDialog extends javax.swing.JDialog
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 279, Short.MAX_VALUE)
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void mnuNewCloudActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuNewCloudActionPerformed
+    {//GEN-HEADEREND:event_mnuNewCloudActionPerformed
+        if (m_picker == null)
+        {
+            Tools.logit("MyDialog.mnuNewCloudActionPerformed() No cloud picker...");
+            return;
+        }
+
+        m_picker.setVisible(true);
+        m_picker.requestFocus();
+    }//GEN-LAST:event_mnuNewCloudActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JMenuBar mnuBar;
+    private javax.swing.JMenuItem mnuNewCloud;
+    private javax.swing.JMenu mnuNimbus;
     // End of variables declaration//GEN-END:variables
 
     public void setTitle(String title)
@@ -85,7 +132,7 @@ public abstract class AbstractDialog extends javax.swing.JDialog
 
     public void runLater()
     {
-        Tools.logit("AbstractDialog.runLater()");
+        Tools.logit("MyDialog.runLater()");
 
         Runnable run = new Runnable()
         {
@@ -101,7 +148,7 @@ public abstract class AbstractDialog extends javax.swing.JDialog
 
     public void runAndWait()
     {
-        Tools.logit("AbstractDialog.runAndWait()");
+        Tools.logit("MyDialog.runAndWait()");
 
         Runnable run = new Runnable()
         {
@@ -114,19 +161,19 @@ public abstract class AbstractDialog extends javax.swing.JDialog
 
         try
         {
-            Tools.logit("AbstractDialog.runAndWait() EventQueue.invokeAndWait(run)");
+            Tools.logit("MyDialog.runAndWait() EventQueue.invokeAndWait(run)");
             java.awt.EventQueue.invokeAndWait(run);
             //SwingUtilities.invokeAndWait(run);
         }
         catch (InterruptedException ex)
         {
             //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("AbstractDialog.runAndWait() InterruptedException: "+ex.toString());
+            Tools.logit("MyDialog.runAndWait() InterruptedException: "+ex.toString());
         }
         catch (InvocationTargetException ex)
         {
             //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("AbstractDialog.runAndWait() InvocationTargetException: "+ex.toString());
+            Tools.logit("MyDialog.runAndWait() InvocationTargetException: "+ex.toString());
         }
     }
 
@@ -139,7 +186,7 @@ public abstract class AbstractDialog extends javax.swing.JDialog
 
     protected void action_windowOnClosing()
     {
-        Tools.logit("AbstractDialog.action_windowOnClosing()");
+        Tools.logit("MyDialog.action_windowOnClosing()");
     }
 
     protected void responsiveTaskUI()
@@ -154,13 +201,13 @@ public abstract class AbstractDialog extends javax.swing.JDialog
         catch (InterruptedException ex)
         {
             //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("AbstractDialog.responsiveTaskUI() Thread.sleep() error: "+ex);
+            Tools.logit("MyDialog.responsiveTaskUI() Thread.sleep() error: "+ex);
         }
     }
 
     protected void action_drop(DropTargetDropEvent dtde)
     {
-        Tools.logit("AbstractDialog.action_drop()");
+        Tools.logit("MyDialog.action_drop()");
 
         // Accept copy drops
         dtde.acceptDrop(DnDConstants.ACTION_COPY);

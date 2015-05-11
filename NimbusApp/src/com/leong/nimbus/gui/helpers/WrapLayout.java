@@ -1,6 +1,6 @@
 // https://tips4java.wordpress.com/2008/11/06/wrap-layout/
 
-package com.leong.nimbus.gui;
+package com.leong.nimbus.gui.helpers;
 
 import java.awt.*;
 import javax.swing.JScrollPane;

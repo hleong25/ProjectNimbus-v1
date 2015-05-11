@@ -10,10 +10,12 @@ import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseListener;
-import com.leong.nimbus.gui.MyDialog;
-import com.leong.nimbus.gui.helpers.BusyTaskCursor;
-import com.leong.nimbus.gui.helpers.WrapLayout;
+import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.helpers.BusyTaskCursor;
+import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
+import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
+import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -27,19 +29,18 @@ import java.util.List;
  *
  * @author henry
  */
-public class GDriveDialog extends MyDialog
+public class GDrivePanel
+    extends javax.swing.JPanel
+    implements ICloudPanel
 {
+    private final GDriveController m_gdrive = new GDriveController();
+
     /**
-     * Creates new form GDriveDialog
+     * Creates new form GDrivePanel
      */
-    public GDriveDialog()
+    public GDrivePanel()
     {
         initComponents();
-
-        super_initComponents();
-        setJMenuBar(mnuBar);
-
-        m_bgcolor = pnlFiles.getBackground();
     }
 
     /**
@@ -56,8 +57,7 @@ public class GDriveDialog extends MyDialog
         pnlScroll = new javax.swing.JScrollPane();
         pnlFiles = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Google Drive");
+        setLayout(new java.awt.BorderLayout());
 
         btnConnect.setText("Connect to Google Drive!");
         btnConnect.addActionListener(new java.awt.event.ActionListener()
@@ -67,7 +67,7 @@ public class GDriveDialog extends MyDialog
                 btnConnectActionPerformed(evt);
             }
         });
-        getContentPane().add(btnConnect, java.awt.BorderLayout.PAGE_START);
+        add(btnConnect, java.awt.BorderLayout.PAGE_START);
 
         pnlScroll.setMinimumSize(new java.awt.Dimension(400, 300));
         pnlScroll.setPreferredSize(new java.awt.Dimension(400, 300));
@@ -92,9 +92,7 @@ public class GDriveDialog extends MyDialog
         });
         pnlScroll.setViewportView(pnlFiles);
 
-        getContentPane().add(pnlScroll, java.awt.BorderLayout.CENTER);
-
-        pack();
+        add(pnlScroll, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
@@ -104,16 +102,30 @@ public class GDriveDialog extends MyDialog
             @Override
             public void run()
             {
-                if (m_gdrive.login(GDriveDialog.this))
+                if (m_gdrive.login(GDrivePanel.this))
                 {
                     // setup drag and drop once logged in
-                    new DropTarget(pnlFiles, m_dropTarget);
+                    //new DropTarget(pnlFiles, m_dropTarget);
+
+                    new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+                    {
+                        @Override
+                        public boolean onAction_drop(List list)
+                        {
+                            return GDrivePanel.this.onAction_drop(list);
+                        }
+                    });
 
                     showFiles(GDriveConstants.FOLDER_ROOT, true);
                 }
             }
         });
     }//GEN-LAST:event_btnConnectActionPerformed
+
+    private void pnlFilesMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_pnlFilesMouseClicked
+    {//GEN-HEADEREND:event_pnlFilesMouseClicked
+        pnlFiles.requestFocusInWindow();
+    }//GEN-LAST:event_pnlFilesMouseClicked
 
     private void pnlFilesKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlFilesKeyReleased
     {//GEN-HEADEREND:event_pnlFilesKeyReleased
@@ -126,25 +138,11 @@ public class GDriveDialog extends MyDialog
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
-    private void pnlFilesMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_pnlFilesMouseClicked
-    {//GEN-HEADEREND:event_pnlFilesMouseClicked
-        pnlFiles.requestFocusInWindow();
-    }//GEN-LAST:event_pnlFilesMouseClicked
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnConnect;
-    private javax.swing.JPanel pnlFiles;
-    private javax.swing.JScrollPane pnlScroll;
-    // End of variables declaration//GEN-END:variables
-
-    private final GDriveController m_gdrive = new GDriveController();
-    private final Color m_bgcolor;
-
     protected FileItemPanel createFileItemPanel(final File file)
     {
         FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
 
-        pnl.setBackground(m_bgcolor);
+        pnl.setBackground(Color.WHITE);
 
         pnl.addMouseListener(new GDriveFileItemPanelMouseListener(file)
         {
@@ -204,8 +202,7 @@ public class GDriveDialog extends MyDialog
         pnlFiles.requestFocusInWindow();
     }
 
-    @Override
-    protected boolean onAction_drop(List objs)
+    protected boolean onAction_drop(List list)
     {
         Tools.logit("GDriveDialog.onDropAction()");
 
@@ -220,7 +217,7 @@ public class GDriveDialog extends MyDialog
 
         List<FileHolder> uploadFiles = new LinkedList<>();
 
-        for (Object obj : objs)
+        for (Object obj : list)
         {
             final java.io.File content = (java.io.File) obj;
             final File metadata = m_gdrive.generateMetadata(parentID, content);
@@ -239,7 +236,7 @@ public class GDriveDialog extends MyDialog
             pnlFiles.add(pnl);
             pnlFiles.revalidate();
 
-            responsiveTaskUI();
+            ResponsiveTaskUI.yield();
         }
 
         // Loop them through
@@ -265,12 +262,12 @@ public class GDriveDialog extends MyDialog
                         case MEDIA_IN_PROGRESS:
                             Tools.logit("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
                             pnl.setProgress((int)(mhu.getProgress()*100.0));
-                            responsiveTaskUI();
+                            ResponsiveTaskUI.yield();
                             break;
                         case MEDIA_COMPLETE:
                             Tools.logit("Upload is complete!");
                             pnl.setProgress(100);
-                            responsiveTaskUI();
+                            ResponsiveTaskUI.yield();
                             break;
                     }
                 }
@@ -281,4 +278,11 @@ public class GDriveDialog extends MyDialog
 
         return true;
     }
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnConnect;
+    private javax.swing.JPanel pnlFiles;
+    private javax.swing.JScrollPane pnlScroll;
+    // End of variables declaration//GEN-END:variables
 }

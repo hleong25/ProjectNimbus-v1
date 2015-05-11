@@ -6,6 +6,7 @@
 package com.leong.nimbus.mainapp;
 
 import com.leong.nimbus.clouds.google.drive.GDriveDialog;
+import com.leong.nimbus.gui.PickCloudFrame;
 import com.leong.nimbus.utils.Tools;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
@@ -21,10 +22,41 @@ public class MainGuiApp
     {
         Tools.logit("MainGuiApp");
 
-        setupLookAndFeel();
+        //setupLookAndFeel();
 
-        PickCloudDialog picker = new PickCloudDialog();
-        picker.runAndWait();
+        PickCloudFrame.showMe();
+
+        if (true)
+            return;
+
+        try
+        {
+            Tools.logit("AbstractDialog.runAndWait() EventQueue.invokeAndWait(run)");
+            //final PickCloudDialog picker = new PickCloudDialog();
+            final PickCloudFrame picker = new PickCloudFrame();
+
+            //picker.runAndWait();
+            java.awt.EventQueue.invokeAndWait(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    picker.setVisible(true);
+                }
+            });
+
+            //SwingUtilities.invokeAndWait(run);
+        }
+        catch (InterruptedException ex)
+        {
+            //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("AbstractDialog.runAndWait() InterruptedException: "+ex.toString());
+        }
+        catch (InvocationTargetException ex)
+        {
+            //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("AbstractDialog.runAndWait() InvocationTargetException: "+ex.toString());
+        }
     }
 
     private static void setupLookAndFeel()

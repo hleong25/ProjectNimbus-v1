@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.leong.nimbus.gui;
+package com.leong.nimbus.gui.helpers;
 
 import com.leong.nimbus.utils.Tools;
 import java.util.logging.Level;
@@ -32,20 +32,23 @@ public class ResponsiveTaskUI
             public void run()
             {
                 taskIFace.run();
-
-                //try
-                //{
-                //    // suspend this thread via sleep() and yeild control to other threads
-                //    Thread.sleep(5000);
-                //}
-                //catch (InterruptedException ex)
-                //{
-                //    //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
-                //    Tools.logit("ResponsiveTaskUI.doTask() Thread.sleep() error: "+ex);
-                //}
             }
         };
 
         thread.start();
+    }
+
+    public static void yield()
+    {
+        try
+        {
+            // suspend this thread via sleep() and yeild control to other threads
+            Thread.sleep(10);
+        }
+        catch (InterruptedException ex)
+        {
+            //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
+            Tools.logit("ResponsiveTaskUI.yield() Thread.sleep() error: "+ex);
+        }
     }
 }
