@@ -101,10 +101,10 @@ public class GDriveDialog extends AbstractJDialog
             @Override
             public void run()
             {
-                if (m_gdrive.login())
+                if (m_gdrive.login(GDriveDialog.this))
                 {
                     // setup drag and drop once logged in
-                    new DropTarget(pnlFiles, GDriveDialog.this);
+                    new DropTarget(pnlFiles, m_dropTarget);
 
                     showFiles(GDriveConstants.FOLDER_ROOT, true);
                 }
@@ -202,7 +202,7 @@ public class GDriveDialog extends AbstractJDialog
     }
 
     @Override
-    protected boolean onDropAction(List objs)
+    protected boolean onAction_drop(List objs)
     {
         Tools.logit("GDriveDialog.onDropAction()");
 

@@ -7,6 +7,9 @@ package com.leong.nimbus.mainapp;
 
 import com.leong.nimbus.clouds.google.drive.GDriveDialog;
 import com.leong.nimbus.utils.Tools;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,19 +19,44 @@ public class MainGuiApp
 {
     public static void main(String[] args)
     {
-        //GDriveController gdrive = new GDriveController();
-        //gdrive.login();
-
         Tools.logit("MainGuiApp");
 
+        setupLookAndFeel();
+
+        PickCloudDialog picker = new PickCloudDialog();
+        picker.runAndWait();
+    }
+
+    private static void setupLookAndFeel()
+    {
+        try
         {
-            GDriveDialog gdriveFrame = new GDriveDialog();
-            Tools.logit("GDrive.run()");
-            gdriveFrame.run();
-            Tools.logit("GDrive.run() done");
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
+            {
+                if ("Nimbus".equals(info.getName()))
+                {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        }
+        catch (ClassNotFoundException ex)
+        {
+            Tools.logit("setupLookAndFeel() ClassNotFoundException: "+ex);
+        }
+        catch (InstantiationException ex)
+        {
+            Tools.logit("setupLookAndFeel() InstantiationException: "+ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            Tools.logit("setupLookAndFeel() IllegalAccessException: "+ex);
+        }
+        catch (javax.swing.UnsupportedLookAndFeelException ex)
+        {
+            Tools.logit("setupLookAndFeel() UnsupportedLookAndFeelException: "+ex);
         }
 
-        Tools.logit("exit");
     }
 
 }

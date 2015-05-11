@@ -10,10 +10,8 @@ import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.JDialog;
@@ -24,8 +22,10 @@ import javax.swing.JDialog;
  */
 public abstract class AbstractJDialog
     extends JDialog
-    implements DropTargetListener
 {
+
+    protected DropTargetAdapter m_dropTarget;
+
     public AbstractJDialog()
     {
         this(null);
@@ -39,7 +39,14 @@ public abstract class AbstractJDialog
 
         Tools.logit("AbstractJDialog.ctor(window)");
 
-        //myInit();
+        m_dropTarget = new DropTargetAdapter()
+        {
+            @Override
+            public void drop(DropTargetDropEvent dtde)
+            {
+                action_drop(dtde);
+            }
+        };
     }
 
     public void setTitle(String title)
@@ -52,9 +59,25 @@ public abstract class AbstractJDialog
             super.setTitle(title + APP_NAME);
     }
 
-    public void run()
+    public void runLater()
     {
-        Tools.logit("AbstractJDialog.run()");
+        Tools.logit("AbstractJDialog.runLater()");
+
+        Runnable run = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                do_run();
+            }
+        };
+
+        java.awt.EventQueue.invokeLater(run);
+    }
+
+    public void runAndWait()
+    {
+        Tools.logit("AbstractJDialog.runAndWait()");
 
         Runnable run = new Runnable()
         {
@@ -67,26 +90,26 @@ public abstract class AbstractJDialog
 
         try
         {
-            Tools.logit("AbstractJDialog.run() EventQueue.invokeAndWait(run)");
+            Tools.logit("AbstractJDialog.runAndWait() EventQueue.invokeAndWait(run)");
             java.awt.EventQueue.invokeAndWait(run);
             //SwingUtilities.invokeAndWait(run);
         }
         catch (InterruptedException ex)
         {
             //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("AbstractJDialog.run() InterruptedException: "+ex.toString());
+            Tools.logit("AbstractJDialog.runAndWait() InterruptedException: "+ex.toString());
         }
         catch (InvocationTargetException ex)
         {
             //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("AbstractJDialog.run() InvocationTargetException: "+ex.toString());
+            Tools.logit("AbstractJDialog.runAndWait() InvocationTargetException: "+ex.toString());
         }
     }
 
     protected void do_run()
     {
         //pack();
-        setModal(true);
+        //setModal(true);
         setVisible(true);
     }
 
@@ -111,37 +134,9 @@ public abstract class AbstractJDialog
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Implements DropTargetListener
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void dragEnter(DropTargetDragEvent dtde)
+    protected void action_drop(DropTargetDropEvent dtde)
     {
-
-    }
-
-    @Override
-    public void dragOver(DropTargetDragEvent dtde)
-    {
-    }
-
-    @Override
-    public void dropActionChanged(DropTargetDragEvent dtde)
-    {
-    }
-
-    @Override
-    public void dragExit(DropTargetEvent dte)
-    {
-    }
-
-    @Override
-    public void drop(DropTargetDropEvent dtde)
-    {
-        Tools.logit("AbstractJDialog.drop()");
+        Tools.logit("AbstractJDialog.action_drop()");
 
         // Accept copy drops
         dtde.acceptDrop(DnDConstants.ACTION_COPY);
@@ -168,7 +163,7 @@ public abstract class AbstractJDialog
                         @Override
                         public void run()
                         {
-                            onDropAction(files);
+                            onAction_drop(files);
                         }
                     });
                 }
@@ -185,5 +180,8 @@ public abstract class AbstractJDialog
         dtde.dropComplete(true);
     }
 
-    protected abstract boolean onDropAction(List objs);
+    protected boolean onAction_drop(List objs)
+    {
+        return false;
+    }
 }

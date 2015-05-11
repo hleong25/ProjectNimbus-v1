@@ -13,6 +13,7 @@ import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
+import java.awt.Component;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -68,7 +69,7 @@ public class GDriveController implements ICloudController
         m_cachedFiles = new HashMap<>();
     }
 
-    public boolean login()
+    public boolean login(Component parentComponent)
     {
         Tools.logit("GDriveController.login()");
 
@@ -92,10 +93,11 @@ public class GDriveController implements ICloudController
             e.printStackTrace();
         }
 
-        String authCode = JOptionPane.showInputDialog("Input the authentication code here");
+        String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");
 
         if (Tools.isNullOrEmpty(authCode))
         {
+            Tools.isNullOrEmpty("Auth code not valid");
             return false;
         }
 
