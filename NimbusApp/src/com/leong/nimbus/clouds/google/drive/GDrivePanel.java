@@ -132,7 +132,7 @@ public class GDrivePanel
         //Tools.logit("GDriveDialog.pnlFilesKeyReleased() keycode="+evt.getKeyCode());
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
-            Tools.logit("GDriveDialog.pnlFilesKeyReleased() F5");
+            Tools.logit("GDrivePanel.pnlFilesKeyReleased() F5");
             String currentPathID = m_gdrive.getCurrentPathID();
             showFiles(currentPathID, true);
         }
@@ -158,7 +158,7 @@ public class GDrivePanel
 
     protected void showFiles(final String pathID, final boolean forceRefresh)
     {
-        Tools.logit("GDriveDialog.showFiles("+pathID+")");
+        Tools.logit("GDrivePanel.showFiles("+pathID+")");
 
         final List<File> files = new LinkedList<>();
 
@@ -204,7 +204,7 @@ public class GDrivePanel
 
     protected boolean onAction_drop(List list)
     {
-        Tools.logit("GDriveDialog.onDropAction()");
+        Tools.logit("GDrivePanel.onAction_drop()");
 
         final String parentID = m_gdrive.getCurrentPathID();
 

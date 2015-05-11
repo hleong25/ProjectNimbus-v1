@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.utils.Tools;
 import javax.swing.ImageIcon;
 
 /**
@@ -59,8 +60,7 @@ public class PickCloudFrame extends javax.swing.JFrame
 
     private void btnGoogleDriveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnGoogleDriveActionPerformed
     {//GEN-HEADEREND:event_btnGoogleDriveActionPerformed
-        MyFrame frame = MyFrame.setupMainPanel(MyFrame.CloudType.GOOGLE_DRIVE);
-        showAndDispose(frame);
+        showAndDispose(NimbusFrame.CloudType.GOOGLE_DRIVE);
     }//GEN-LAST:event_btnGoogleDriveActionPerformed
 
     public static void showMe()
@@ -125,12 +125,20 @@ public class PickCloudFrame extends javax.swing.JFrame
         });
     }
 
-    protected void showAndDispose(MyFrame frame)
+    protected void showAndDispose(NimbusFrame.CloudType type)
     {
+        NimbusFrame frame = NimbusFrame.setupMainPanel(type);
+
         if (frame != null)
         {
+            Tools.logit("PickCloudFrame.showAndDispose() Showing "+type.toString());
+
             // show it
             frame.runLater();
+        }
+        else
+        {
+            Tools.logit("PickCloudFrame.showAndDispose() Unknown type: "+type.toString());
         }
 
         // kill me

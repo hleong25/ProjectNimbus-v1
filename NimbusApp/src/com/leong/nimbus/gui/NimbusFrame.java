@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author henry
  */
-public class MyFrame extends javax.swing.JFrame
+public class NimbusFrame extends javax.swing.JFrame
 {
     public static enum CloudType
     {
@@ -25,9 +25,9 @@ public class MyFrame extends javax.swing.JFrame
     private final static String CARD_GOOGLE_DRIVE = "Google Drive";
 
     /**
-     * Creates new form MyFrame
+     * Creates new form NimbusFrame
      */
-    public MyFrame()
+    public NimbusFrame()
     {
         initComponents();
 
@@ -36,14 +36,14 @@ public class MyFrame extends javax.swing.JFrame
             @Override
             public void run()
             {
-                do_run();
+                setVisible(true);
             }
         };
     }
 
-    public static MyFrame setupMainPanel(CloudType type)
+    public static NimbusFrame setupMainPanel(CloudType type)
     {
-        MyFrame frame = new MyFrame();
+        NimbusFrame frame = new NimbusFrame();
 
         switch (type)
         {
@@ -126,7 +126,7 @@ public class MyFrame extends javax.swing.JFrame
 
     public void runLater()
     {
-        Tools.logit("MyFrame.runLater()");
+        Tools.logit("NimbusFrame.runLater()");
 
         java.awt.EventQueue.invokeLater(m_run);
     }
@@ -135,24 +135,19 @@ public class MyFrame extends javax.swing.JFrame
     {
         try
         {
-            Tools.logit("MyFrame.runAndWait() EventQueue.invokeAndWait(run)");
+            Tools.logit("NimbusFrame.runAndWait() EventQueue.invokeAndWait(run)");
             java.awt.EventQueue.invokeAndWait(m_run);
         }
         catch (InterruptedException ex)
         {
             //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("MyFrame.runAndWait() InterruptedException: "+ex.toString());
+            Tools.logit("NimbusFrame.runAndWait() InterruptedException: "+ex.toString());
         }
         catch (InvocationTargetException ex)
         {
             //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("MyFrame.runAndWait() InvocationTargetException: "+ex.toString());
+            Tools.logit("NimbusFrame.runAndWait() InvocationTargetException: "+ex.toString());
         }
-    }
-
-    protected void do_run()
-    {
-        setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
