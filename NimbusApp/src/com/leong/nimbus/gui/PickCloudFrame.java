@@ -40,6 +40,7 @@ public class PickCloudFrame extends javax.swing.JFrame
         setTitle("Nimbus");
 
         pnlPicker.setMinimumSize(new java.awt.Dimension(400, 300));
+        pnlPicker.setPreferredSize(new java.awt.Dimension(400, 300));
         pnlPicker.setLayout(new java.awt.GridBagLayout());
 
         btnGoogleDrive.setText("Google Drive");
