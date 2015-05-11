@@ -10,7 +10,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseListener;
-import com.leong.nimbus.gui.AbstractJDialog;
+import com.leong.nimbus.gui.AbstractDialog;
 import com.leong.nimbus.gui.BusyTaskCursor;
 import com.leong.nimbus.gui.WrapLayout;
 import com.leong.nimbus.gui.components.FileItemPanel;
@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author henry
  */
-public class GDriveDialog extends AbstractJDialog
+public class GDriveDialog extends AbstractDialog
 {
     /**
      * Creates new form GDriveDialog

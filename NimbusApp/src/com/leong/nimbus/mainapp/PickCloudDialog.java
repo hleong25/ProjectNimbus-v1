@@ -6,13 +6,11 @@
 package com.leong.nimbus.mainapp;
 
 import com.leong.nimbus.clouds.google.drive.GDriveDialog;
-import com.leong.nimbus.gui.AbstractJDialog;
+import com.leong.nimbus.gui.AbstractDialog;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -22,7 +20,7 @@ import javax.swing.JDialog;
  *
  * @author henry
  */
-public class PickCloudDialog extends AbstractJDialog
+public class PickCloudDialog extends AbstractDialog
 {
     private List<JDialog> m_dialogs = new LinkedList<>();
 
@@ -97,7 +95,7 @@ public class PickCloudDialog extends AbstractJDialog
     private javax.swing.JPanel pnlClouds;
     // End of variables declaration//GEN-END:variables
 
-    private void showDialog(AbstractJDialog dialog)
+    private void showDialog(AbstractDialog dialog)
     {
         m_dialogs.add(dialog);
 
