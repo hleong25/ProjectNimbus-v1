@@ -27,21 +27,31 @@ public final class BusyTaskCursor
         // empty
     }
 
-    public static void doTask(final Component component, IBusyTask taskIface)
+    public static void doTask(final Component component, final IBusyTask taskIface)
     {
-        try
+        ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
         {
-            //Tools.logit("BusyTaskCursor.doTask() cursor busy");
-            component.setCursor(CURSOR_BUSY);
+            @Override
+            public void run()
+            {
+                try
+                {
+                    //Tools.logit("BusyTaskCursor.doTask() cursor busy");
+                    component.setCursor(CURSOR_BUSY);
 
-            //Tools.logit("BusyTaskCursor.doTask() taskIface.run()");
-            taskIface.run();
-        }
-        finally
-        {
-            //Tools.logit("BusyTaskCursor.doTask() cursor default");
-            component.setCursor(CURSOR_DEFAULT);
-        }
+                    ResponsiveTaskUI.yield();
+
+                    //Tools.logit("BusyTaskCursor.doTask() taskIface.run()");
+                    taskIface.run();
+                }
+                finally
+                {
+                    //Tools.logit("BusyTaskCursor.doTask() cursor default");
+                    component.setCursor(CURSOR_DEFAULT);
+                }
+            }
+        });
+
     }
 
 }

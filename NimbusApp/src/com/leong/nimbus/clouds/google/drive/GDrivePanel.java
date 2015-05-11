@@ -149,48 +149,54 @@ public class GDrivePanel
             @Override
             public void onOpenFolder(File item)
             {
-                showFiles(item.getId(), false);
+                responsiveShowFiles(item.getId(), false);
             }
         });
 
         return pnl;
     }
 
-    protected void showFiles(final String pathID, final boolean forceRefresh)
+    protected void responsiveShowFiles(final String pathID, final boolean forceRefresh)
     {
-        Tools.logit("GDrivePanel.showFiles("+pathID+")");
-
-        final List<File> files = new LinkedList<>();
-
-        // remove all items first
-        pnlFiles.removeAll();
-
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
             @Override
             public void run()
             {
-                // show parent link
-                {
-                    File parentFile = m_gdrive.getParentFile(pathID);
-
-                    if (parentFile != null)
-                    {
-                        FileItemPanel pnl = createFileItemPanel(parentFile);
-
-                        pnl.setLabel("..");
-
-                        pnlFiles.add(pnl);
-                    }
-                }
-
-                // get all files in this folder
-                files.addAll(m_gdrive.getFiles(pathID, forceRefresh));
+                showFiles(pathID, forceRefresh);
             }
         });
+    }
+
+    protected void showFiles(final String pathID, final boolean forceRefresh)
+    {
+        Tools.logit("GDrivePanel.showFiles("+pathID+")");
+
+        // remove all items first
+        pnlFiles.removeAll();
+
+        // show parent link
+        {
+            File parentFile = m_gdrive.getParentFile(pathID);
+
+            if (parentFile != null)
+            {
+                FileItemPanel pnl = createFileItemPanel(parentFile);
+
+                pnl.setLabel("..");
+
+                pnlFiles.add(pnl);
+            }
+        }
+
+        // get all files in this folder
+        final List<File> files = m_gdrive.getFiles(pathID, forceRefresh);
+
+        Tools.logit("GDrivePanel.showFiles() Total files: "+files.size());
 
         for (File file : files)
         {
+            //Tools.logit("GDrivePanel.showFiles() Adding '"+file.getTitle()+"'");
             FileItemPanel pnl = createFileItemPanel(file);
             pnlFiles.add(pnl);
         }
