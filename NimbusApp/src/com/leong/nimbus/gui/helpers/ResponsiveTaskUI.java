@@ -6,8 +6,6 @@
 package com.leong.nimbus.gui.helpers;
 
 import com.leong.nimbus.utils.Tools;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

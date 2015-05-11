@@ -23,17 +23,11 @@ import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Tools;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

@@ -60,8 +60,6 @@ public class PickCloudFrame extends javax.swing.JFrame
     private void btnGoogleDriveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnGoogleDriveActionPerformed
     {//GEN-HEADEREND:event_btnGoogleDriveActionPerformed
         MyFrame frame = MyFrame.setupMainPanel(MyFrame.CloudType.GOOGLE_DRIVE);
-        //MyFrame frame = new MyFrame();
-        //frame.setTitle("Google Drive");
         showAndDispose(frame);
     }//GEN-LAST:event_btnGoogleDriveActionPerformed
 

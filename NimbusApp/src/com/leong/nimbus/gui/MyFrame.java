@@ -5,16 +5,9 @@
  */
 package com.leong.nimbus.gui;
 
-import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.utils.Tools;
 import java.awt.CardLayout;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDropEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  *
@@ -46,15 +39,6 @@ public class MyFrame extends javax.swing.JFrame
                 do_run();
             }
         };
-
-        //m_dropTarget = new DropTargetAdapter()
-        //{
-        //    @Override
-        //    public void drop(DropTargetDropEvent dtde)
-        //    {
-        //        action_drop(dtde);
-        //    }
-        //};
     }
 
     public static MyFrame setupMainPanel(CloudType type)
@@ -149,13 +133,10 @@ public class MyFrame extends javax.swing.JFrame
 
     public void runAndWait()
     {
-        //Tools.logit("MyFrame.runAndWait()");
-
         try
         {
             Tools.logit("MyFrame.runAndWait() EventQueue.invokeAndWait(run)");
             java.awt.EventQueue.invokeAndWait(m_run);
-            //SwingUtilities.invokeAndWait(run);
         }
         catch (InterruptedException ex)
         {
@@ -174,22 +155,6 @@ public class MyFrame extends javax.swing.JFrame
         setVisible(true);
     }
 
-    protected void responsiveTaskUI()
-    {
-        // this call should be from another thread so the UI can be responsive
-        // refer to class ResponsiveTaskUI
-        try
-        {
-            // suspend this thread via sleep() and yeild control to other threads
-            Thread.sleep(10);
-        }
-        catch (InterruptedException ex)
-        {
-            //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("MyFrame.responsiveTaskUI() Thread.sleep() error: "+ex);
-        }
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu mnuNimbus;
     private javax.swing.JMenuItem mnuOpenNewCloud;
@@ -198,55 +163,4 @@ public class MyFrame extends javax.swing.JFrame
     private com.leong.nimbus.clouds.google.drive.GDrivePanel pnlGoogleDrive;
     private javax.swing.JPanel pnlMain;
     // End of variables declaration//GEN-END:variables
-
-    //protected void action_drop(DropTargetDropEvent dtde)
-    //{
-    //    Tools.logit("MyFrame.action_drop()");
-
-    //    // Accept copy drops
-    //    dtde.acceptDrop(DnDConstants.ACTION_COPY);
-
-    //    // Get the transfer which can provide the dropped item data
-    //    Transferable transferable = dtde.getTransferable();
-
-    //    // Get the data formats of the dropped item
-    //    DataFlavor[] flavors = transferable.getTransferDataFlavors();
-
-    //    // Loop through the flavors
-    //    for (DataFlavor flavor : flavors)
-    //    {
-    //        try
-    //        {
-    //            // If the drop items are files
-    //            if (flavor.isFlavorJavaFileListType())
-    //            {
-    //                // Get all of the dropped files
-    //                final List files = (List) transferable.getTransferData(flavor);
-
-    //                ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
-    //                {
-    //                    @Override
-    //                    public void run()
-    //                    {
-    //                        onAction_drop(files);
-    //                    }
-    //                });
-    //            }
-    //        }
-    //        catch (Exception e)
-    //        {
-    //            // Print out the error stack
-    //            e.printStackTrace();
-
-    //        }
-    //    }
-
-    //    // Inform that the drop is complete
-    //    dtde.dropComplete(true);
-    //}
-
-    //protected boolean onAction_drop(List objs)
-    //{
-    //    return false;
-    //}
 }
