@@ -211,11 +211,12 @@ public class LocalPanel
         Tools.logit("LocalPanel.showFiles("+currPath.getAbsolutePath()+")");
         txtPath.setText(currPath.getAbsolutePath());
 
+        List<Component> list = getFiles(currPath, forceRefresh);
+
         // remove all items first
         pnlFiles.removeAll();
 
-        List<Component> list = getFiles(currPath, forceRefresh);
-
+        // add the components to the panel
         for (Component pnl : list)
         {
             pnlFiles.add(pnl);
