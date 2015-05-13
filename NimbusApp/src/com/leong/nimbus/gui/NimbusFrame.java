@@ -17,11 +17,13 @@ public class NimbusFrame extends javax.swing.JFrame
 {
     public static enum CloudType
     {
+        LOCAL_FILE_SYSTEM,
         GOOGLE_DRIVE,
     }
 
     private final Runnable m_run;
 
+    private final static String CARD_LOCAL_FILE_SYSTEM = "Local File System";
     private final static String CARD_GOOGLE_DRIVE = "Google Drive";
 
     /**
@@ -44,17 +46,24 @@ public class NimbusFrame extends javax.swing.JFrame
     public static NimbusFrame setupMainPanel(CloudType type)
     {
         NimbusFrame frame = new NimbusFrame();
+        String cardName = "";
 
         switch (type)
         {
+            case LOCAL_FILE_SYSTEM:
+                cardName = CARD_LOCAL_FILE_SYSTEM;
+                break;
+
             case GOOGLE_DRIVE:
-                frame.setTitle(CARD_GOOGLE_DRIVE);
-                ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, CARD_GOOGLE_DRIVE);
+                cardName = CARD_GOOGLE_DRIVE;
                 break;
 
             default:
                 return null;
         }
+
+        frame.setTitle(cardName);
+        ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);
 
         return frame;
     }
@@ -72,6 +81,7 @@ public class NimbusFrame extends javax.swing.JFrame
         pnlMain = new javax.swing.JPanel();
         pnlCards = new javax.swing.JPanel();
         pnlGoogleDrive = new com.leong.nimbus.clouds.google.drive.GDrivePanel();
+        pnlLocal = new com.leong.nimbus.clouds.local.LocalPanel();
         mnubar = new javax.swing.JMenuBar();
         mnuNimbus = new javax.swing.JMenu();
         mnuOpenNewCloud = new javax.swing.JMenuItem();
@@ -84,6 +94,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
         pnlCards.setLayout(new java.awt.CardLayout());
         pnlCards.add(pnlGoogleDrive, "Google Drive");
+        pnlCards.add(pnlLocal, "Local File System");
 
         pnlMain.add(pnlCards, java.awt.BorderLayout.CENTER);
 
@@ -156,6 +167,7 @@ public class NimbusFrame extends javax.swing.JFrame
     private javax.swing.JMenuBar mnubar;
     private javax.swing.JPanel pnlCards;
     private com.leong.nimbus.clouds.google.drive.GDrivePanel pnlGoogleDrive;
+    private com.leong.nimbus.clouds.local.LocalPanel pnlLocal;
     private javax.swing.JPanel pnlMain;
     // End of variables declaration//GEN-END:variables
 }

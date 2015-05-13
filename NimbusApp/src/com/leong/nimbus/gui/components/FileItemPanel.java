@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui.components;
 
+import java.awt.Color;
 import java.awt.Component;
 
 /**
@@ -108,5 +109,23 @@ public class FileItemPanel extends javax.swing.JPanel
     @Override
     public int getBaseline(int width, int height) {
         return 0;
+    }
+
+    protected boolean m_highlight = false;
+    public void setHighlight(boolean highlight)
+    {
+        m_highlight = highlight;
+
+        if (highlight)
+        {
+            Color bgcolor = Color.WHITE;
+            setBackground(bgcolor);
+            revalidate();
+        }
+    }
+
+    public boolean isHighlight()
+    {
+        return m_highlight;
     }
 }

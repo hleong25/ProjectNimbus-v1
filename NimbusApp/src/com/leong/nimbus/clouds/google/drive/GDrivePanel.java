@@ -9,7 +9,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
-import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseListener;
+import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
@@ -21,6 +21,8 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,13 +146,26 @@ public class GDrivePanel
 
         pnl.setBackground(Color.WHITE);
 
-        pnl.addMouseListener(new GDriveFileItemPanelMouseListener(file)
+        pnl.addMouseListener(new GDriveFileItemPanelMouseAdapter(file)
         {
             @Override
             public void onOpenFolder(File item)
             {
                 responsiveShowFiles(item.getId(), false);
             }
+        });
+
+        pnl.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                FileItemPanel pnl = (FileItemPanel) e.getSource();
+                pnl.setHighlight(true);
+
+                super.mouseClicked(e);
+            }
+
         });
 
         return pnl;

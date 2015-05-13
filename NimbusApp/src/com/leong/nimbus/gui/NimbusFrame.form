@@ -78,6 +78,13 @@
                 </Constraint>
               </Constraints>
             </Component>
+            <Component class="com.leong.nimbus.clouds.local.LocalPanel" name="pnlLocal">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                  <CardConstraints cardName="Local File System"/>
+                </Constraint>
+              </Constraints>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>

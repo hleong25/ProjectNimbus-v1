@@ -32,8 +32,10 @@ public class PickCloudFrame extends javax.swing.JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents()
     {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         pnlPicker = new javax.swing.JPanel();
+        btnLocal = new javax.swing.JButton();
         btnGoogleDrive = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -42,6 +44,21 @@ public class PickCloudFrame extends javax.swing.JFrame
         pnlPicker.setMinimumSize(new java.awt.Dimension(400, 300));
         pnlPicker.setPreferredSize(new java.awt.Dimension(400, 300));
         pnlPicker.setLayout(new java.awt.GridBagLayout());
+
+        btnLocal.setText("Local File System");
+        btnLocal.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnLocalActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        pnlPicker.add(btnLocal, gridBagConstraints);
 
         btnGoogleDrive.setText("Google Drive");
         btnGoogleDrive.setIcon(new ImageIcon(getClass().getClassLoader().getResource("resources/icons/google/drive-32.png")));
@@ -52,7 +69,12 @@ public class PickCloudFrame extends javax.swing.JFrame
                 btnGoogleDriveActionPerformed(evt);
             }
         });
-        pnlPicker.add(btnGoogleDrive, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        pnlPicker.add(btnGoogleDrive, gridBagConstraints);
 
         getContentPane().add(pnlPicker, java.awt.BorderLayout.CENTER);
 
@@ -63,6 +85,11 @@ public class PickCloudFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_btnGoogleDriveActionPerformed
         showAndDispose(NimbusFrame.CloudType.GOOGLE_DRIVE);
     }//GEN-LAST:event_btnGoogleDriveActionPerformed
+
+    private void btnLocalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLocalActionPerformed
+    {//GEN-HEADEREND:event_btnLocalActionPerformed
+        showAndDispose(NimbusFrame.CloudType.LOCAL_FILE_SYSTEM);
+    }//GEN-LAST:event_btnLocalActionPerformed
 
     public static void showMe()
     {
@@ -148,6 +175,7 @@ public class PickCloudFrame extends javax.swing.JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGoogleDrive;
+    private javax.swing.JButton btnLocal;
     private javax.swing.JPanel pnlPicker;
     // End of variables declaration//GEN-END:variables
 }
