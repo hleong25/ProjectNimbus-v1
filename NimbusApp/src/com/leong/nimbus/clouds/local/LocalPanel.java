@@ -13,10 +13,15 @@ import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -28,6 +33,8 @@ public class LocalPanel
     implements ICloudPanel
 {
     private final LocalController m_local = new LocalController();
+
+    private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
 
     /**
      * Creates new form LocalPanel
@@ -155,6 +162,50 @@ public class LocalPanel
         });
     }
 
+    protected List<Component> getFiles(final File currPath, final boolean forceRefresh)
+    {
+        List<Component> list;
+
+        if (!forceRefresh && m_cachedComponents.containsKey(currPath))
+        {
+            Tools.logit("LocalPanel.getFiles() Cache hit!");
+            list = m_cachedComponents.get(currPath);
+        }
+        else
+        {
+            list = new LinkedList<>();
+
+            // show parent link
+            {
+                File parentFile = m_local.getParentFile(currPath);
+
+                if (parentFile != null)
+                {
+                    FileItemPanel pnl = createFileItemPanel(parentFile);
+
+                    pnl.setLabel("..");
+
+                    list.add(pnl);
+                }
+            }
+
+            // get all files in this folder
+            final List<File> files = m_local.getFiles(currPath.getAbsolutePath(), forceRefresh);
+
+            Tools.logit("LocalPanel.getFiles() Total files: "+files.size());
+
+            for (File file : files)
+            {
+                FileItemPanel pnl = createFileItemPanel(file);
+                list.add(pnl);
+            }
+
+            m_cachedComponents.put(currPath, list);
+        }
+
+        return list;
+    }
+
     protected void showFiles(final File currPath, final boolean forceRefresh)
     {
         Tools.logit("LocalPanel.showFiles("+currPath.getAbsolutePath()+")");
@@ -163,32 +214,14 @@ public class LocalPanel
         // remove all items first
         pnlFiles.removeAll();
 
-        // show parent link
+        List<Component> list = getFiles(currPath, forceRefresh);
+
+        for (Component pnl : list)
         {
-            File parentFile = m_local.getParentFile(currPath);
-
-            if (parentFile != null)
-            {
-                FileItemPanel pnl = createFileItemPanel(parentFile);
-
-                pnl.setLabel("..");
-
-                pnlFiles.add(pnl);
-            }
-        }
-
-        // get all files in this folder
-        final List<File> files = m_local.getFiles(currPath.getAbsolutePath(), forceRefresh);
-
-        Tools.logit("LocalPanel.showFiles() Total files: "+files.size());
-
-        for (File file : files)
-        {
-            //Tools.logit("GDrivePanel.showFiles() Adding '"+file.getTitle()+"'");
-            FileItemPanel pnl = createFileItemPanel(file);
             pnlFiles.add(pnl);
         }
 
+        // make sure repaint happens
         pnlFiles.revalidate();
         pnlFiles.repaint();
 

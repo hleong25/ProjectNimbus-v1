@@ -32,12 +32,12 @@ public class LocalFileItem implements IFileItem
 
         if (m_item.isDirectory())
         {
-            Tools.logit("Path="+m_item.getAbsolutePath());
+            //Tools.logit("Path="+m_item.getAbsolutePath());
             path = "resources/icons/google/Close-Folder-icon-64.png";
         }
         else
         {
-            Tools.logit("File="+m_item.getAbsolutePath());
+            //Tools.logit("File="+m_item.getAbsolutePath());
             path = "resources/icons/google/docs-64.png";
         }
 

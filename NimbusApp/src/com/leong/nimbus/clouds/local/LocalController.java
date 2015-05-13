@@ -24,7 +24,7 @@ public class LocalController implements ICloudController
 
     private final Comparator<File> m_comparatorFiles;
     private final Map<String, List<File>> m_cachedListFiles;
-    private final Map<String, File> m_cachedFiles;
+    //private final Map<String, File> m_cachedFiles;
 
     public LocalController()
     {
@@ -46,13 +46,13 @@ public class LocalController implements ICloudController
         };
 
         m_cachedListFiles = new HashMap<>();
-        m_cachedFiles = new HashMap<>();
+        //m_cachedFiles = new HashMap<>();
     }
 
     public File getHomeFile()
     {
         File home = m_model.getHomeFile();
-        m_cachedFiles.put(home.getAbsolutePath(), home);
+        //m_cachedFiles.put(home.getAbsolutePath(), home);
         return home;
     }
 
