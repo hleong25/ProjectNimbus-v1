@@ -7,8 +7,8 @@ package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.filechooser.FileSystemView;
 
@@ -36,7 +36,7 @@ public class LocalModel implements ICloudModel
 
     public List<File> getFiles(String path)
     {
-        List<File> list = new LinkedList<>();
+        List<File> list = new ArrayList<>();
 
         File currPath = getFile(path);
 

@@ -24,7 +24,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -236,7 +236,7 @@ public class GDrivePanel
             public FileItemPanel pnl;
         }
 
-        List<FileHolder> uploadFiles = new LinkedList<>();
+        List<FileHolder> uploadFiles = new ArrayList<>();
 
         for (Object obj : list)
         {

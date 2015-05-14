@@ -25,8 +25,8 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Tools;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -166,7 +166,7 @@ public class GDriveModel implements ICloudModel
 
     public List<File> getFiles(String fileID)
     {
-        final List<File> list = new LinkedList<>();
+        final List<File> list = new ArrayList<>();
 
         try
         {

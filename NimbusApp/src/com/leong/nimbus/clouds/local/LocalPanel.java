@@ -10,6 +10,7 @@ import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
+import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
 import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
@@ -17,12 +18,10 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.swing.filechooser.FileSystemView;
 
 /**
  *
@@ -134,19 +133,6 @@ public class LocalPanel
             }
         });
 
-        //pnl.addMouseListener(new MouseAdapter()
-        //{
-        //    @Override
-        //    public void mouseClicked(MouseEvent e)
-        //    {
-        //        FileItemPanel pnl = (FileItemPanel) e.getSource();
-        //        pnl.setHighlight(true);
-
-        //        super.mouseClicked(e);
-        //    }
-
-        //});
-
         return pnl;
     }
 
@@ -173,7 +159,9 @@ public class LocalPanel
         }
         else
         {
-            list = new LinkedList<>();
+            list = new ArrayList<>();
+
+            FileItemPanelGroup group = new FileItemPanelGroup();
 
             // show parent link
             {
@@ -185,6 +173,7 @@ public class LocalPanel
 
                     pnl.setLabel("..");
 
+                    group.add(pnl);
                     list.add(pnl);
                 }
             }
@@ -197,6 +186,7 @@ public class LocalPanel
             for (File file : files)
             {
                 FileItemPanel pnl = createFileItemPanel(file);
+                group.add(pnl);
                 list.add(pnl);
             }
 
@@ -212,6 +202,13 @@ public class LocalPanel
         txtPath.setText(currPath.getAbsolutePath());
 
         List<Component> list = getFiles(currPath, forceRefresh);
+
+        if (!list.isEmpty())
+        {
+            // must reset the highlights
+            FileItemPanel pnl = (FileItemPanel) list.get(0);
+            pnl.getGroup().reset();
+        }
 
         // remove all items first
         pnlFiles.removeAll();

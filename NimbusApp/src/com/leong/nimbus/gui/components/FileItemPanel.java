@@ -5,6 +5,9 @@
  */
 package com.leong.nimbus.gui.components;
 
+import com.leong.nimbus.gui.helpers.ColorFactory;
+import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
+import com.leong.nimbus.utils.Tools;
 import java.awt.Color;
 import java.awt.Component;
 
@@ -14,6 +17,7 @@ import java.awt.Component;
  */
 public class FileItemPanel extends javax.swing.JPanel
 {
+    protected FileItemPanelGroup m_group = null;
 
     /**
      * Creates new form FileItemPanel
@@ -30,6 +34,7 @@ public class FileItemPanel extends javax.swing.JPanel
         lblLabel.setText(getHtmlLabel(m_item.getLabel()));
 
         progbar.setVisible(false);
+
     }
 
     /**
@@ -118,14 +123,28 @@ public class FileItemPanel extends javax.swing.JPanel
 
         if (highlight)
         {
-            Color bgcolor = Color.WHITE;
-            setBackground(bgcolor);
-            revalidate();
+            this.setBackground(ColorFactory.getInstance().getColor("SkyBlue"));
+            setOpaque(true);
+        }
+        else
+        {
+            this.setBackground(ColorFactory.TRANSPARENT);
+            setOpaque(false);
         }
     }
 
     public boolean isHighlight()
     {
         return m_highlight;
+    }
+
+    public void setGroup(FileItemPanelGroup group)
+    {
+        m_group = group;
+    }
+
+    public FileItemPanelGroup getGroup()
+    {
+        return m_group;
     }
 }
