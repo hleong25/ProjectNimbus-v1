@@ -207,7 +207,10 @@ public class LocalPanel
         {
             // must reset the highlights
             FileItemPanel pnl = (FileItemPanel) list.get(0);
-            pnl.getGroup().reset();
+            if (pnl.getGroup() != null)
+            {
+                pnl.getGroup().reset();
+            }
         }
 
         // remove all items first
