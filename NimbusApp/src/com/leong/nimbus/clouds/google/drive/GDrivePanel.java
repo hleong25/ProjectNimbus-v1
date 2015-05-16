@@ -14,10 +14,12 @@ import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
+import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
@@ -25,7 +27,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -38,6 +42,8 @@ public class GDrivePanel
     private static final Logit Log = Logit.create(GDrivePanel.class.getName());
 
     private final GDriveController m_gdrive = new GDriveController();
+
+    private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
 
     /**
      * Creates new form GDrivePanel
@@ -185,7 +191,90 @@ public class GDrivePanel
         });
     }
 
+    protected List<Component> getFiles(final File parent, final boolean useCache)
+    {
+        Log.entering("getFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
+
+        List<Component> list;
+
+        if (useCache && m_cachedComponents.containsKey(parent))
+        {
+            Log.fine(String.format("Cache hit '%s'", parent.getId()));
+            list = m_cachedComponents.get(parent);
+        }
+        else
+        {
+            list = new ArrayList<>();
+
+            FileItemPanelGroup group = new FileItemPanelGroup();
+
+            // show parent link
+            {
+                File grandParentFile = m_gdrive.getParent(parent);
+
+                if (grandParentFile != null)
+                {
+                    FileItemPanel pnl = createFileItemPanel(grandParentFile);
+
+                    pnl.setLabel("..");
+
+                    group.add(pnl);
+                    list.add(pnl);
+                }
+            }
+
+            // get all files in this folder
+            final List<File> files = m_gdrive.getChildrenItems(parent, useCache);
+
+            Log.fine("Total files: "+files.size());
+
+            for (File file : files)
+            {
+                FileItemPanel pnl = createFileItemPanel(file);
+                group.add(pnl);
+                list.add(pnl);
+            }
+
+            m_cachedComponents.put(parent, list);
+        }
+
+        return list;
+    }
+
     protected void showFiles(final File parent, final boolean useCache)
+    {
+        Log.entering("showFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
+
+        List<Component> list = getFiles(parent, useCache);
+
+        if (!list.isEmpty())
+        {
+            // must reset the highlights
+            FileItemPanel pnl = (FileItemPanel) list.get(0);
+            if (pnl.getGroup() != null)
+            {
+                pnl.getGroup().reset();
+            }
+        }
+
+        // remove all items first
+        pnlFiles.removeAll();
+
+        // add the components to the panel
+        for (Component pnl : list)
+        {
+            pnlFiles.add(pnl);
+        }
+
+        // make sure repaint happens
+        pnlFiles.revalidate();
+        pnlFiles.repaint();
+
+        // for keyreleased to work properly
+        pnlFiles.requestFocusInWindow();
+    }
+
+    protected void showFiles1(final File parent, final boolean useCache)
     {
         Log.entering("showFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
 

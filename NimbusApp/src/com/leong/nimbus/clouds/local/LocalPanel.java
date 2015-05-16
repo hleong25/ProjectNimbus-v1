@@ -153,6 +153,8 @@ public class LocalPanel
 
     protected List<Component> getFiles(final File parent, final boolean useCache)
     {
+        Log.entering("showFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
+
         List<Component> list;
 
         if (useCache && m_cachedComponents.containsKey(parent))
@@ -184,7 +186,7 @@ public class LocalPanel
             // get all files in this folder
             final List<File> files = m_local.getChildrenItems(parent, useCache);
 
-            Log.fine(MessageFormat.format("Total files: {0}", files.size()));
+            Log.fine("Total files: "+files.size());
 
             for (File file : files)
             {
@@ -199,13 +201,13 @@ public class LocalPanel
         return list;
     }
 
-    protected void showFiles(final File currPath, final boolean forceRefresh)
+    protected void showFiles(final File parent, final boolean useCache)
     {
-        Log.entering("showFiles", new Object[]{currPath, forceRefresh});
-        //Tools.logit("LocalPanel.showFiles("+currPath.getAbsolutePath()+")");
-        txtPath.setText(currPath.getAbsolutePath());
+        Log.entering("showFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
 
-        List<Component> list = getFiles(currPath, forceRefresh);
+        txtPath.setText(parent.getAbsolutePath());
+
+        List<Component> list = getFiles(parent, useCache);
 
         if (!list.isEmpty())
         {
