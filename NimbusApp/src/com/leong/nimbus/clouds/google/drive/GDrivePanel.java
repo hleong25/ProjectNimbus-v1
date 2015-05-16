@@ -45,6 +45,8 @@ public class GDrivePanel
 
     private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
 
+    private File m_currentPath;
+
     /**
      * Creates new form GDrivePanel
      */
@@ -143,8 +145,7 @@ public class GDrivePanel
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
             Log.fine("KeyEvent.VK_F5");
-            File currentPath = m_gdrive.getCurrentPath();
-            showFiles(currentPath, false);
+            showFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
@@ -245,6 +246,8 @@ public class GDrivePanel
     {
         Log.entering("showFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
 
+        m_currentPath = parent;
+
         List<Component> list = getFiles(parent, useCache);
 
         if (!list.isEmpty())
@@ -274,53 +277,9 @@ public class GDrivePanel
         pnlFiles.requestFocusInWindow();
     }
 
-    protected void showFiles1(final File parent, final boolean useCache)
-    {
-        Log.entering("showFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
-
-        //Tools.logit("GDrivePanel.showFiles("+pathID+")");
-
-        // remove all items first
-        pnlFiles.removeAll();
-
-        // show parent link
-        {
-            File grandParentFile = m_gdrive.getParent(parent);
-
-            if (grandParentFile != null)
-            {
-                FileItemPanel pnl = createFileItemPanel(grandParentFile);
-
-                pnl.setLabel("..");
-
-                pnlFiles.add(pnl);
-            }
-        }
-
-        // get all files in this folder
-        final List<File> files = m_gdrive.getChildrenItems(parent, useCache);
-
-        Log.fine("Total files: "+files.size());
-
-        for (File file : files)
-        {
-            //Tools.logit("GDrivePanel.showFiles() Adding '"+file.getTitle()+"'");
-            FileItemPanel pnl = createFileItemPanel(file);
-            pnlFiles.add(pnl);
-        }
-
-        pnlFiles.revalidate();
-        pnlFiles.repaint();
-
-        // for keyreleased to work properly
-        pnlFiles.requestFocusInWindow();
-    }
-
     protected boolean onAction_drop(List list)
     {
         Log.entering("onAction_drop", new Object[]{list});
-
-        final File parent = m_gdrive.getCurrentPath();
 
         class FileHolder
         {
@@ -334,7 +293,7 @@ public class GDrivePanel
         for (Object obj : list)
         {
             final java.io.File content = (java.io.File) obj;
-            final File metadata = m_gdrive.generateMetadata(parent, content);
+            final File metadata = m_gdrive.generateMetadata(m_currentPath, content);
             final FileItemPanel pnl = createFileItemPanel(metadata);
 
             pnl.showProgress(true);
@@ -388,7 +347,7 @@ public class GDrivePanel
             });
         }
 
-        showFiles(parent, false);
+        showFiles(m_currentPath, false);
 
         return true;
     }

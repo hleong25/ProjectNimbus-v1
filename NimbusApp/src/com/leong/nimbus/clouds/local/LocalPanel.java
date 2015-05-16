@@ -37,6 +37,8 @@ public class LocalPanel
 
     private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
 
+    private File m_currentPath;
+
     /**
      * Creates new form LocalPanel
      */
@@ -109,8 +111,7 @@ public class LocalPanel
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
             Log.fine("KeyEvent.VK_F5");
-            //File currentPath = m_local.getCurrentPath();
-            //showFiles(currentPath, false);
+            showFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
@@ -152,7 +153,7 @@ public class LocalPanel
 
     protected List<Component> getFiles(final File parent, final boolean useCache)
     {
-        Log.entering("showFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
+        Log.entering("getFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
 
         List<Component> list;
 
@@ -205,6 +206,8 @@ public class LocalPanel
         Log.entering("showFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
 
         txtPath.setText(parent.getAbsolutePath());
+
+        m_currentPath = parent;
 
         List<Component> list = getFiles(parent, useCache);
 

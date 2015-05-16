@@ -43,8 +43,6 @@ public class GDriveController implements ICloudController<com.google.api.service
     private final Map<File, List<File>> m_cachedListFiles = new HashMap<>();
     private final Map<String, File> m_cachedFiles = new HashMap<>();
 
-    private File m_currentPath;
-
     public GDriveController()
     {
         Log.entering("<init>");
@@ -99,11 +97,6 @@ public class GDriveController implements ICloudController<com.google.api.service
         Log.info("Auth code: "+authCode);
 
         return m_model.login(authCode);
-    }
-
-    public File getCurrentPath()
-    {
-        return m_currentPath;
     }
 
     public File generateMetadata(File parent, java.io.File content)
@@ -217,8 +210,6 @@ public class GDriveController implements ICloudController<com.google.api.service
         {
             parent =  m_model.getRoot();
         }
-
-        m_currentPath = parent;
 
         if (useCache && m_cachedListFiles.containsKey(parent))
         {
