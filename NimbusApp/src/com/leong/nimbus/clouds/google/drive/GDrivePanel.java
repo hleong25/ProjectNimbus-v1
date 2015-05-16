@@ -41,7 +41,7 @@ public class GDrivePanel
 {
     private static final Logit Log = Logit.create(GDrivePanel.class.getName());
 
-    private final GDriveController m_gdrive = new GDriveController();
+    private final GDriveController m_controller = new GDriveController();
 
     private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
 
@@ -114,7 +114,7 @@ public class GDrivePanel
             @Override
             public void run()
             {
-                if (m_gdrive.login(GDrivePanel.this))
+                if (m_controller.login(GDrivePanel.this))
                 {
                     // setup drag and drop once logged in
                     //new DropTarget(pnlFiles, m_dropTarget);
@@ -128,7 +128,7 @@ public class GDrivePanel
                         }
                     });
 
-                    showFiles(m_gdrive.getRoot(), false);
+                    showFiles(m_controller.getRoot(), false);
                 }
             }
         });
@@ -211,7 +211,7 @@ public class GDrivePanel
 
             // show parent link
             {
-                File grandParentFile = m_gdrive.getParent(parent);
+                File grandParentFile = m_controller.getParent(parent);
 
                 if (grandParentFile != null)
                 {
@@ -225,7 +225,7 @@ public class GDrivePanel
             }
 
             // get all files in this folder
-            final List<File> files = m_gdrive.getChildrenItems(parent, useCache);
+            final List<File> files = m_controller.getChildrenItems(parent, useCache);
 
             Log.fine("Total files: "+files.size());
 
@@ -293,7 +293,7 @@ public class GDrivePanel
         for (Object obj : list)
         {
             final java.io.File content = (java.io.File) obj;
-            final File metadata = m_gdrive.generateMetadata(m_currentPath, content);
+            final File metadata = m_controller.generateMetadata(m_currentPath, content);
             final FileItemPanel pnl = createFileItemPanel(metadata);
 
             pnl.showProgress(true);
@@ -320,7 +320,7 @@ public class GDrivePanel
 
             final FileItemPanel pnl = holder.pnl;
 
-            m_gdrive.uploadLocalFile(holder.metadata, holder.content, new MediaHttpUploaderProgressListener()
+            m_controller.uploadLocalFile(holder.metadata, holder.content, new MediaHttpUploaderProgressListener()
             {
                 @Override
                 public void progressChanged(MediaHttpUploader mhu) throws IOException

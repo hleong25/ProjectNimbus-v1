@@ -33,7 +33,7 @@ public class LocalPanel
 {
     private static final Logit Log = Logit.create(LocalPanel.class.getName());
 
-    private final LocalController m_local = new LocalController();
+    private final LocalController m_controller = new LocalController();
 
     private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
 
@@ -117,7 +117,7 @@ public class LocalPanel
 
     private void formComponentShown(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentShown
     {//GEN-HEADEREND:event_formComponentShown
-        File root = m_local.getRoot();
+        File root = m_controller.getRoot();
         showFiles(root, true);
     }//GEN-LAST:event_formComponentShown
 
@@ -170,7 +170,7 @@ public class LocalPanel
 
             // show parent link
             {
-                File grandParentFile = m_local.getParent(parent);
+                File grandParentFile = m_controller.getParent(parent);
 
                 if (grandParentFile != null)
                 {
@@ -184,7 +184,7 @@ public class LocalPanel
             }
 
             // get all files in this folder
-            final List<File> files = m_local.getChildrenItems(parent, useCache);
+            final List<File> files = m_controller.getChildrenItems(parent, useCache);
 
             Log.fine("Total files: "+files.size());
 

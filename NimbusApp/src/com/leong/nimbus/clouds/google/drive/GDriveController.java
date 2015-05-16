@@ -152,6 +152,8 @@ public class GDriveController implements ICloudController<com.google.api.service
     @Override
     public File getRoot()
     {
+        Log.entering("getRoot");
+
         File root = m_model.getRoot();
         return root;
     }
@@ -159,6 +161,8 @@ public class GDriveController implements ICloudController<com.google.api.service
     @Override
     public File getItemById(String id, boolean useCache)
     {
+        Log.entering("getItemById", new Object[]{id, useCache});
+
         if (useCache && m_cachedFiles.containsKey(id))
         {
             Log.info("Cache hit: "+id);
@@ -188,6 +192,8 @@ public class GDriveController implements ICloudController<com.google.api.service
     @Override
     public File getParent(File item)
     {
+        Log.entering("getParent", item.getId());
+
         if (item == null)
         {
             Log.warning("item is null");
@@ -206,6 +212,8 @@ public class GDriveController implements ICloudController<com.google.api.service
     @Override
     public List<File> getChildrenItems(File parent, boolean useCache)
     {
+        Log.entering("getChildrenItems", new Object[]{parent.getId(), useCache});
+
         if (parent == null)
         {
             parent =  m_model.getRoot();
