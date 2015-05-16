@@ -57,6 +57,7 @@ public final class Logit extends Logger
             public String format(LogRecord record)
             {
                 StringBuilder str = new StringBuilder();
+                str.append("["+record.getLevel()+"] ");
                 str.append(record.getSourceClassName());
                 str.append(".");
                 str.append(record.getSourceMethodName());
