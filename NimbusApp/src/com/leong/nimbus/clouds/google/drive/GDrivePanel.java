@@ -16,7 +16,7 @@ import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.WrapLayout;
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.dnd.DropTarget;
@@ -35,6 +35,8 @@ public class GDrivePanel
     extends javax.swing.JPanel
     implements ICloudPanel
 {
+    private static final Logit Log = Logit.create(GDrivePanel.class.getName());
+
     private final GDriveController m_gdrive = new GDriveController();
 
     /**
@@ -118,7 +120,7 @@ public class GDrivePanel
                         }
                     });
 
-                    showFiles(GDriveConstants.FOLDER_ROOT, true);
+                    showFiles(m_gdrive.getRoot(), false);
                 }
             }
         });
@@ -131,12 +133,12 @@ public class GDrivePanel
 
     private void pnlFilesKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlFilesKeyReleased
     {//GEN-HEADEREND:event_pnlFilesKeyReleased
-        //Tools.logit("GDriveDialog.pnlFilesKeyReleased() keycode="+evt.getKeyCode());
+        Log.entering("pnlFilesKeyReleased", evt);
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
-            Tools.logit("GDrivePanel.pnlFilesKeyReleased() F5");
-            String currentPathID = m_gdrive.getCurrentPathID();
-            showFiles(currentPathID, true);
+            Log.fine("KeyEvent.VK_F5");
+            File currentPath = m_gdrive.getCurrentPath();
+            showFiles(currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
@@ -149,9 +151,9 @@ public class GDrivePanel
         pnl.addMouseListener(new GDriveFileItemPanelMouseAdapter(file)
         {
             @Override
-            public void onOpenFolder(File item)
+            public void onOpenFolder(File parent)
             {
-                responsiveShowFiles(item.getId(), false);
+                responsiveShowFiles(parent, true);
             }
         });
 
@@ -171,32 +173,34 @@ public class GDrivePanel
         return pnl;
     }
 
-    protected void responsiveShowFiles(final String pathID, final boolean forceRefresh)
+    protected void responsiveShowFiles(final File parent, final boolean useCache)
     {
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
             @Override
             public void run()
             {
-                showFiles(pathID, forceRefresh);
+                showFiles(parent, useCache);
             }
         });
     }
 
-    protected void showFiles(final String pathID, final boolean forceRefresh)
+    protected void showFiles(final File parent, final boolean useCache)
     {
-        Tools.logit("GDrivePanel.showFiles("+pathID+")");
+        Log.entering("showFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
+
+        //Tools.logit("GDrivePanel.showFiles("+pathID+")");
 
         // remove all items first
         pnlFiles.removeAll();
 
         // show parent link
         {
-            File parentFile = m_gdrive.getParentFile(pathID);
+            File grandParentFile = m_gdrive.getParent(parent);
 
-            if (parentFile != null)
+            if (grandParentFile != null)
             {
-                FileItemPanel pnl = createFileItemPanel(parentFile);
+                FileItemPanel pnl = createFileItemPanel(grandParentFile);
 
                 pnl.setLabel("..");
 
@@ -205,9 +209,9 @@ public class GDrivePanel
         }
 
         // get all files in this folder
-        final List<File> files = m_gdrive.getFiles(pathID, forceRefresh);
+        final List<File> files = m_gdrive.getChildrenItems(parent, useCache);
 
-        Tools.logit("GDrivePanel.showFiles() Total files: "+files.size());
+        Log.fine("Total files: "+files.size());
 
         for (File file : files)
         {
@@ -225,9 +229,9 @@ public class GDrivePanel
 
     protected boolean onAction_drop(List list)
     {
-        Tools.logit("GDrivePanel.onAction_drop()");
+        Log.entering("onAction_drop", new Object[]{list});
 
-        final String parentID = m_gdrive.getCurrentPathID();
+        final File parent = m_gdrive.getCurrentPath();
 
         class FileHolder
         {
@@ -241,7 +245,7 @@ public class GDrivePanel
         for (Object obj : list)
         {
             final java.io.File content = (java.io.File) obj;
-            final File metadata = m_gdrive.generateMetadata(parentID, content);
+            final File metadata = m_gdrive.generateMetadata(parent, content);
             final FileItemPanel pnl = createFileItemPanel(metadata);
 
             pnl.showProgress(true);
@@ -264,7 +268,7 @@ public class GDrivePanel
         for (FileHolder holder : uploadFiles)
         {
             // Print out the file path
-            Tools.logit("File path is '" + holder.content.getPath() + "'.");
+            Log.fine("File path: "+holder.content.getPath());
 
             final FileItemPanel pnl = holder.pnl;
 
@@ -275,18 +279,18 @@ public class GDrivePanel
                 {
                     switch (mhu.getUploadState()) {
                         case INITIATION_STARTED:
-                            Tools.logit("Initiation has started!");
+                            Log.fine("Initiation has started!");
                             break;
                         case INITIATION_COMPLETE:
-                            Tools.logit("Initiation is complete!");
+                            Log.fine("Initiation is complete!");
                             break;
                         case MEDIA_IN_PROGRESS:
-                            Tools.logit("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
+                            Log.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
                             pnl.setProgress((int)(mhu.getProgress()*100.0));
                             ResponsiveTaskUI.yield();
                             break;
                         case MEDIA_COMPLETE:
-                            Tools.logit("Upload is complete!");
+                            Log.fine("Upload is complete!");
                             pnl.setProgress(100);
                             ResponsiveTaskUI.yield();
                             break;
@@ -295,7 +299,7 @@ public class GDrivePanel
             });
         }
 
-        showFiles(parentID, true);
+        showFiles(parent, false);
 
         return true;
     }

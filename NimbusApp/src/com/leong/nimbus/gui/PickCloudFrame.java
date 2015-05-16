@@ -5,7 +5,8 @@
  */
 package com.leong.nimbus.gui;
 
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
+import java.text.MessageFormat;
 import javax.swing.ImageIcon;
 
 /**
@@ -14,6 +15,8 @@ import javax.swing.ImageIcon;
  */
 public class PickCloudFrame extends javax.swing.JFrame
 {
+
+    private static final Logit Log = Logit.create(PickCloudFrame.class.getName());
 
     /**
      * Creates new form PickCloudFrame
@@ -159,14 +162,14 @@ public class PickCloudFrame extends javax.swing.JFrame
 
         if (frame != null)
         {
-            Tools.logit("PickCloudFrame.showAndDispose() Showing "+type.toString());
+            Log.info("Showing "+type.toString());
 
             // show it
             frame.runLater();
         }
         else
         {
-            Tools.logit("PickCloudFrame.showAndDispose() Unknown type: "+type.toString());
+            Log.warning(MessageFormat.format("Unknown type: {0}", type.toString()));
         }
 
         // kill me

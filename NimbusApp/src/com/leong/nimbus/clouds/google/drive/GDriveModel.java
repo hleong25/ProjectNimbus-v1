@@ -22,6 +22,7 @@ import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
+import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +34,10 @@ import java.util.List;
  *
  * @author henry
  */
-public class GDriveModel implements ICloudModel
+public class GDriveModel implements ICloudModel<com.google.api.services.drive.model.File>
 {
+    private static final Logit Log = Logit.create(GDriveModel.class.getName());
+
     private static final String CLIENT_ID = "377040850517-vc3hbqvqqct5svp9nrdagrhg2v06v0o2.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "-ezNN3hvssAwm6Ewgmrg69pI";
 
@@ -44,10 +47,12 @@ public class GDriveModel implements ICloudModel
     private Drive m_service;
 
     private String m_rootID;
+    private File m_root;
 
     public GDriveModel()
     {
-        Tools.logit("GDriveModel.ctor()");
+        Log.entering("<init>");
+        //Tools.logit("GDriveModel.ctor()");
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
@@ -61,18 +66,19 @@ public class GDriveModel implements ICloudModel
 
     public String getAuthUrl()
     {
-        Tools.logit("GDriveModel.getAuthUrl()");
+        Log.entering("getAuthUrl");
         String url = m_flow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
-        Tools.logit(url);
+        Log.info(url);
         return url;
     }
 
     public boolean login(String authCode)
     {
-        Tools.isNullOrEmpty("GDrive.Model.login()");
+        Log.entering("login-gdm", new Object[]{authCode});
+
         if (m_flow == null)
         {
-            Tools.logit("Google flow not initialized");
+            Log.severe("Google flow not initialized");
             return false;
         }
 
@@ -83,34 +89,35 @@ public class GDriveModel implements ICloudModel
 
         if (Tools.isNullOrEmpty(authCode))
         {
-            Tools.logit("GDriveModel.login() Auth code not valid");
+            Log.severe("Auth code not valid");
             return false;
         }
 
         GoogleTokenResponse response = null;
         try
         {
-            Tools.logit("GDriveModel.login() new token request");
+            Log.fine("new token request");
             response = m_flow.newTokenRequest(authCode).setRedirectUri(REDIRECT_URI).execute();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            e.printStackTrace();
+            Log.severe(ex.toString());
+            //e.printStackTrace();
 
             return false;
         }
 
         if ((response == null) || response.isEmpty())
         {
-            Tools.logit("GDriveModel.login() Response is null or empty");
+            Log.severe("Response is null or empty");
             return false;
         }
         else
         {
-            Tools.logit("GDriveModel.login() Response is " + response.toString());
+            Log.fine("Response is " + response.toString());
         }
 
-        Tools.logit("GDriveModel.login() new GoogleCredential()");
+        Log.fine("new GoogleCredential()");
         GoogleCredential credential = new GoogleCredential.Builder()
                 .setJsonFactory(jsonFactory)
                 .setTransport(httpTransport)
@@ -119,7 +126,7 @@ public class GDriveModel implements ICloudModel
                 .setFromTokenResponse(response);
 
         //Create a new authorized API client
-        Tools.logit("GDriveModel.login() new Drive.Builder()");
+        Log.fine("new Drive.Builder()");
         m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
                 .setApplicationName("Nimbus")
                 .build();
@@ -127,50 +134,55 @@ public class GDriveModel implements ICloudModel
         return true;
     }
 
-    public String getRootID()
+    @Override
+    public File getRoot()
     {
-        if (!Tools.isNullOrEmpty(m_rootID))
+        if (m_root != null)
         {
-            return m_rootID;
+            return m_root;
         }
 
         try
         {
             About about = m_service.about().get().execute();
 
-            m_rootID = about.getRootFolderId();
+            String rootID = about.getRootFolderId();
 
-            Tools.logit("GDriveModel.getRootID() "+m_rootID);
+            Log.info("Root ID: "+rootID);
+
+            m_root = getItemById(rootID);
         }
         catch (IOException ex)
         {
-            Tools.logit("Failed to get root ID. "+ex.toString());
+            Log.severe(ex.toString());
         }
 
-        return m_rootID;
+        return m_root;
     }
 
-    public File getFile(String fileID)
+    @Override
+    public File getItemById(String id)
     {
         try
         {
-            return m_service.files().get(fileID).execute();
+            return m_service.files().get(id).execute();
         }
         catch (IOException ex)
         {
             //Logger.getLogger(GDriveModel.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
+            Log.severe(ex.toString());
         }
         return null;
     }
 
-    public List<File> getFiles(String fileID)
+    @Override
+    public List<File> getChildrenItems(File parent)
     {
         final List<File> list = new ArrayList<>();
 
         try
         {
-            Drive.Children.List request = m_service.children().list(fileID);
+            Drive.Children.List request = m_service.children().list(parent.getId());
 
             do {
                 try {
@@ -186,16 +198,16 @@ public class GDriveModel implements ICloudModel
 
                     }
                     request.setPageToken(children.getNextPageToken());
-                } catch (IOException e) {
-                    System.out.println("An error occurred: " + e);
+                } catch (IOException ex) {
+                    Log.severe(ex.toString());
                     request.setPageToken(null);
                 }
             } while (request.getPageToken() != null &&
                     request.getPageToken().length() > 0);
 
-        } catch (IOException e)
+        } catch (IOException ex)
         {
-            e.printStackTrace();
+            Log.severe(ex.toString());
         }
 
         return list;
@@ -206,7 +218,7 @@ public class GDriveModel implements ICloudModel
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
 
-        Tools.logit("GDriveModel.uploadLocalFile()");
+        Log.entering("uploadLocalFile");
 
         try
         {
@@ -218,17 +230,16 @@ public class GDriveModel implements ICloudModel
                 .setChunkSize(2*MediaHttpUploader.MINIMUM_CHUNK_SIZE)
                 .setProgressListener(progressListener);
 
-            Tools.logit("GDriveModel.uploadLocalFile() Start uploading file");
+            Log.fine("Start uploading file");
             File uploadedFile = request.execute();
 
-            Tools.logit("GDriveModel.uploadLocalFile() Uploaded file done");
+            Log.fine("Uploaded file done");
 
             return uploadedFile;
         }
         catch (IOException ex)
         {
-            //Logger.getLogger(GDriveModel.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("GDriveModel.uploadLocalFile() Failed to upload local file: "+ex.toString());
+            Log.severe(ex.toString());
         }
 
         return null;

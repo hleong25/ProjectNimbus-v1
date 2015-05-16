@@ -5,7 +5,7 @@
  */
 package com.leong.nimbus.gui;
 
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
 import java.lang.reflect.InvocationTargetException;
 
@@ -20,6 +20,8 @@ public class NimbusFrame extends javax.swing.JFrame
         LOCAL_FILE_SYSTEM,
         GOOGLE_DRIVE,
     }
+
+    private static final Logit Log = Logit.create(NimbusFrame.class.getName());
 
     private final Runnable m_run;
 
@@ -137,27 +139,23 @@ public class NimbusFrame extends javax.swing.JFrame
 
     public void runLater()
     {
-        Tools.logit("NimbusFrame.runLater()");
+        Log.entering("runLater");
 
         java.awt.EventQueue.invokeLater(m_run);
     }
 
     public void runAndWait()
     {
+        Log.entering("runAndWait");
+
         try
         {
-            Tools.logit("NimbusFrame.runAndWait() EventQueue.invokeAndWait(run)");
+            Log.fine("EventQueue.invokeAndWait(run)");
             java.awt.EventQueue.invokeAndWait(m_run);
         }
-        catch (InterruptedException ex)
+        catch (InterruptedException | InvocationTargetException ex)
         {
-            //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("NimbusFrame.runAndWait() InterruptedException: "+ex.toString());
-        }
-        catch (InvocationTargetException ex)
-        {
-            //Logger.getLogger(AbstractJDialog.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("NimbusFrame.runAndWait() InvocationTargetException: "+ex.toString());
+            Log.severe(ex.toString());
         }
     }
 

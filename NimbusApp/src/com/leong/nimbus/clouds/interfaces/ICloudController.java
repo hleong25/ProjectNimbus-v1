@@ -5,11 +5,16 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import java.util.List;
+
 /**
  *
  * @author henry
  */
-public interface ICloudController
+public interface ICloudController<T>
 {
-
+    T getRoot();
+    T getItemById(String id, boolean useCache);
+    T getParent(T item);
+    List<T> getChildrenItems(T parent, boolean useCache);
 }

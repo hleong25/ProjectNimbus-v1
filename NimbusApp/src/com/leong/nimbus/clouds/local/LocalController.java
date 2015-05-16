@@ -6,8 +6,9 @@
 package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.interfaces.ICloudController;
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -18,13 +19,14 @@ import java.util.Map;
  *
  * @author henry
  */
-public class LocalController implements ICloudController
+public class LocalController implements ICloudController<java.io.File>
 {
+    private static final Logit Log = Logit.create(LocalController.class.getName());
+
     private final LocalModel m_model = new LocalModel();
 
     private final Comparator<File> m_comparatorFiles;
-    private final Map<String, List<File>> m_cachedListFiles;
-    //private final Map<String, File> m_cachedFiles;
+    private final Map<File, List<File>> m_cachedChildren = new HashMap<>();
 
     public LocalController()
     {
@@ -45,48 +47,47 @@ public class LocalController implements ICloudController
             }
         };
 
-        m_cachedListFiles = new HashMap<>();
-        //m_cachedFiles = new HashMap<>();
     }
 
-    public File getHomeFile()
+    @Override
+    public File getRoot()
     {
-        File home = m_model.getHomeFile();
-        //m_cachedFiles.put(home.getAbsolutePath(), home);
-        return home;
+        File root = m_model.getRoot();
+        return root;
     }
 
-    public File getParentFile(File file)
+    @Override
+    public File getItemById(String id, boolean useCache)
     {
-        return file.getParentFile();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public File getParentFile(String file)
+    @Override
+    public File getParent(File item)
     {
-        File currPath = m_model.getFile(file);
-        File parentPath = currPath.getParentFile();
-        return parentPath;
+        return item.getParentFile();
     }
 
-    public List<File> getFiles(String path, boolean forceRefresh)
+    @Override
+    public List<File> getChildrenItems(File parent, boolean useCache)
     {
-        if (Tools.isNullOrEmpty(path))
+        if (parent == null)
         {
-            path = getHomeFile().getAbsolutePath();
+            parent = getRoot();
         }
 
-        if (!forceRefresh && m_cachedListFiles.containsKey(path))
+        if (useCache && m_cachedChildren.containsKey(parent))
         {
-            Tools.logit("LocalController.getFiles() Cache hit '"+path+"'");
-            return m_cachedListFiles.get(path);
+            Log.fine(MessageFormat.format("Cache hit {0}'", parent.getAbsolutePath()));
+            return m_cachedChildren.get(parent);
         }
 
-        List<File> files =  m_model.getFiles(path);
+        List<File> files =  m_model.getChildrenItems(parent);
 
         Collections.sort(files, m_comparatorFiles);
 
-        Tools.logit("LocalController.getFiles() Add cache '"+path+"'");
-        m_cachedListFiles.put(path, files);
+        Log.fine("Add cache: "+parent.getAbsolutePath());
+        m_cachedChildren.put(parent, files);
 
         return files;
     }

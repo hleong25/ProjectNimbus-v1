@@ -5,7 +5,7 @@
  */
 package com.leong.nimbus.gui.helpers;
 
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -19,6 +19,8 @@ import java.util.List;
  */
 public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
 {
+    private static final Logit Log = Logit.create(DefaultDropTargetAdapter.class.getName());
+
     public DefaultDropTargetAdapter()
     {
         // do nothing
@@ -27,7 +29,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
     @Override
     public void drop(DropTargetDropEvent dtde)
     {
-        Tools.logit("DefaultDropTargetAdapter.drop()");
+        Log.entering("drop");
 
         // Accept copy drops
         dtde.acceptDrop(DnDConstants.ACTION_COPY);
@@ -59,11 +61,10 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                     });
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 // Print out the error stack
-                e.printStackTrace();
-
+                Log.severe(ex.toString());
             }
         }
 

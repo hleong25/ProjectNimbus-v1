@@ -16,37 +16,38 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author henry
  */
-public class LocalModel implements ICloudModel
+public class LocalModel implements ICloudModel<java.io.File>
 {
     public LocalModel()
     {
     }
 
-    public File getHomeFile()
+    @Override
+    public File getRoot()
     {
-        File homeFile = FileSystemView.getFileSystemView().getHomeDirectory();
-        return homeFile;
+        File root = FileSystemView.getFileSystemView().getHomeDirectory();
+        return root;
     }
 
-    public File getFile(String path)
+    @Override
+    public File getItemById(String id)
     {
-        File file = new File(path);
+        File file = new File(id);
         return file;
     }
 
-    public List<File> getFiles(String path)
+    @Override
+    public List<File> getChildrenItems(File parent)
     {
         List<File> list = new ArrayList<>();
 
-        File currPath = getFile(path);
-
-        if (!currPath.isDirectory())
+        if (!parent.isDirectory())
         {
             // nothing to do
             return list;
         }
 
-        list.addAll(Arrays.asList(currPath.listFiles()));
+        list.addAll(Arrays.asList(parent.listFiles()));
 
         return list;
     }

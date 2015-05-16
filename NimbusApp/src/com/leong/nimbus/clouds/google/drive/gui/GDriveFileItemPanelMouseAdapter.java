@@ -23,7 +23,7 @@ public abstract class GDriveFileItemPanelMouseAdapter extends MouseAdapter
         m_item = item;
     }
 
-    public abstract void onOpenFolder(File item);
+    public abstract void onOpenFolder(File parent);
 
     @Override
     public void mouseClicked(MouseEvent e)

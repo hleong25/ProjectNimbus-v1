@@ -6,7 +6,7 @@
 package com.leong.nimbus.mainapp;
 
 import com.leong.nimbus.gui.PickCloudFrame;
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 
 /**
  *
@@ -14,9 +14,12 @@ import com.leong.nimbus.utils.Tools;
  */
 public class MainGuiApp
 {
+    private static final Logit Log = Logit.create(MainGuiApp.class.getName());
+
     public static void main(String[] args)
     {
-        Tools.logit("MainGuiApp");
+        Logit.init();
+        Log.entering("main");
 
         //setupLookAndFeel();
 
@@ -36,21 +39,9 @@ public class MainGuiApp
                 }
             }
         }
-        catch (ClassNotFoundException ex)
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex)
         {
-            Tools.logit("setupLookAndFeel() ClassNotFoundException: "+ex);
-        }
-        catch (InstantiationException ex)
-        {
-            Tools.logit("setupLookAndFeel() InstantiationException: "+ex);
-        }
-        catch (IllegalAccessException ex)
-        {
-            Tools.logit("setupLookAndFeel() IllegalAccessException: "+ex);
-        }
-        catch (javax.swing.UnsupportedLookAndFeelException ex)
-        {
-            Tools.logit("setupLookAndFeel() UnsupportedLookAndFeelException: "+ex);
+            Log.severe(ex.toString());
         }
 
     }

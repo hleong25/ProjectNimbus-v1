@@ -5,11 +5,15 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import java.util.List;
+
 /**
  *
  * @author henry
  */
-public interface ICloudModel
+public interface ICloudModel<T>
 {
-
+    T getRoot();
+    T getItemById(String id);
+    List<T> getChildrenItems(T parent);
 }

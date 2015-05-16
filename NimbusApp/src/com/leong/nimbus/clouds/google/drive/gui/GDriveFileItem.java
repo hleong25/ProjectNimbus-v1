@@ -8,7 +8,7 @@ package com.leong.nimbus.clouds.google.drive.gui;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.GDriveConstants;
 import com.leong.nimbus.gui.components.IFileItem;
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 import javax.swing.ImageIcon;
 
 /**
@@ -17,6 +17,8 @@ import javax.swing.ImageIcon;
  */
 public class GDriveFileItem implements IFileItem
 {
+    private static final Logit Log = Logit.create(GDriveFileItem.class.getName());
+
     protected File m_item;
 
     public GDriveFileItem(File item)
@@ -33,7 +35,7 @@ public class GDriveFileItem implements IFileItem
 
         if (m_item.getMimeType() == null)
         {
-            Tools.logit("Item="+m_item.getTitle()+" Mime=(null)");
+            Log.fine("Item="+m_item.getTitle()+" Mime=(null)");
             path = "resources/icons/google/drive-64.png";
         }
         else if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_DOCUMENT))
@@ -58,11 +60,9 @@ public class GDriveFileItem implements IFileItem
         }
         else
         {
-            Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
+            Log.fine("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType());
             path = "resources/icons/google/drive-64.png";
         }
-
-        //Tools.logit("Item="+m_item.getTitle()+" Mime="+m_item.getMimeType()+" Icon="+path);
 
         ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(path));
 

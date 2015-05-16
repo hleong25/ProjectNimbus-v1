@@ -12,12 +12,13 @@ import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
 import com.leong.nimbus.gui.helpers.WrapLayout;
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ public class LocalPanel
     extends javax.swing.JPanel
     implements ICloudPanel
 {
+    private static final Logit Log = Logit.create(LocalPanel.class.getName());
+
     private final LocalController m_local = new LocalController();
 
     private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
@@ -103,19 +106,19 @@ public class LocalPanel
 
     private void pnlFilesKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlFilesKeyReleased
     {//GEN-HEADEREND:event_pnlFilesKeyReleased
-        //Tools.logit("GDriveDialog.pnlFilesKeyReleased() keycode="+evt.getKeyCode());
+        Log.entering("pnlFilesKeyReleased", evt);
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
-            Tools.logit("LocalPanel.pnlFilesKeyReleased() F5");
-            //String currentPathID = m_gdrive.getCurrentPathID();
-            //showFiles(currentPathID, true);
+            Log.fine("KeyEvent.VK_F5");
+            //File currentPath = m_local.getCurrentPath();
+            //showFiles(currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
     private void formComponentShown(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentShown
     {//GEN-HEADEREND:event_formComponentShown
-        File home = m_local.getHomeFile();
-        showFiles(home, true);
+        File root = m_local.getRoot();
+        showFiles(root, true);
     }//GEN-LAST:event_formComponentShown
 
     protected FileItemPanel createFileItemPanel(final File file)
@@ -129,33 +132,33 @@ public class LocalPanel
             @Override
             public void onOpenFolder(File item)
             {
-                responsiveShowFiles(item, false);
+                responsiveShowFiles(item, true);
             }
         });
 
         return pnl;
     }
 
-    protected void responsiveShowFiles(final File path, final boolean forceRefresh)
+    protected void responsiveShowFiles(final File path, final boolean useCache)
     {
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
             @Override
             public void run()
             {
-                showFiles(path, forceRefresh);
+                showFiles(path, useCache);
             }
         });
     }
 
-    protected List<Component> getFiles(final File currPath, final boolean forceRefresh)
+    protected List<Component> getFiles(final File parent, final boolean useCache)
     {
         List<Component> list;
 
-        if (!forceRefresh && m_cachedComponents.containsKey(currPath))
+        if (useCache && m_cachedComponents.containsKey(parent))
         {
-            Tools.logit("LocalPanel.getFiles() Cache hit!");
-            list = m_cachedComponents.get(currPath);
+            Log.fine(String.format("Cache hit '%s'", parent.getAbsolutePath()));
+            list = m_cachedComponents.get(parent);
         }
         else
         {
@@ -165,11 +168,11 @@ public class LocalPanel
 
             // show parent link
             {
-                File parentFile = m_local.getParentFile(currPath);
+                File grandParentFile = m_local.getParent(parent);
 
-                if (parentFile != null)
+                if (grandParentFile != null)
                 {
-                    FileItemPanel pnl = createFileItemPanel(parentFile);
+                    FileItemPanel pnl = createFileItemPanel(grandParentFile);
 
                     pnl.setLabel("..");
 
@@ -179,9 +182,9 @@ public class LocalPanel
             }
 
             // get all files in this folder
-            final List<File> files = m_local.getFiles(currPath.getAbsolutePath(), forceRefresh);
+            final List<File> files = m_local.getChildrenItems(parent, useCache);
 
-            Tools.logit("LocalPanel.getFiles() Total files: "+files.size());
+            Log.fine(MessageFormat.format("Total files: {0}", files.size()));
 
             for (File file : files)
             {
@@ -190,7 +193,7 @@ public class LocalPanel
                 list.add(pnl);
             }
 
-            m_cachedComponents.put(currPath, list);
+            m_cachedComponents.put(parent, list);
         }
 
         return list;
@@ -198,7 +201,8 @@ public class LocalPanel
 
     protected void showFiles(final File currPath, final boolean forceRefresh)
     {
-        Tools.logit("LocalPanel.showFiles("+currPath.getAbsolutePath()+")");
+        Log.entering("showFiles", new Object[]{currPath, forceRefresh});
+        //Tools.logit("LocalPanel.showFiles("+currPath.getAbsolutePath()+")");
         txtPath.setText(currPath.getAbsolutePath());
 
         List<Component> list = getFiles(currPath, forceRefresh);

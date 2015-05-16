@@ -5,7 +5,7 @@
  */
 package com.leong.nimbus.gui.helpers;
 
-import com.leong.nimbus.utils.Tools;
+import com.leong.nimbus.utils.Logit;
 
 /**
  *
@@ -13,6 +13,8 @@ import com.leong.nimbus.utils.Tools;
  */
 public class ResponsiveTaskUI
 {
+    private static final Logit Log = Logit.create(ResponsiveTaskUI.class.getName());
+
     public interface IResponsiveTask
     {
         void run();
@@ -46,7 +48,7 @@ public class ResponsiveTaskUI
         catch (InterruptedException ex)
         {
             //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("ResponsiveTaskUI.yield() Thread.sleep() error: "+ex);
+            Log.warning(ex.toString());
         }
     }
 }

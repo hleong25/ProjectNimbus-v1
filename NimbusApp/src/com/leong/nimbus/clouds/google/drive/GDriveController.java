@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.ParentReference;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
@@ -32,21 +33,21 @@ import javax.swing.JOptionPane;
  *
  * @author henry
  */
-public class GDriveController implements ICloudController
+public class GDriveController implements ICloudController<com.google.api.services.drive.model.File>
 {
-    private final GDriveModel m_model;
+    private static final Logit Log = Logit.create(GDriveController.class.getName());
+
+    private final GDriveModel m_model = new GDriveModel();
 
     private final Comparator<File> m_comparatorFiles;
-    private final Map<String, List<File>> m_cachedListFiles;
-    private final Map<String, File> m_cachedFiles;
+    private final Map<File, List<File>> m_cachedListFiles = new HashMap<>();
+    private final Map<String, File> m_cachedFiles = new HashMap<>();
 
-    private String m_currentPathID = GDriveConstants.FOLDER_ROOT;
+    private File m_currentPath;
 
     public GDriveController()
     {
-        Tools.logit("GDriveController.ctor()");
-
-        m_model = new GDriveModel();
+        Log.entering("<init>");
 
         m_comparatorFiles = new Comparator<File>()
         {
@@ -64,14 +65,11 @@ public class GDriveController implements ICloudController
                 return f1.getTitle().compareTo(f2.getTitle());
             }
         };
-
-        m_cachedListFiles = new HashMap<>();
-        m_cachedFiles = new HashMap<>();
     }
 
     public boolean login(Component parentComponent)
     {
-        Tools.logit("GDriveController.login()");
+        Log.entering("login", parentComponent);
 
         String authUrl = m_model.getAuthUrl();
 
@@ -81,113 +79,49 @@ public class GDriveController implements ICloudController
             BrowserLauncher launcher = new BrowserLauncher();
             launcher.setNewWindowPolicy(true);
 
-            Tools.logit("Opening new browser to "+authUrl);
+            Log.fine("Opening new browser to "+authUrl);
             launcher.openURLinBrowser(authUrl);
         }
-        catch (BrowserLaunchingInitializingException e)
+        catch (BrowserLaunchingInitializingException | UnsupportedOperatingSystemException ex)
         {
-            e.printStackTrace();
-        }
-        catch (UnsupportedOperatingSystemException e)
-        {
-            e.printStackTrace();
+            Log.severe(ex.toString());
         }
 
         String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");
 
         if (Tools.isNullOrEmpty(authCode))
         {
-            Tools.isNullOrEmpty("Auth code not valid");
+            Log.severe("Auth code not valid.");
             return false;
         }
 
         authCode = authCode.trim();
-        Tools.logit("Auth code is "+authCode);
+        Log.info("Auth code: "+authCode);
 
         return m_model.login(authCode);
     }
 
-    public File getParentFile(String fileID)
+    public File getCurrentPath()
     {
-        File file = getFile(fileID);
-
-        if (!file.getParents().isEmpty())
-        {
-            String parentID = file.getParents().get(0).getId();
-            return getFile(parentID);
-        }
-
-        return null;
+        return m_currentPath;
     }
 
-    public File getFile(String fileID)
+    public File generateMetadata(File parent, java.io.File content)
     {
-        if (fileID.equals(GDriveConstants.FOLDER_ROOT))
-        {
-            fileID = m_model.getRootID();
-        }
+        Log.entering("generateMetadata", new Object[]{parent, content});
 
-        if (m_cachedFiles.containsKey(fileID))
-        {
-            Tools.logit("GDriveController.getFile() Cache hit '"+fileID+"'");
-            return m_cachedFiles.get(fileID);
-        }
-
-        File file = m_model.getFile(fileID);
-
-        if (!Tools.isNullOrEmpty(fileID) && (file != null))
-        {
-            Tools.logit("GDriveController.getFile() Add cache '"+fileID+"'");
-            m_cachedFiles.put(fileID, file);
-        }
-
-        return file;
-    }
-
-    public List<File> getFiles(String fileID, boolean forceRefresh)
-    {
-        if (fileID.equals(GDriveConstants.FOLDER_ROOT))
-        {
-            fileID = m_model.getRootID();
-        }
-
-        m_currentPathID = fileID;
-
-        if (!forceRefresh && m_cachedListFiles.containsKey(fileID))
-        {
-            Tools.logit("GDriveController.getFiles() Cache hit '"+fileID+"'");
-            return m_cachedListFiles.get(fileID);
-        }
-
-        List<File> files =  m_model.getFiles(fileID);
-
-        Collections.sort(files, m_comparatorFiles);
-
-        Tools.logit("GDriveController.getFiles() Add cache '"+fileID+"'");
-        m_cachedListFiles.put(fileID, files);
-
-        return files;
-    }
-
-    public String getCurrentPathID()
-    {
-        return m_currentPathID;
-    }
-
-    public File generateMetadata(String parentID, java.io.File content)
-    {
         String mimeType = URLConnection.guessContentTypeFromName(content.getName());
 
-        Tools.logit("GDriveController.generateMetadata() File="+content.getName()+" Mime="+mimeType);
+        Log.fine("Mime: "+mimeType);
 
-        ParentReference parent = new ParentReference();
-        parent.setId(parentID);
+        ParentReference parentRef = new ParentReference();
+        parentRef.setId(parent.getId());
 
         File metadata = new File();
         metadata.setTitle(content.getName());
         metadata.setFileSize(content.length());
         metadata.setMimeType(mimeType);
-        metadata.setParents(Arrays.asList(parent));
+        metadata.setParents(Arrays.asList(parentRef));
 
         return metadata;
     }
@@ -205,8 +139,7 @@ public class GDriveController implements ICloudController
         }
         catch (FileNotFoundException ex)
         {
-            //Logger.getLogger(GDriveController.class.getName()).log(Level.SEVERE, null, ex);
-            Tools.logit("File not found: "+ex.toString());
+            Log.severe(ex.toString());
         }
         finally
         {
@@ -216,11 +149,91 @@ public class GDriveController implements ICloudController
             }
             catch (IOException ex)
             {
-                //Logger.getLogger(GDriveController.class.getName()).log(Level.SEVERE, null, ex);
-                Tools.logit("File fail to close. "+ex.toString());
+                Log.severe(ex.toString());
             }
         }
 
         return null;
     }
+
+    @Override
+    public File getRoot()
+    {
+        File root = m_model.getRoot();
+        return root;
+    }
+
+    @Override
+    public File getItemById(String id, boolean useCache)
+    {
+        if (useCache && m_cachedFiles.containsKey(id))
+        {
+            Log.info("Cache hit: "+id);
+            return m_cachedFiles.get(id);
+        }
+
+        File file;
+
+        if (id.equals(GDriveConstants.FOLDER_ROOT))
+        {
+            file = m_model.getRoot();
+        }
+        else
+        {
+            file = m_model.getItemById(id);
+        }
+
+        if (file != null)
+        {
+            Log.info("Add cache: "+file.getId());
+            m_cachedFiles.put(file.getId(), file);
+        }
+
+        return file;
+    }
+
+    @Override
+    public File getParent(File item)
+    {
+        if (item == null)
+        {
+            Log.warning("item is null");
+            return null;
+        }
+
+        if (!item.getParents().isEmpty())
+        {
+            String parentID = item.getParents().get(0).getId();
+            return getItemById(parentID, true);
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<File> getChildrenItems(File parent, boolean useCache)
+    {
+        if (parent == null)
+        {
+            parent =  m_model.getRoot();
+        }
+
+        m_currentPath = parent;
+
+        if (useCache && m_cachedListFiles.containsKey(parent))
+        {
+            Log.info("Cache hit: "+parent.getId());
+            return m_cachedListFiles.get(parent);
+        }
+
+        List<File> files =  m_model.getChildrenItems(parent);
+
+        Collections.sort(files, m_comparatorFiles);
+
+        Log.fine("Add cache: "+parent.getId());
+        m_cachedListFiles.put(parent, files);
+
+        return files;
+    }
+    
 }

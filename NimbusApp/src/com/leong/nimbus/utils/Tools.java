@@ -5,7 +5,6 @@
  */
 package com.leong.nimbus.utils;
 
-import com.leong.nimbus.utils.Logger.Level;
 
 /**
  *
@@ -13,16 +12,6 @@ import com.leong.nimbus.utils.Logger.Level;
  */
 public class Tools
 {
-    public static void logit(String msg)
-    {
-        Logger.msg(Level.INFO, msg);
-    }
-
-    public static void logit(StringBuffer msg)
-    {
-        Tools.logit(msg.toString());
-    }
-
     public static boolean isNullOrEmpty(String str)
     {
         return (str == null) || str.isEmpty();
