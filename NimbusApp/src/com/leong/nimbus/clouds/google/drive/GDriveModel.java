@@ -101,9 +101,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.severe(ex.toString());
-            //e.printStackTrace();
-
+            Log.exception(ex);
             return false;
         }
 
@@ -154,7 +152,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
 
         return m_root;
@@ -169,8 +167,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            //Logger.getLogger(GDriveModel.class.getName()).log(Level.SEVERE, null, ex);
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
         return null;
     }
@@ -199,7 +196,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                     }
                     request.setPageToken(children.getNextPageToken());
                 } catch (IOException ex) {
-                    Log.severe(ex.toString());
+                    Log.exception(ex);
                     request.setPageToken(null);
                 }
             } while (request.getPageToken() != null &&
@@ -207,7 +204,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         } catch (IOException ex)
         {
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
 
         return list;
@@ -239,7 +236,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
 
         return null;

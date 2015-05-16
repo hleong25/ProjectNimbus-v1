@@ -84,7 +84,7 @@ public class GDriveController implements ICloudController<com.google.api.service
         }
         catch (BrowserLaunchingInitializingException | UnsupportedOperatingSystemException ex)
         {
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
 
         String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");
@@ -139,7 +139,7 @@ public class GDriveController implements ICloudController<com.google.api.service
         }
         catch (FileNotFoundException ex)
         {
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
         finally
         {
@@ -149,7 +149,7 @@ public class GDriveController implements ICloudController<com.google.api.service
             }
             catch (IOException ex)
             {
-                Log.severe(ex.toString());
+                Log.exception(ex);
             }
         }
 

@@ -23,12 +23,12 @@
 
 package com.leong.nimbus.gui.helpers;
 
+import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * Created on Apr 17, 2005
@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  * @author J. H. S.
  */
 public class ColorFactory {
-  private static final Logger logger = Logger.getLogger(ColorFactory.class.getName());
+  private static final Logit Log = Logit.create(ColorFactory.class.getName());
   public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
   private static ColorFactory instance;
   private final Map<String, Color> colorMap = new HashMap<>(256);
@@ -284,8 +284,8 @@ public class ColorFactory {
           color = new Color(rgba[0], rgba[1], rgba[2], rgba[3]);
         }
         else {
-          if(logger.isLoggable(Level.INFO)) {
-            logger.warning("getColor(): Color spec [" + normalSpec + "] unknown.");
+          if(Log.isLoggable(Level.INFO)) {
+            Log.warning("getColor(): Color spec [" + normalSpec + "] unknown.");
           }
           return Color.RED;
         }

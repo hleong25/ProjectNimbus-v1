@@ -41,7 +41,7 @@ public class MainGuiApp
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex)
         {
-            Log.severe(ex.toString());
+            Log.exception(ex);
         }
 
     }

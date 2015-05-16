@@ -47,8 +47,7 @@ public class ResponsiveTaskUI
         }
         catch (InterruptedException ex)
         {
-            //Logger.getLogger(ResponsiveTaskUI.class.getName()).log(Level.SEVERE, null, ex);
-            Log.warning(ex.toString());
+            Log.exception(ex);
         }
     }
 }

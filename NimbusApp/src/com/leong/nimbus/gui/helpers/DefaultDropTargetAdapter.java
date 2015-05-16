@@ -63,8 +63,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
             }
             catch (Exception ex)
             {
-                // Print out the error stack
-                Log.severe(ex.toString());
+                Log.exception(ex);
             }
         }
 
