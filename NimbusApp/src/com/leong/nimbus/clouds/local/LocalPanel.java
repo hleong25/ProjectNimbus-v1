@@ -44,7 +44,12 @@ public class LocalPanel
      */
     public LocalPanel()
     {
+        Log.entering("<init>");
         initComponents();
+
+        Log.fine("Showing root path");
+        File root = m_controller.getRoot();
+        showFiles(root, true);
     }
 
     /**
@@ -61,13 +66,6 @@ public class LocalPanel
         pnlScroll = new javax.swing.JScrollPane();
         pnlFiles = new javax.swing.JPanel();
 
-        addComponentListener(new java.awt.event.ComponentAdapter()
-        {
-            public void componentShown(java.awt.event.ComponentEvent evt)
-            {
-                formComponentShown(evt);
-            }
-        });
         setLayout(new java.awt.BorderLayout(0, 2));
 
         txtPath.setText("Path");
@@ -114,12 +112,6 @@ public class LocalPanel
             showFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
-
-    private void formComponentShown(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentShown
-    {//GEN-HEADEREND:event_formComponentShown
-        File root = m_controller.getRoot();
-        showFiles(root, true);
-    }//GEN-LAST:event_formComponentShown
 
     protected FileItemPanel createFileItemPanel(final File file)
     {

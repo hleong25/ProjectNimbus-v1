@@ -52,6 +52,7 @@ public class GDrivePanel
      */
     public GDrivePanel()
     {
+        Log.entering("<init>");
         initComponents();
     }
 

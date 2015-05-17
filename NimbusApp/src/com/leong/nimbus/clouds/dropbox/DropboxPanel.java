@@ -36,6 +36,7 @@ public class DropboxPanel
      */
     public DropboxPanel()
     {
+        Log.entering("<init>");
         initComponents();
     }
 

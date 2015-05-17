@@ -23,6 +23,7 @@ public class PickCloudFrame extends javax.swing.JFrame
      */
     public PickCloudFrame()
     {
+        Log.entering("<init>");
         initComponents();
     }
 

@@ -35,6 +35,7 @@ public class NimbusFrame extends javax.swing.JFrame
      */
     public NimbusFrame()
     {
+        Log.entering("<init>");
         initComponents();
 
         m_run = new Runnable()
@@ -96,6 +97,8 @@ public class NimbusFrame extends javax.swing.JFrame
         mnuOpenNewCloud = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(800, 600));
+        setPreferredSize(new java.awt.Dimension(800, 600));
 
         pnlMain.setMinimumSize(new java.awt.Dimension(400, 300));
         pnlMain.setPreferredSize(new java.awt.Dimension(400, 300));
