@@ -71,6 +71,13 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
           <SubComponents>
+            <Component class="com.leong.nimbus.clouds.local.LocalPanel" name="pnlLocal">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                  <CardConstraints cardName="Local File System"/>
+                </Constraint>
+              </Constraints>
+            </Component>
             <Component class="com.leong.nimbus.clouds.google.drive.GDrivePanel" name="pnlGoogleDrive">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
@@ -78,10 +85,10 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="com.leong.nimbus.clouds.local.LocalPanel" name="pnlLocal">
+            <Component class="com.leong.nimbus.clouds.dropbox.DropboxPanel" name="pnlDropbox">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                  <CardConstraints cardName="Local File System"/>
+                  <CardConstraints cardName="Dropbox"/>
                 </Constraint>
               </Constraints>
             </Component>

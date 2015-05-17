@@ -40,6 +40,7 @@ public class PickCloudFrame extends javax.swing.JFrame
         pnlPicker = new javax.swing.JPanel();
         btnLocal = new javax.swing.JButton();
         btnGoogleDrive = new javax.swing.JButton();
+        btnDropbox = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Nimbus");
@@ -79,6 +80,21 @@ public class PickCloudFrame extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         pnlPicker.add(btnGoogleDrive, gridBagConstraints);
 
+        btnDropbox.setText("Dropbox");
+        btnDropbox.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnDropboxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        pnlPicker.add(btnDropbox, gridBagConstraints);
+
         getContentPane().add(pnlPicker, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -93,6 +109,11 @@ public class PickCloudFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_btnLocalActionPerformed
         showAndDispose(NimbusFrame.CloudType.LOCAL_FILE_SYSTEM);
     }//GEN-LAST:event_btnLocalActionPerformed
+
+    private void btnDropboxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnDropboxActionPerformed
+    {//GEN-HEADEREND:event_btnDropboxActionPerformed
+        showAndDispose(NimbusFrame.CloudType.DROPBOX);
+    }//GEN-LAST:event_btnDropboxActionPerformed
 
     public static void showMe()
     {
@@ -167,6 +188,7 @@ public class PickCloudFrame extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDropbox;
     private javax.swing.JButton btnGoogleDrive;
     private javax.swing.JButton btnLocal;
     private javax.swing.JPanel pnlPicker;

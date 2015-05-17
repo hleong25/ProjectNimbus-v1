@@ -74,7 +74,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
     public boolean login(String authCode)
     {
-        Log.entering("login-gdm", new Object[]{authCode});
+        Log.entering("login", new Object[]{authCode});
 
         if (m_flow == null)
         {

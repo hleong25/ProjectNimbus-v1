@@ -19,6 +19,7 @@ public class NimbusFrame extends javax.swing.JFrame
     {
         LOCAL_FILE_SYSTEM,
         GOOGLE_DRIVE,
+        DROPBOX,
     }
 
     private static final Logit Log = Logit.create(NimbusFrame.class.getName());
@@ -27,6 +28,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
     private final static String CARD_LOCAL_FILE_SYSTEM = "Local File System";
     private final static String CARD_GOOGLE_DRIVE = "Google Drive";
+    private final static String CARD_DROPBOX = "Dropbox";
 
     /**
      * Creates new form NimbusFrame
@@ -60,6 +62,10 @@ public class NimbusFrame extends javax.swing.JFrame
                 cardName = CARD_GOOGLE_DRIVE;
                 break;
 
+            case DROPBOX:
+                cardName = CARD_DROPBOX;
+                break;
+
             default:
                 return null;
         }
@@ -82,8 +88,9 @@ public class NimbusFrame extends javax.swing.JFrame
 
         pnlMain = new javax.swing.JPanel();
         pnlCards = new javax.swing.JPanel();
-        pnlGoogleDrive = new com.leong.nimbus.clouds.google.drive.GDrivePanel();
         pnlLocal = new com.leong.nimbus.clouds.local.LocalPanel();
+        pnlGoogleDrive = new com.leong.nimbus.clouds.google.drive.GDrivePanel();
+        pnlDropbox = new com.leong.nimbus.clouds.dropbox.DropboxPanel();
         mnubar = new javax.swing.JMenuBar();
         mnuNimbus = new javax.swing.JMenu();
         mnuOpenNewCloud = new javax.swing.JMenuItem();
@@ -95,8 +102,9 @@ public class NimbusFrame extends javax.swing.JFrame
         pnlMain.setLayout(new java.awt.BorderLayout());
 
         pnlCards.setLayout(new java.awt.CardLayout());
-        pnlCards.add(pnlGoogleDrive, "Google Drive");
         pnlCards.add(pnlLocal, "Local File System");
+        pnlCards.add(pnlGoogleDrive, "Google Drive");
+        pnlCards.add(pnlDropbox, "Dropbox");
 
         pnlMain.add(pnlCards, java.awt.BorderLayout.CENTER);
 
@@ -164,6 +172,7 @@ public class NimbusFrame extends javax.swing.JFrame
     private javax.swing.JMenuItem mnuOpenNewCloud;
     private javax.swing.JMenuBar mnubar;
     private javax.swing.JPanel pnlCards;
+    private com.leong.nimbus.clouds.dropbox.DropboxPanel pnlDropbox;
     private com.leong.nimbus.clouds.google.drive.GDrivePanel pnlGoogleDrive;
     private com.leong.nimbus.clouds.local.LocalPanel pnlLocal;
     private javax.swing.JPanel pnlMain;
