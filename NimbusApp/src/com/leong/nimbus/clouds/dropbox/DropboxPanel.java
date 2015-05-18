@@ -8,6 +8,8 @@ package com.leong.nimbus.clouds.dropbox;
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItem;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItemPanelMouseAdapter;
+import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
@@ -26,28 +28,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JPanel;
 
 /**
  *
  * @author henry
  */
 public class DropboxPanel
-    extends javax.swing.JPanel
-    implements ICloudPanel
+    extends CloudPanelAdapter<DbxEntry, DropboxController>
+//    extends javax.swing.JPanel
+//    implements ICloudPanel
 {
     private static final Logit Log = Logit.create(DropboxPanel.class.getName());
-
-    private final DropboxController m_controller = new DropboxController();
-
-    private final Map<DbxEntry, List<Component>> m_cachedComponents = new HashMap<>();
-
-    private DbxEntry m_currentPath;
 
     /**
      * Creates new form DropboxPanel
      */
     public DropboxPanel()
     {
+        super(new DropboxController());
+
         Log.entering("<init>");
         initComponents();
     }
@@ -146,6 +146,7 @@ public class DropboxPanel
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
+    /*
     protected FileItemPanel createFileItemPanel(final DbxEntry entry)
     {
         FileItemPanel pnl = new FileItemPanel(new DropboxFileItem(entry));
@@ -273,6 +274,7 @@ public class DropboxPanel
         // for keyreleased to work properly
         pnlFiles.requestFocusInWindow();
     }
+    */
 
     protected boolean onAction_drop(List list)
     {
@@ -362,4 +364,36 @@ public class DropboxPanel
     private javax.swing.JPanel pnlFiles;
     private javax.swing.JScrollPane pnlScroll;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public String getAbsolutePath(DbxEntry item)
+    {
+        Log.entering("getAbsolutePath", new Object[]{item.toStringMultiline()});
+        return item.path;
+    }
+
+    @Override
+    public FileItemPanel createFileItemPanel(DbxEntry file)
+    {
+        FileItemPanel pnl = new FileItemPanel(new DropboxFileItem(file));
+
+        pnl.setBackground(Color.WHITE);
+
+        pnl.addMouseListener(new DropboxFileItemPanelMouseAdapter(file)
+        {
+            @Override
+            public void onOpenFolder(final DbxEntry item)
+            {
+                responsiveShowFiles(item, true);
+            }
+        });
+
+        return pnl;
+    }
+
+    @Override
+    public JPanel getFilesPanel()
+    {
+        return pnlFiles;
+    }
 }

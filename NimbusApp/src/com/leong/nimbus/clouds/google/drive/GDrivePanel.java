@@ -10,6 +10,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
+import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
@@ -30,28 +31,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JPanel;
 
 /**
  *
  * @author henry
  */
 public class GDrivePanel
-    extends javax.swing.JPanel
-    implements ICloudPanel
+    extends CloudPanelAdapter<File, GDriveController>
+//    extends javax.swing.JPanel
+//    implements ICloudPanel
 {
     private static final Logit Log = Logit.create(GDrivePanel.class.getName());
-
-    private final GDriveController m_controller = new GDriveController();
-
-    private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
-
-    private File m_currentPath;
 
     /**
      * Creates new form GDrivePanel
      */
     public GDrivePanel()
     {
+        super(new GDriveController());
+
         Log.entering("<init>");
         initComponents();
     }
@@ -115,7 +114,9 @@ public class GDrivePanel
             @Override
             public void run()
             {
-                if (m_controller.login(GDrivePanel.this))
+                GDriveController controller = (GDriveController)m_controller;
+
+                if (controller.login(GDrivePanel.this))
                 {
                     // setup drag and drop once logged in
                     //new DropTarget(pnlFiles, m_dropTarget);
@@ -150,6 +151,7 @@ public class GDrivePanel
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
+    /*
     protected FileItemPanel createFileItemPanel(final File file)
     {
         FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
@@ -277,6 +279,7 @@ public class GDrivePanel
         // for keyreleased to work properly
         pnlFiles.requestFocusInWindow();
     }
+    */
 
     protected boolean onAction_drop(List list)
     {
@@ -359,4 +362,36 @@ public class GDrivePanel
     private javax.swing.JPanel pnlFiles;
     private javax.swing.JScrollPane pnlScroll;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public String getAbsolutePath(File item)
+    {
+        Log.entering("getAbsolutePath", new Object[]{item});
+        return item.getId();
+    }
+
+    @Override
+    public FileItemPanel createFileItemPanel(File file)
+    {
+        FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
+
+        pnl.setBackground(Color.WHITE);
+
+        pnl.addMouseListener(new GDriveFileItemPanelMouseAdapter(file)
+        {
+            @Override
+            public void onOpenFolder(final File item)
+            {
+                responsiveShowFiles(item, true);
+            }
+        });
+
+        return pnl;
+    }
+
+    @Override
+    public JPanel getFilesPanel()
+    {
+        return pnlFiles;
+    }
 }

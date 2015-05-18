@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.local;
 
+import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
@@ -22,28 +23,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JPanel;
 
 /**
  *
  * @author henry
  */
 public class LocalPanel
-    extends javax.swing.JPanel
-    implements ICloudPanel
+    extends CloudPanelAdapter<File, LocalController>
+    //extends javax.swing.JPanel
+    //implements ICloudPanel
 {
     private static final Logit Log = Logit.create(LocalPanel.class.getName());
-
-    private final LocalController m_controller = new LocalController();
-
-    private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
-
-    private File m_currentPath;
 
     /**
      * Creates new form LocalPanel
      */
     public LocalPanel()
     {
+        super(new LocalController());
+
         Log.entering("<init>");
         initComponents();
 
@@ -113,7 +112,8 @@ public class LocalPanel
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
-    protected FileItemPanel createFileItemPanel(final File file)
+    /*
+    protected FileItemPanel createFileItemPanel1(final File file)
     {
         FileItemPanel pnl = new FileItemPanel(new LocalFileItem(file));
 
@@ -131,7 +131,7 @@ public class LocalPanel
         return pnl;
     }
 
-    protected void responsiveShowFiles(final File path, final boolean useCache)
+    protected void responsiveShowFiles1(final File path, final boolean useCache)
     {
         BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
         {
@@ -143,7 +143,7 @@ public class LocalPanel
         });
     }
 
-    protected List<Component> getFiles(final File parent, final boolean useCache)
+    protected List<Component> getFiles1(final File parent, final boolean useCache)
     {
         Log.entering("getFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
 
@@ -193,7 +193,7 @@ public class LocalPanel
         return list;
     }
 
-    protected void showFiles(final File parent, final boolean useCache)
+    protected void showFiles1(final File parent, final boolean useCache)
     {
         Log.entering("showFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
 
@@ -229,10 +229,52 @@ public class LocalPanel
         // for keyreleased to work properly
         pnlFiles.requestFocusInWindow();
     }
+    */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel pnlFiles;
     private javax.swing.JScrollPane pnlScroll;
     private javax.swing.JTextField txtPath;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public String getAbsolutePath(File item)
+    {
+        Log.entering("getAbsolutePath", new Object[]{item});
+        return item.getAbsolutePath();
+    }
+
+    @Override
+    public void setCurrentPath(File path)
+    {
+        Log.entering("setCurrentPath", new Object[]{path});
+
+        super.setCurrentPath(path);
+        txtPath.setText(getAbsolutePath(path));
+    }
+
+    @Override
+    public FileItemPanel createFileItemPanel(File file)
+    {
+        FileItemPanel pnl = new FileItemPanel(new LocalFileItem(file));
+
+        pnl.setBackground(Color.WHITE);
+
+        pnl.addMouseListener(new LocalFileItemPanelMouseAdapter(file)
+        {
+            @Override
+            public void onOpenFolder(final File item)
+            {
+                responsiveShowFiles(item, true);
+            }
+        });
+
+        return pnl;
+    }
+
+    @Override
+    public JPanel getFilesPanel()
+    {
+        return pnlFiles;
+    }
 }
