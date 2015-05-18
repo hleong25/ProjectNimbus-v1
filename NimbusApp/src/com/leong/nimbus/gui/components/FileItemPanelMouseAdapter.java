@@ -29,7 +29,7 @@ public abstract class FileItemPanelMouseAdapter<T> extends MouseAdapter
     {
         //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked()");
 
-        if (e.getClickCount() == 2)
+        if (e.getClickCount() >= 2)
         {
             //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked() click count = 2");
             if (isFolder(m_item))
