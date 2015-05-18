@@ -6,37 +6,23 @@
 package com.leong.nimbus.clouds.dropbox.gui;
 
 import com.dropbox.core.DbxEntry;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import com.leong.nimbus.gui.components.FileItemPanelMouseAdapter;
 
 /**
  *
  * @author henry
  */
-public abstract class DropboxFileItemPanelMouseAdapter extends MouseAdapter
+public abstract class DropboxFileItemPanelMouseAdapter
+    extends FileItemPanelMouseAdapter<DbxEntry>
 {
-    protected final DbxEntry m_entry;
-
-    public DropboxFileItemPanelMouseAdapter(DbxEntry entry)
+    public DropboxFileItemPanelMouseAdapter(DbxEntry item)
     {
-        m_entry = entry;
+        super(item);
     }
-
-    public abstract void onOpenFolder(DbxEntry item);
 
     @Override
-    public void mouseClicked(MouseEvent e)
+    public boolean isFolder(final DbxEntry item)
     {
-        //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked()");
-
-        if (e.getClickCount() == 2)
-        {
-            //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked() click count = 2");
-            if (m_entry.isFolder())
-            {
-                onOpenFolder(m_entry);
-            }
-        }
+        return item.isFolder();
     }
-
 }

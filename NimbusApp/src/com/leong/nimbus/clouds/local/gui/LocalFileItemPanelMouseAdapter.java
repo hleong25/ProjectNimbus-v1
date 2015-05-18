@@ -5,37 +5,25 @@
  */
 package com.leong.nimbus.clouds.local.gui;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import com.leong.nimbus.gui.components.FileItemPanelMouseAdapter;
 import java.io.File;
 
 /**
  *
  * @author henry
  */
-public abstract class LocalFileItemPanelMouseAdapter extends MouseAdapter
+public abstract class LocalFileItemPanelMouseAdapter
+    extends FileItemPanelMouseAdapter<File>
 {
-    protected final File m_item;
-
     public LocalFileItemPanelMouseAdapter(File item)
     {
-        m_item = item;
+        super(item);
     }
-
-    public abstract void onOpenFolder(File item);
 
     @Override
-    public void mouseClicked(MouseEvent e)
+    public boolean isFolder(final File item)
     {
-        //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked()");
-
-        if (e.getClickCount() == 2)
-        {
-            //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked() click count = 2");
-            if (m_item.isDirectory())
-            {
-                onOpenFolder(m_item);
-            }
-        }
+        return item.isDirectory();
     }
+
 }

@@ -7,37 +7,24 @@ package com.leong.nimbus.clouds.google.drive.gui;
 
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.GDriveConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import com.leong.nimbus.gui.components.FileItemPanelMouseAdapter;
 
 /**
  *
  * @author henry
  */
-public abstract class GDriveFileItemPanelMouseAdapter extends MouseAdapter
+public abstract class GDriveFileItemPanelMouseAdapter
+    extends FileItemPanelMouseAdapter<File>
 {
-    protected final File m_item;
-
     public GDriveFileItemPanelMouseAdapter(File item)
     {
-        m_item = item;
+        super(item);
     }
 
-    public abstract void onOpenFolder(File parent);
-
     @Override
-    public void mouseClicked(MouseEvent e)
+    public boolean isFolder(final File item)
     {
-        //Tools.logit("GDriveFileItemPanelMouseAdapter.mouseClicked()");
-
-        if (e.getClickCount() == 2)
-        {
-            //Tools.logit("GDriveFileItemPanelMouseAdapter.mouseClicked() click count = 2");
-            if (m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER))
-            {
-                onOpenFolder(m_item);
-            }
-        }
+        return m_item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER);
     }
 
 }

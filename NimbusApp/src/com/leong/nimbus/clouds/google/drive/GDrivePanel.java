@@ -159,9 +159,9 @@ public class GDrivePanel
         pnl.addMouseListener(new GDriveFileItemPanelMouseAdapter(file)
         {
             @Override
-            public void onOpenFolder(File parent)
+            public void onOpenFolder(final File item)
             {
-                responsiveShowFiles(parent, true);
+                responsiveShowFiles(item, true);
             }
         });
 

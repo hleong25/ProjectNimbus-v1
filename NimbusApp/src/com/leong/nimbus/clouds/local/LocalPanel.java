@@ -122,7 +122,7 @@ public class LocalPanel
         pnl.addMouseListener(new LocalFileItemPanelMouseAdapter(file)
         {
             @Override
-            public void onOpenFolder(File item)
+            public void onOpenFolder(final File item)
             {
                 responsiveShowFiles(item, true);
             }

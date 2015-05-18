@@ -155,9 +155,9 @@ public class DropboxPanel
         pnl.addMouseListener(new DropboxFileItemPanelMouseAdapter(entry)
         {
             @Override
-            public void onOpenFolder(DbxEntry parent)
+            public void onOpenFolder(final DbxEntry item)
             {
-                responsiveShowFiles(parent, true);
+                responsiveShowFiles(item, true);
             }
         });
 
