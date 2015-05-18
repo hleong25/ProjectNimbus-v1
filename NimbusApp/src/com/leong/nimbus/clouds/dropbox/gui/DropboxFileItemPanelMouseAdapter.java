@@ -3,26 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.leong.nimbus.clouds.local.gui;
+package com.leong.nimbus.clouds.dropbox.gui;
 
+import com.dropbox.core.DbxEntry;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
 /**
  *
  * @author henry
  */
-public abstract class LocalFileItemPanelMouseAdapter extends MouseAdapter
+public abstract class DropboxFileItemPanelMouseAdapter extends MouseAdapter
 {
-    protected final File m_item;
+    protected final DbxEntry m_entry;
 
-    public LocalFileItemPanelMouseAdapter(File item)
+    public DropboxFileItemPanelMouseAdapter(DbxEntry entry)
     {
-        m_item = item;
+        m_entry = entry;
     }
 
-    public abstract void onOpenFolder(File item);
+    public abstract void onOpenFolder(DbxEntry item);
 
     @Override
     public void mouseClicked(MouseEvent e)
@@ -32,10 +32,11 @@ public abstract class LocalFileItemPanelMouseAdapter extends MouseAdapter
         if (e.getClickCount() == 2)
         {
             //Tools.logit("LocalFileItemPanelMouseAdapter.mouseClicked() click count = 2");
-            if (m_item.isDirectory())
+            if (m_entry.isFolder())
             {
-                onOpenFolder(m_item);
+                onOpenFolder(m_entry);
             }
         }
     }
+
 }

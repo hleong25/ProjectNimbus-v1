@@ -8,20 +8,24 @@ package com.leong.nimbus.clouds.dropbox;
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
+import com.dropbox.core.util.Collector;
+import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author henry
  */
-public class DropboxModel
+public class DropboxModel implements ICloudModel<DbxEntry>
 {
     private static final Logit Log = Logit.create(DropboxModel.class.getName());
 
@@ -33,6 +37,8 @@ public class DropboxModel
     private final DbxWebAuthNoRedirect m_webAuth = new DbxWebAuthNoRedirect(m_config, m_appInfo);
 
     private DbxClient m_client;
+
+    private DbxEntry m_root;
 
     public DropboxModel()
     {
@@ -78,6 +84,8 @@ public class DropboxModel
         // geting the client
         m_client = new DbxClient(m_config, accessToken);
 
+        getRoot();
+
         try
         {
             Log.info("Linked account: "+m_client.getAccountInfo().displayName);
@@ -90,6 +98,76 @@ public class DropboxModel
         }
 
         return true;
+    }
+
+    @Override
+    public DbxEntry getRoot()
+    {
+        Log.entering("getRoot");
+
+        if (m_root != null)
+        {
+            return m_root;
+        }
+
+        m_root = getItemById(DropboxConstants.FOLDER_ROOT);
+        return m_root;
+    }
+
+    @Override
+    public DbxEntry getItemById(String id)
+    {
+        Log.entering("getItemById", id);
+
+        try
+        {
+            DbxEntry entry = m_client.getMetadata(id);
+            Log.fine(entry.toStringMultiline());
+            return entry;
+        }
+        catch (DbxException ex)
+        {
+            Log.exception(ex);
+        }
+
+        return null;
+    }
+
+    //@SuppressWarnings("unchecked")
+    @Override
+    public List<DbxEntry> getChildrenItems(DbxEntry parent)
+    {
+        Log.entering("getChildrenItems", parent);
+
+        if (!parent.isFolder())
+        {
+            Log.warning("Entry '"+parent.path+"' is not a folder");
+            return null;
+        }
+
+        List<DbxEntry> list = new ArrayList<>();
+
+        try
+        {
+            DbxEntry.WithChildrenC items = m_client.getMetadataWithChildrenC(parent.path, new Collector.ArrayListCollector<DbxEntry>());
+
+            list = (ArrayList<DbxEntry>)(items.children);
+
+            if (false && Log.isLoggable(Level.FINER))
+            {
+                for (DbxEntry entry : list)
+                {
+                    Log.finer(entry.toStringMultiline());
+                }
+            }
+
+        }
+        catch (DbxException ex)
+        {
+            Log.exception(ex);
+        }
+
+        return list;
     }
 
 }

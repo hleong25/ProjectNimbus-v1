@@ -1,27 +1,25 @@
-package com.leong.nimbus.clouds.local.gui;
-
-
-import com.leong.nimbus.gui.components.IFileItem;
-import java.io.File;
-import javax.swing.ImageIcon;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package com.leong.nimbus.clouds.dropbox.gui;
+
+import com.dropbox.core.DbxEntry;
+import com.leong.nimbus.gui.components.IFileItem;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author henry
  */
-public class LocalFileItem implements IFileItem
+public class DropboxFileItem implements IFileItem
 {
-    protected final File m_item;
+    protected DbxEntry m_entry;
 
-    public LocalFileItem(File item)
+    public DropboxFileItem(DbxEntry entry)
     {
-        m_item = item;
+        m_entry = entry;
     }
 
     @Override
@@ -29,14 +27,12 @@ public class LocalFileItem implements IFileItem
     {
         String path;
 
-        if (m_item.isDirectory())
+        if (m_entry.isFolder())
         {
-            //Tools.logit("Path="+m_item.getAbsolutePath());
             path = "resources/icons/google/Close-Folder-icon-64.png";
         }
         else
         {
-            //Tools.logit("File="+m_item.getAbsolutePath());
             path = "resources/icons/google/docs-64.png";
         }
 
@@ -48,7 +44,7 @@ public class LocalFileItem implements IFileItem
     @Override
     public String getLabel()
     {
-        return m_item.getName();
+        return m_entry.name;
     }
 
 }

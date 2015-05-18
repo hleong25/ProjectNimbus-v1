@@ -192,7 +192,7 @@ public class GDriveController implements ICloudController<com.google.api.service
     @Override
     public File getParent(File item)
     {
-        Log.entering("getParent", item.getId());
+        Log.entering("getParent", (item != null ? item.getId() : "null"));
 
         if (item == null)
         {

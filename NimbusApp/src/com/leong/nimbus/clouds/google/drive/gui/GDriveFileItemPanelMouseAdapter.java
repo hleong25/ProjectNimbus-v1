@@ -16,7 +16,7 @@ import java.awt.event.MouseEvent;
  */
 public abstract class GDriveFileItemPanelMouseAdapter extends MouseAdapter
 {
-    protected File m_item;
+    protected final File m_item;
 
     public GDriveFileItemPanelMouseAdapter(File item)
     {

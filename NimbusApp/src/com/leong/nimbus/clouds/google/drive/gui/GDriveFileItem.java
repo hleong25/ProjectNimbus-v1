@@ -19,7 +19,7 @@ public class GDriveFileItem implements IFileItem
 {
     private static final Logit Log = Logit.create(GDriveFileItem.class.getName());
 
-    protected File m_item;
+    protected final File m_item;
 
     public GDriveFileItem(File item)
     {

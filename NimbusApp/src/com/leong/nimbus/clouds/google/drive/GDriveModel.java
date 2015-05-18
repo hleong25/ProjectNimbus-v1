@@ -46,7 +46,6 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     private final GoogleAuthorizationCodeFlow m_flow;
     private Drive m_service;
 
-    private String m_rootID;
     private File m_root;
 
     public GDriveModel()
@@ -135,6 +134,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public File getRoot()
     {
+        Log.entering("getRoot");
+
         if (m_root != null)
         {
             return m_root;

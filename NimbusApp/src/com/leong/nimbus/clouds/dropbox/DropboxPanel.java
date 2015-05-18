@@ -5,15 +5,27 @@
  */
 package com.leong.nimbus.clouds.dropbox;
 
+import com.dropbox.core.DbxEntry;
+import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItem;
+import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
+import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
+import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
 import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Logit;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -27,9 +39,9 @@ public class DropboxPanel
 
     private final DropboxController m_controller = new DropboxController();
 
-//    private final Map<File, List<Component>> m_cachedComponents = new HashMap<>();
+    private final Map<DbxEntry, List<Component>> m_cachedComponents = new HashMap<>();
 
-//    private File m_currentPath;
+    private DbxEntry m_currentPath;
 
     /**
      * Creates new form DropboxPanel
@@ -109,14 +121,11 @@ public class DropboxPanel
                                 @Override
                                 public boolean onAction_drop(List list)
                                 {
-                                    Log.severe("TODO");
-                                    return false;
-                                    //return DropboxPanel.this.onAction_drop(list);
+                                    return DropboxPanel.this.onAction_drop(list);
                                 }
                             });
 
-                            Log.severe("TODO");
-                            //showFiles(m_controller.getRoot(), false);
+                            showFiles(m_controller.getRoot(), false);
                         }
                     }
                 });
@@ -133,138 +142,143 @@ public class DropboxPanel
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
             Log.fine("KeyEvent.VK_F5");
-            Log.severe("TODO");
-            //showFiles(m_currentPath, false);
+            showFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
-    //protected FileItemPanel createFileItemPanel(final File file)
-    //{
-    //    FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
+    protected FileItemPanel createFileItemPanel(final DbxEntry entry)
+    {
+        FileItemPanel pnl = new FileItemPanel(new DropboxFileItem(entry));
 
-    //    pnl.setBackground(Color.WHITE);
+        pnl.setBackground(Color.WHITE);
 
-    //    pnl.addMouseListener(new GDriveFileItemPanelMouseAdapter(file)
-    //    {
-    //        @Override
-    //        public void onOpenFolder(File parent)
-    //        {
-    //            responsiveShowFiles(parent, true);
-    //        }
-    //    });
+        pnl.addMouseListener(new DropboxFileItemPanelMouseAdapter(entry)
+        {
+            @Override
+            public void onOpenFolder(DbxEntry parent)
+            {
+                responsiveShowFiles(parent, true);
+            }
+        });
 
-    //    pnl.addMouseListener(new MouseAdapter()
-    //    {
-    //        @Override
-    //        public void mouseClicked(MouseEvent e)
-    //        {
-    //            FileItemPanel pnl = (FileItemPanel) e.getSource();
-    //            pnl.setHighlight(true);
+        pnl.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                FileItemPanel pnl = (FileItemPanel) e.getSource();
+                pnl.setHighlight(true);
 
-    //            super.mouseClicked(e);
-    //        }
+                super.mouseClicked(e);
+            }
 
-    //    });
+        });
 
-    //    return pnl;
-    //}
+        return pnl;
+    }
 
-    //protected void responsiveShowFiles(final File parent, final boolean useCache)
-    //{
-    //    BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
-    //    {
-    //        @Override
-    //        public void run()
-    //        {
-    //            showFiles(parent, useCache);
-    //        }
-    //    });
-    //}
+    protected void responsiveShowFiles(final DbxEntry parent, final boolean useCache)
+    {
+        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                showFiles(parent, useCache);
+            }
+        });
+    }
 
-    //protected List<Component> getFiles(final File parent, final boolean useCache)
-    //{
-    //    Log.entering("getFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
+    protected List<Component> getFiles(final DbxEntry parent, final boolean useCache)
+    {
+        Log.entering("getFiles", new Object[]{parent != null ? parent.path : "(parent.null)", useCache});
 
-    //    List<Component> list;
+        List<Component> list;
 
-    //    if (useCache && m_cachedComponents.containsKey(parent))
-    //    {
-    //        Log.fine(String.format("Cache hit '%s'", parent.getId()));
-    //        list = m_cachedComponents.get(parent);
-    //    }
-    //    else
-    //    {
-    //        list = new ArrayList<>();
+        if (useCache && m_cachedComponents.containsKey(parent))
+        {
+            Log.fine(String.format("Cache hit '%s'", parent.path));
+            list = m_cachedComponents.get(parent);
+        }
+        else
+        {
+            list = new ArrayList<>();
 
-    //        FileItemPanelGroup group = new FileItemPanelGroup();
+            FileItemPanelGroup group = new FileItemPanelGroup();
 
-    //        // show parent link
-    //        {
-    //            File grandParentFile = m_controller.getParent(parent);
+            // show parent link
+            {
+                DbxEntry grandParentFile = m_controller.getParent(parent);
 
-    //            if (grandParentFile != null)
-    //            {
-    //                FileItemPanel pnl = createFileItemPanel(grandParentFile);
+                if (grandParentFile != null)
+                {
+                    FileItemPanel pnl = createFileItemPanel(grandParentFile);
 
-    //                pnl.setLabel("..");
+                    pnl.setLabel("..");
 
-    //                group.add(pnl);
-    //                list.add(pnl);
-    //            }
-    //        }
+                    group.add(pnl);
+                    list.add(pnl);
+                }
+            }
 
-    //        // get all files in this folder
-    //        final List<File> files = m_controller.getChildrenItems(parent, useCache);
+            // get all files in this folder
+            final List<DbxEntry> files = m_controller.getChildrenItems(parent, useCache);
 
-    //        Log.fine("Total files: "+files.size());
+            Log.fine("Total files: "+files.size());
 
-    //        for (File file : files)
-    //        {
-    //            FileItemPanel pnl = createFileItemPanel(file);
-    //            group.add(pnl);
-    //            list.add(pnl);
-    //        }
+            for (DbxEntry file : files)
+            {
+                FileItemPanel pnl = createFileItemPanel(file);
+                group.add(pnl);
+                list.add(pnl);
+            }
 
-    //        m_cachedComponents.put(parent, list);
-    //    }
+            m_cachedComponents.put(parent, list);
+        }
 
-    //    return list;
-    //}
+        return list;
+    }
 
-    //protected void showFiles(final File parent, final boolean useCache)
-    //{
-    //    Log.entering("showFiles", new Object[]{parent != null ? parent.getId() : "(parent.null)", useCache});
+    protected void showFiles(final DbxEntry parent, final boolean useCache)
+    {
+        Log.entering("showFiles", new Object[]{parent != null ? parent.path : "(parent.null)", useCache});
 
-    //    m_currentPath = parent;
+        m_currentPath = parent;
 
-    //    List<Component> list = getFiles(parent, useCache);
+        List<Component> list = getFiles(parent, useCache);
 
-    //    if (!list.isEmpty())
-    //    {
-    //        // must reset the highlights
-    //        FileItemPanel pnl = (FileItemPanel) list.get(0);
-    //        if (pnl.getGroup() != null)
-    //        {
-    //            pnl.getGroup().reset();
-    //        }
-    //    }
+        if (!list.isEmpty())
+        {
+            // must reset the highlights
+            FileItemPanel pnl = (FileItemPanel) list.get(0);
+            if (pnl.getGroup() != null)
+            {
+                pnl.getGroup().reset();
+            }
+        }
 
-    //    // remove all items first
-    //    pnlFiles.removeAll();
+        // remove all items first
+        pnlFiles.removeAll();
 
-    //    // add the components to the panel
-    //    for (Component pnl : list)
-    //    {
-    //        pnlFiles.add(pnl);
-    //    }
+        // add the components to the panel
+        for (Component pnl : list)
+        {
+            pnlFiles.add(pnl);
+        }
 
-    //    // make sure repaint happens
-    //    pnlFiles.revalidate();
-    //    pnlFiles.repaint();
+        // make sure repaint happens
+        pnlFiles.revalidate();
+        pnlFiles.repaint();
 
-    //    // for keyreleased to work properly
-    //    pnlFiles.requestFocusInWindow();
-    //}
+        // for keyreleased to work properly
+        pnlFiles.requestFocusInWindow();
+    }
+
+    protected boolean onAction_drop(List list)
+    {
+        Log.entering("onAction_drop", new Object[]{list});
+        return true;
+    }
 
     //protected boolean onAction_drop(List list)
     //{
