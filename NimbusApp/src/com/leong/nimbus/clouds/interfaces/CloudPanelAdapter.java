@@ -27,7 +27,7 @@ public abstract class CloudPanelAdapter<T, S extends ICloudController<T>>
 {
     private static final Logit Log = Logit.create(CloudPanelAdapter.class.getName());
 
-    protected S m_controller;
+    protected final S m_controller;
 
     protected final Map<T, List<Component>> m_cachedComponents = new HashMap<>();
 

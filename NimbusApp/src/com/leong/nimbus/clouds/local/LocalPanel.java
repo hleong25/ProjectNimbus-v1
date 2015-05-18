@@ -38,7 +38,7 @@ public class LocalPanel
 
         Log.fine("Showing root path");
         File root = m_controller.getRoot();
-        showFiles(root, true);
+        responsiveShowFiles(root, false);
     }
 
     /**
@@ -98,7 +98,7 @@ public class LocalPanel
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
             Log.fine("KeyEvent.VK_F5");
-            showFiles(m_currentPath, false);
+            responsiveShowFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 

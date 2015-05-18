@@ -131,7 +131,7 @@ public class DropboxPanel
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
             Log.fine("KeyEvent.VK_F5");
-            showFiles(m_currentPath, false);
+            responsiveShowFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 

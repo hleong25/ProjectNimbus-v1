@@ -105,9 +105,7 @@ public class GDrivePanel
             @Override
             public void run()
             {
-                GDriveController controller = (GDriveController)m_controller;
-
-                if (controller.login(GDrivePanel.this))
+                if (m_controller.login(GDrivePanel.this))
                 {
                     // setup drag and drop once logged in
                     //new DropTarget(pnlFiles, m_dropTarget);
@@ -138,7 +136,7 @@ public class GDrivePanel
         if (evt.getKeyCode() == KeyEvent.VK_F5)
         {
             Log.fine("KeyEvent.VK_F5");
-            showFiles(m_currentPath, false);
+            responsiveShowFiles(m_currentPath, false);
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
