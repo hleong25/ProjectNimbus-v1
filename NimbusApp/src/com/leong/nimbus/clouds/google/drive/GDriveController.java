@@ -212,7 +212,7 @@ public class GDriveController implements ICloudController<com.google.api.service
     @Override
     public List<File> getChildrenItems(File parent, boolean useCache)
     {
-        Log.entering("getChildrenItems", new Object[]{parent.getId(), useCache});
+        Log.entering("getChildrenItems", new Object[]{(parent != null ? parent.getId() : "(parent.null)"), useCache});
 
         if (parent == null)
         {

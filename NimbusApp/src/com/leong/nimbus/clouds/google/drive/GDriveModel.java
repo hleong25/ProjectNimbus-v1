@@ -162,6 +162,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public File getItemById(String id)
     {
+        Log.entering("getItemById", id);
+
         try
         {
             return m_service.files().get(id).execute();
@@ -176,6 +178,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public List<File> getChildrenItems(File parent)
     {
+        Log.entering("getChildrenItems", new Object[]{(parent != null ? parent.getId() : "(parent.null)")});
+
         final List<File> list = new ArrayList<>();
 
         try
