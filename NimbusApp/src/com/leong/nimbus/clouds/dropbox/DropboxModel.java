@@ -133,7 +133,6 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         return null;
     }
 
-    //@SuppressWarnings("unchecked")
     @Override
     public List<DbxEntry> getChildrenItems(DbxEntry parent)
     {
@@ -145,13 +144,11 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             return null;
         }
 
-        List<DbxEntry> list = new ArrayList<>();
-
         try
         {
-            DbxEntry.WithChildrenC items = m_client.getMetadataWithChildrenC(parent.path, new Collector.ArrayListCollector<DbxEntry>());
+            DbxEntry.WithChildrenC<ArrayList<DbxEntry>> items = m_client.getMetadataWithChildrenC(parent.path, new Collector.ArrayListCollector<DbxEntry>());
 
-            list = (ArrayList<DbxEntry>)(items.children);
+            final List<DbxEntry> list = items.children;
 
             if (false && Log.isLoggable(Level.FINER))
             {
@@ -161,13 +158,14 @@ public class DropboxModel implements ICloudModel<DbxEntry>
                 }
             }
 
+            return list;
         }
         catch (DbxException ex)
         {
             Log.exception(ex);
         }
 
-        return list;
+        return null;
     }
 
 }
