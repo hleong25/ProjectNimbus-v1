@@ -6,23 +6,15 @@
 package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
-import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
-import com.leong.nimbus.gui.helpers.BusyTaskCursor;
-import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
 import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.swing.JPanel;
 
 /**
@@ -112,124 +104,6 @@ public class LocalPanel
         }
     }//GEN-LAST:event_pnlFilesKeyReleased
 
-    /*
-    protected FileItemPanel createFileItemPanel1(final File file)
-    {
-        FileItemPanel pnl = new FileItemPanel(new LocalFileItem(file));
-
-        pnl.setBackground(Color.WHITE);
-
-        pnl.addMouseListener(new LocalFileItemPanelMouseAdapter(file)
-        {
-            @Override
-            public void onOpenFolder(final File item)
-            {
-                responsiveShowFiles(item, true);
-            }
-        });
-
-        return pnl;
-    }
-
-    protected void responsiveShowFiles1(final File path, final boolean useCache)
-    {
-        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
-        {
-            @Override
-            public void run()
-            {
-                showFiles(path, useCache);
-            }
-        });
-    }
-
-    protected List<Component> getFiles1(final File parent, final boolean useCache)
-    {
-        Log.entering("getFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
-
-        List<Component> list;
-
-        if (useCache && m_cachedComponents.containsKey(parent))
-        {
-            Log.fine(String.format("Cache hit '%s'", parent.getAbsolutePath()));
-            list = m_cachedComponents.get(parent);
-        }
-        else
-        {
-            list = new ArrayList<>();
-
-            FileItemPanelGroup group = new FileItemPanelGroup();
-
-            // show parent link
-            {
-                File grandParentFile = m_controller.getParent(parent);
-
-                if (grandParentFile != null)
-                {
-                    FileItemPanel pnl = createFileItemPanel(grandParentFile);
-
-                    pnl.setLabel("..");
-
-                    group.add(pnl);
-                    list.add(pnl);
-                }
-            }
-
-            // get all files in this folder
-            final List<File> files = m_controller.getChildrenItems(parent, useCache);
-
-            Log.fine("Total files: "+files.size());
-
-            for (File file : files)
-            {
-                FileItemPanel pnl = createFileItemPanel(file);
-                group.add(pnl);
-                list.add(pnl);
-            }
-
-            m_cachedComponents.put(parent, list);
-        }
-
-        return list;
-    }
-
-    protected void showFiles1(final File parent, final boolean useCache)
-    {
-        Log.entering("showFiles", new Object[]{parent != null ? parent.getAbsolutePath() : "(parent.null)", useCache});
-
-        txtPath.setText(parent.getAbsolutePath());
-
-        m_currentPath = parent;
-
-        List<Component> list = getFiles(parent, useCache);
-
-        if (!list.isEmpty())
-        {
-            // must reset the highlights
-            FileItemPanel pnl = (FileItemPanel) list.get(0);
-            if (pnl.getGroup() != null)
-            {
-                pnl.getGroup().reset();
-            }
-        }
-
-        // remove all items first
-        pnlFiles.removeAll();
-
-        // add the components to the panel
-        for (Component pnl : list)
-        {
-            pnlFiles.add(pnl);
-        }
-
-        // make sure repaint happens
-        pnlFiles.revalidate();
-        pnlFiles.repaint();
-
-        // for keyreleased to work properly
-        pnlFiles.requestFocusInWindow();
-    }
-    */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel pnlFiles;
