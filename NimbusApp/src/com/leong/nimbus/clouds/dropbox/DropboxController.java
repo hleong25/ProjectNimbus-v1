@@ -146,7 +146,7 @@ public class DropboxController implements ICloudController<DbxEntry>
 
         String path = item.path;
 
-        if (path == DropboxConstants.FOLDER_ROOT)
+        if (path.equals(DropboxConstants.FOLDER_ROOT))
         {
             return null;
         }

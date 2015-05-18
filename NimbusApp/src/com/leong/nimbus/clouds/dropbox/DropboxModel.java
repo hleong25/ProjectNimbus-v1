@@ -122,7 +122,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         try
         {
             DbxEntry entry = m_client.getMetadata(id);
-            Log.fine(entry.toStringMultiline());
+            //Log.fine(entry.toStringMultiline());
             return entry;
         }
         catch (DbxException ex)
