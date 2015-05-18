@@ -27,8 +27,6 @@ import javax.swing.JPanel;
  */
 public class DropboxPanel
     extends CloudPanelAdapter<DbxEntry, DropboxController>
-//    extends javax.swing.JPanel
-//    implements ICloudPanel
 {
     private static final Logit Log = Logit.create(DropboxPanel.class.getName());
 

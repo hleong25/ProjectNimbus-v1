@@ -23,8 +23,6 @@ import javax.swing.JPanel;
  */
 public class LocalPanel
     extends CloudPanelAdapter<File, LocalController>
-    //extends javax.swing.JPanel
-    //implements ICloudPanel
 {
     private static final Logit Log = Logit.create(LocalPanel.class.getName());
 

@@ -32,8 +32,6 @@ import javax.swing.JPanel;
  */
 public class GDrivePanel
     extends CloudPanelAdapter<File, GDriveController>
-//    extends javax.swing.JPanel
-//    implements ICloudPanel
 {
     private static final Logit Log = Logit.create(GDrivePanel.class.getName());
 
