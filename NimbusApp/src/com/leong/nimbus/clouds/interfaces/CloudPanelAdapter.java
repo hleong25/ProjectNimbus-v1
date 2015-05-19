@@ -20,23 +20,21 @@ import javax.swing.JPanel;
  *
  * @author henry
  */
-public abstract class CloudPanelAdapter<T, S extends ICloudController<T>>
+public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T>>
     extends javax.swing.JPanel
     implements ICloudPanel<T>
 {
     private static final Logit Log = Logit.create(CloudPanelAdapter.class.getName());
 
-    protected final S m_controller;
-
     protected final Map<T, List<Component>> m_cachedComponents = new HashMap<>();
+
+    protected CONTROLLER m_controller;
 
     protected T m_currentPath;
 
-    protected CloudPanelAdapter(S controller)
+    protected CloudPanelAdapter()
     {
-        Log.entering("<init>", new Object[]{controller});
-
-        m_controller = controller;
+        Log.entering("<init>");
     }
 
     @Override

@@ -16,6 +16,8 @@ import javax.swing.JPanel;
  */
 public interface ICloudPanel<T>
 {
+    void initPanel();
+
     String getAbsolutePath(T item);
     void setCurrentPath(T path);
 

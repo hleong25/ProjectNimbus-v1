@@ -5,12 +5,9 @@
  */
 package com.leong.nimbus.utils;
 
-import java.text.MessageFormat;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -48,31 +45,7 @@ public final class Logit extends Logger
         Logit logger = new Logit(Logger.getLogger(name));
 
         ConsoleHandler console = new ConsoleHandler();
-        //console.setFormatter(new SimpleFormatter());
-        console.setFormatter(new Formatter()
-        {
-            @Override
-            public String format(LogRecord record)
-            {
-                StringBuilder str = new StringBuilder();
-                str.append("["+record.getLevel()+"] ");
-                str.append(record.getSourceClassName());
-                str.append(".");
-                str.append(record.getSourceMethodName());
-                str.append("() ");
-                if (record.getParameters() == null)
-                {
-                    str.append(record.getMessage());
-                }
-                else
-                {
-                    str.append(MessageFormat.format(record.getMessage(), record.getParameters()));
-                }
-                str.append("\n");
-
-                return str.toString();
-            }
-        });
+        console.setFormatter(new LogitFormatter());
 
         console.setLevel(level);
         logger.setLevel(level);

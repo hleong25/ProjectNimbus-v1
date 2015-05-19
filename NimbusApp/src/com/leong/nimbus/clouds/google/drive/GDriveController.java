@@ -65,6 +65,11 @@ public class GDriveController implements ICloudController<com.google.api.service
         };
     }
 
+    public static GDriveController createInstance()
+    {
+        return new GDriveController();
+    }
+
     public boolean login(Component parentComponent)
     {
         Log.entering("login", parentComponent);

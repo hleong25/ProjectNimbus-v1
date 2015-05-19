@@ -40,7 +40,7 @@ public class GDrivePanel
      */
     public GDrivePanel()
     {
-        super(new GDriveController());
+        super();
 
         Log.entering("<init>");
         initComponents();
@@ -221,6 +221,13 @@ public class GDrivePanel
     private javax.swing.JPanel pnlFiles;
     private javax.swing.JScrollPane pnlScroll;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void initPanel()
+    {
+        Log.entering("initPanel");
+        m_controller = new GDriveController();
+    }
 
     @Override
     public String getAbsolutePath(File item)

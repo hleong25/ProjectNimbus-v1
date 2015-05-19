@@ -35,7 +35,7 @@ public class DropboxPanel
      */
     public DropboxPanel()
     {
-        super(new DropboxController());
+        super();
 
         Log.entering("<init>");
         initComponents();
@@ -223,6 +223,13 @@ public class DropboxPanel
     private javax.swing.JPanel pnlFiles;
     private javax.swing.JScrollPane pnlScroll;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void initPanel()
+    {
+        Log.entering("initPanel");
+        m_controller = new DropboxController();
+    }
 
     @Override
     public String getAbsolutePath(DbxEntry item)

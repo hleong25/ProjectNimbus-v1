@@ -31,14 +31,10 @@ public class LocalPanel
      */
     public LocalPanel()
     {
-        super(new LocalController());
+        super();
 
         Log.entering("<init>");
         initComponents();
-
-        Log.fine("Showing root path");
-        File root = m_controller.getRoot();
-        responsiveShowFiles(root, false);
     }
 
     /**
@@ -108,6 +104,17 @@ public class LocalPanel
     private javax.swing.JScrollPane pnlScroll;
     private javax.swing.JTextField txtPath;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void initPanel()
+    {
+        Log.entering("initPanel");
+        m_controller = new LocalController();
+
+        Log.fine("Showing root path");
+        File root = m_controller.getRoot();
+        responsiveShowFiles(root, false);
+    }
 
     @Override
     public String getAbsolutePath(File item)

@@ -5,8 +5,10 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -73,6 +75,14 @@ public class NimbusFrame extends javax.swing.JFrame
 
         frame.setTitle(cardName);
         ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);
+
+        for (Component comp : frame.pnlCards.getComponents() ) {
+            if (comp.isVisible() == true) {
+                ICloudPanel<?> pnl = (ICloudPanel<?>)comp;
+                pnl.initPanel();
+                break;
+            }
+        }
 
         return frame;
     }
