@@ -150,7 +150,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
             final List<DbxEntry> list = items.children;
 
-            if (false && Log.isLoggable(Level.FINER))
+            if (false)
             {
                 for (DbxEntry entry : list)
                 {
