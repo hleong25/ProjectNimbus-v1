@@ -5,8 +5,6 @@
  */
 package com.leong.nimbus.utils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
@@ -104,17 +102,9 @@ public final class Logit extends Logger
         super.entering(this.getName(), sourceMethod, params);
     }
 
-    public void exception(Throwable ex)
+    public void throwing(String sourceMethod, Throwable ex)
     {
-        StringWriter stackTrace = new StringWriter();
-        ex.printStackTrace(new PrintWriter(stackTrace));
-
-        //StringBuilder msg = new StringBuilder();
-        //msg.append(ex.getMessage());
-        //msg.append("\n");
-        //msg.append(stackTrace.toString());
-
-        severe(stackTrace.toString());
+        super.throwing(this.getName(), sourceMethod, ex);
     }
 
 }

@@ -77,7 +77,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
         catch (DbxException ex)
         {
-            Log.exception(ex);
+            Log.throwing("login", ex);
             return false;
         }
 
@@ -92,7 +92,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
         catch (DbxException ex)
         {
-            Log.exception(ex);
+            Log.throwing("login", ex);
             m_client = null;
             return false;
         }
@@ -127,7 +127,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
         catch (DbxException ex)
         {
-            Log.exception(ex);
+            Log.throwing("getItemById", ex);
         }
 
         return null;
@@ -162,7 +162,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
         catch (DbxException ex)
         {
-            Log.exception(ex);
+            Log.throwing("getChildrenItems", ex);
         }
 
         return null;

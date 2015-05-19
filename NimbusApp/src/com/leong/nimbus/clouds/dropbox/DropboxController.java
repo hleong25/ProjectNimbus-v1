@@ -13,9 +13,6 @@ import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -76,7 +73,7 @@ public class DropboxController implements ICloudController<DbxEntry>
         }
         catch (BrowserLaunchingInitializingException | UnsupportedOperatingSystemException ex)
         {
-            Log.exception(ex);
+            Log.throwing("login", ex);
         }
 
         String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");

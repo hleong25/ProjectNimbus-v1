@@ -152,7 +152,7 @@ public class PickCloudFrame extends javax.swing.JFrame
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex)
         {
-            Log.exception(ex);
+            Log.throwing("main", ex);
         }
         //</editor-fold>
 

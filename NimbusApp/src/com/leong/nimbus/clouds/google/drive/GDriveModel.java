@@ -100,7 +100,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.exception(ex);
+            Log.throwing("login", ex);
             return false;
         }
 
@@ -153,7 +153,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.exception(ex);
+            Log.throwing("getRoot", ex);
         }
 
         return m_root;
@@ -170,7 +170,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.exception(ex);
+            Log.throwing("getItemById", ex);
         }
         return null;
     }
@@ -201,7 +201,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                     }
                     request.setPageToken(children.getNextPageToken());
                 } catch (IOException ex) {
-                    Log.exception(ex);
+                    Log.throwing("getChildrenItems", ex);
                     request.setPageToken(null);
                 }
             } while (request.getPageToken() != null &&
@@ -209,7 +209,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         } catch (IOException ex)
         {
-            Log.exception(ex);
+            Log.throwing("getChildrenItems", ex);
         }
 
         return list;
@@ -241,7 +241,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         catch (IOException ex)
         {
-            Log.exception(ex);
+            Log.throwing("uploadLocalFile", ex);
         }
 
         return null;

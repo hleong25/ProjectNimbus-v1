@@ -47,7 +47,7 @@ public class ResponsiveTaskUI
         }
         catch (InterruptedException ex)
         {
-            Log.exception(ex);
+            Log.throwing("yield", ex);
         }
     }
 }

@@ -166,7 +166,7 @@ public class NimbusFrame extends javax.swing.JFrame
         }
         catch (InterruptedException | InvocationTargetException ex)
         {
-            Log.exception(ex);
+            Log.throwing("runAndWait", ex);
         }
     }
 
