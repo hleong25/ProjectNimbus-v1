@@ -15,7 +15,7 @@ import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
-import com.leong.nimbus.gui.helpers.WrapLayout;
+import com.leong.nimbus.gui.layout.WrapLayout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.FlowLayout;
