@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui.layout;
 
+import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -36,6 +37,8 @@ public class AllCardsPanel extends javax.swing.JPanel
         ViewTypeStrings.put(ViewType.DETAILED_MODE, "Detailed Mode");
     };
 
+    private ILayoutToCloudPanelProxy m_proxy;
+
     private final CardLayout m_cards;
 
     private final List<JPanel> m_cardPanels = new ArrayList<>();
@@ -51,6 +54,14 @@ public class AllCardsPanel extends javax.swing.JPanel
 
         m_cardPanels.add(pnlWrap);
         m_cardPanels.add(pnlTable);
+    }
+
+    public void setProxy(ILayoutToCloudPanelProxy proxy)
+    {
+        m_proxy = proxy;
+
+        pnlWrap.setProxy(proxy);
+        pnlTable.setProxy(proxy);
     }
 
     /**

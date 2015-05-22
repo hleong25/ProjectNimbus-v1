@@ -181,6 +181,8 @@ public class GDrivePanel
     {
         Log.entering("initPanel");
         m_controller = new GDriveController();
+
+        pnlFiles.setProxy(this);
     }
 
     @Override

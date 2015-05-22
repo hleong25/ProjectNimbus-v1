@@ -6,6 +6,7 @@
 package com.leong.nimbus.gui;
 
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
+import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
@@ -102,6 +103,8 @@ public class NimbusFrame extends javax.swing.JFrame
         mnuView = new javax.swing.JMenu();
         mnuViewLargeIcons = new javax.swing.JMenuItem();
         mnuViewDetailed = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        mnuViewRefresh = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
@@ -155,6 +158,17 @@ public class NimbusFrame extends javax.swing.JFrame
             }
         });
         mnuView.add(mnuViewDetailed);
+        mnuView.add(jSeparator1);
+
+        mnuViewRefresh.setText("Refresh");
+        mnuViewRefresh.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                mnuViewRefreshActionPerformed(evt);
+            }
+        });
+        mnuView.add(mnuViewRefresh);
 
         mnubar.add(mnuView);
 
@@ -177,6 +191,14 @@ public class NimbusFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_mnuViewDetailedActionPerformed
         setPanelView(ViewType.DETAILED_MODE);
     }//GEN-LAST:event_mnuViewDetailedActionPerformed
+
+    private void mnuViewRefreshActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuViewRefreshActionPerformed
+    {//GEN-HEADEREND:event_mnuViewRefreshActionPerformed
+        ICloudPanel<?> pnl = getCurrentCloudPanel();
+        ILayoutToCloudPanelProxy proxy = (ILayoutToCloudPanelProxy)pnl;
+
+        proxy.refreshCurrentView();
+    }//GEN-LAST:event_mnuViewRefreshActionPerformed
 
     @Override
     public void setTitle(String title)
@@ -212,11 +234,13 @@ public class NimbusFrame extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenu mnuNimbus;
     private javax.swing.JMenuItem mnuOpenNewCloud;
     private javax.swing.JMenu mnuView;
     private javax.swing.JMenuItem mnuViewDetailed;
     private javax.swing.JMenuItem mnuViewLargeIcons;
+    private javax.swing.JMenuItem mnuViewRefresh;
     private javax.swing.JMenuBar mnubar;
     private javax.swing.JPanel pnlCards;
     private com.leong.nimbus.clouds.dropbox.DropboxPanel pnlDropbox;

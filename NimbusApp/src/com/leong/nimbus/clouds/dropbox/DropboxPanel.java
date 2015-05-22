@@ -181,6 +181,8 @@ public class DropboxPanel
     {
         Log.entering("initPanel");
         m_controller = new DropboxController();
+
+        pnlFiles.setProxy(this);
     }
 
     @Override

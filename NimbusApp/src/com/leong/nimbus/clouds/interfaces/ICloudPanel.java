@@ -10,7 +10,6 @@ import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import java.awt.Component;
 import java.util.List;
-import javax.swing.JPanel;
 
 /**
  *

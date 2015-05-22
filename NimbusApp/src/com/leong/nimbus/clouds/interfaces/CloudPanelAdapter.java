@@ -8,9 +8,11 @@ package com.leong.nimbus.clouds.interfaces;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
+import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Component;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,8 @@ import javax.swing.JPanel;
  */
 public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T>>
     extends javax.swing.JPanel
-    implements ICloudPanel<T>
+    implements ICloudPanel<T>,
+               ILayoutToCloudPanelProxy
 {
     private static final Logit Log = Logit.create(CloudPanelAdapter.class.getName());
 
@@ -154,6 +157,24 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
     {
         AllCardsPanel pnl = getFilesPanel();
         pnl.setView(type);
+    }
+
+    @Override
+    public void proxyKeyReleased(KeyEvent evt)
+    {
+        Log.entering("proxyKeyReleased", evt);
+        if (evt.getKeyCode() == KeyEvent.VK_F5)
+        {
+            Log.fine("KeyEvent.VK_F5");
+            responsiveShowFiles(m_currentPath, false);
+        }
+    }
+
+    @Override
+    public void refreshCurrentView()
+    {
+        Log.entering("refreshCurrentView");
+        responsiveShowFiles(m_currentPath, false);
     }
 
 }

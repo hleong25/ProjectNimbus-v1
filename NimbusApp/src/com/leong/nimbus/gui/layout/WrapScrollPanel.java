@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui.layout;
 
+import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Component;
 
@@ -16,6 +17,8 @@ public class WrapScrollPanel extends javax.swing.JPanel
 {
     private static final Logit Log = Logit.create(WrapScrollPanel.class.getName());
 
+    private ILayoutToCloudPanelProxy m_proxy;
+
     /**
      * Creates new form WrapScrollPanel
      */
@@ -23,6 +26,11 @@ public class WrapScrollPanel extends javax.swing.JPanel
     {
         Log.entering("<init>");
         initComponents();
+    }
+
+    public void setProxy(ILayoutToCloudPanelProxy proxy)
+    {
+        m_proxy = proxy;
     }
 
     /**
@@ -73,12 +81,8 @@ public class WrapScrollPanel extends javax.swing.JPanel
 
     private void pnlFilesKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlFilesKeyReleased
     {//GEN-HEADEREND:event_pnlFilesKeyReleased
-        //Log.entering("pnlFilesKeyReleased", evt);
-        //if (evt.getKeyCode() == KeyEvent.VK_F5)
-        //{
-        //    Log.fine("KeyEvent.VK_F5");
-        //    responsiveShowFiles(m_currentPath, false);
-        //}
+        Log.entering("pnlFilesKeyReleased", evt);
+        m_proxy.proxyKeyReleased(evt);
     }//GEN-LAST:event_pnlFilesKeyReleased
 
 

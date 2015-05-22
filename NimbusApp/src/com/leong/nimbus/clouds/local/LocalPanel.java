@@ -72,6 +72,7 @@ public class LocalPanel
         Log.entering("initPanel");
         m_controller = new LocalController();
 
+        pnlFiles.setProxy(this);
         pnlFiles.setView(AllCardsPanel.ViewType.LARGE_ICONS);
 
         Log.fine("Showing root path");

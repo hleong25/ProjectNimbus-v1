@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui.layout;
 
+import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import java.awt.Component;
 
 /**
@@ -13,6 +14,7 @@ import java.awt.Component;
  */
 public class TablePanel extends javax.swing.JPanel
 {
+    private ILayoutToCloudPanelProxy m_proxy;
 
     /**
      * Creates new form TablePanel
@@ -20,6 +22,11 @@ public class TablePanel extends javax.swing.JPanel
     public TablePanel()
     {
         initComponents();
+    }
+
+    public void setProxy(ILayoutToCloudPanelProxy proxy)
+    {
+        m_proxy = proxy;
     }
 
     /**
