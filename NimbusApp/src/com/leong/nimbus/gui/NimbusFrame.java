@@ -75,13 +75,8 @@ public class NimbusFrame extends javax.swing.JFrame
         frame.setTitle(cardName);
         ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);
 
-        for (Component comp : frame.pnlCards.getComponents() ) {
-            if (comp.isVisible() == true) {
-                ICloudPanel<?> pnl = (ICloudPanel<?>)comp;
-                pnl.initPanel();
-                break;
-            }
-        }
+        ICloudPanel<?> pnl = frame.getCurrentCloudPanel();
+        pnl.initPanel();
 
         return frame;
     }
@@ -230,11 +225,18 @@ public class NimbusFrame extends javax.swing.JFrame
     private javax.swing.JPanel pnlMain;
     // End of variables declaration//GEN-END:variables
 
+    private ICloudPanel<?> getCurrentCloudPanel()
+    {
+        for (Component comp : pnlCards.getComponents() ) {
+            if (comp.isVisible() == true) {
+                return (ICloudPanel<?>)comp;
+            }
+        }
+        return null;
+    }
+
     private void setPanelView(ViewType type)
     {
-        for (ICloudPanel<?> pnl : m_cloudPanels)
-        {
-            pnl.setPanelView(type);
-        }
+        getCurrentCloudPanel().setPanelView(type);
     }
 }

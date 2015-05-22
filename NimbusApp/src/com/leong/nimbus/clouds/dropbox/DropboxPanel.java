@@ -66,7 +66,7 @@ public class DropboxPanel
             }
         });
         add(btnConnect, java.awt.BorderLayout.PAGE_START);
-        add(pnlFiles, java.awt.BorderLayout.PAGE_END);
+        add(pnlFiles, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
