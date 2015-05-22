@@ -60,6 +60,10 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                         }
                     });
                 }
+                else
+                {
+                    //Log.fine("Unknown flavor: "+flavor);
+                }
             }
             catch (Exception ex)
             {

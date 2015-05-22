@@ -138,83 +138,80 @@ public class DropboxPanel
     protected boolean onAction_drop(List list)
     {
         Log.entering("onAction_drop", new Object[]{list});
+
+        return false;
+        /*
+        class FileHolder
+        {
+            public java.io.File content;
+            public File metadata;
+            public FileItemPanel pnl;
+        }
+
+        List<FileHolder> uploadFiles = new ArrayList<>();
+
+        for (Object obj : list)
+        {
+            final java.io.File content = (java.io.File) obj;
+            final File metadata = m_controller.generateMetadata(m_currentPath, content);
+            final FileItemPanel pnl = createFileItemPanel(metadata);
+
+            pnl.showProgress(true);
+
+            FileHolder holder = new FileHolder();
+            holder.content = content;
+            holder.metadata = metadata;
+            holder.pnl = pnl;
+
+            uploadFiles.add(holder);
+
+            // show the new item being added
+            pnlFiles.add(pnl);
+            pnlFiles.revalidate();
+
+            ResponsiveTaskUI.yield();
+        }
+
+        // Loop them through
+        for (FileHolder holder : uploadFiles)
+        {
+            // Print out the file path
+            Log.fine("File path: "+holder.content.getPath());
+
+            final FileItemPanel pnl = holder.pnl;
+
+            m_controller.uploadLocalFile(holder.metadata, holder.content, new MediaHttpUploaderProgressListener()
+            {
+                @Override
+                public void progressChanged(MediaHttpUploader mhu) throws IOException
+                {
+                    switch (mhu.getUploadState()) {
+                        case INITIATION_STARTED:
+                            Log.fine("Initiation has started!");
+                            break;
+                        case INITIATION_COMPLETE:
+                            Log.fine("Initiation is complete!");
+                            break;
+                        case MEDIA_IN_PROGRESS:
+                            Log.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
+                            pnl.setProgress((int)(mhu.getProgress()*100.0));
+                            ResponsiveTaskUI.yield();
+                            break;
+                        case MEDIA_COMPLETE:
+                            Log.fine("Upload is complete!");
+                            pnl.setProgress(100);
+                            ResponsiveTaskUI.yield();
+                            break;
+                    }
+                }
+            });
+        }
+
+        showFiles(m_currentPath, false);
+
         return true;
+        */
     }
-
-    //protected boolean onAction_drop(List list)
-    //{
-    //    Log.entering("onAction_drop", new Object[]{list});
-
-    //    class FileHolder
-    //    {
-    //        public java.io.File content;
-    //        public File metadata;
-    //        public FileItemPanel pnl;
-    //    }
-
-    //    List<FileHolder> uploadFiles = new ArrayList<>();
-
-    //    for (Object obj : list)
-    //    {
-    //        final java.io.File content = (java.io.File) obj;
-    //        final File metadata = m_controller.generateMetadata(m_currentPath, content);
-    //        final FileItemPanel pnl = createFileItemPanel(metadata);
-
-    //        pnl.showProgress(true);
-
-    //        FileHolder holder = new FileHolder();
-    //        holder.content = content;
-    //        holder.metadata = metadata;
-    //        holder.pnl = pnl;
-
-    //        uploadFiles.add(holder);
-
-    //        // show the new item being added
-    //        pnlFiles.add(pnl);
-    //        pnlFiles.revalidate();
-
-    //        ResponsiveTaskUI.yield();
-    //    }
-
-    //    // Loop them through
-    //    for (FileHolder holder : uploadFiles)
-    //    {
-    //        // Print out the file path
-    //        Log.fine("File path: "+holder.content.getPath());
-
-    //        final FileItemPanel pnl = holder.pnl;
-
-    //        m_controller.uploadLocalFile(holder.metadata, holder.content, new MediaHttpUploaderProgressListener()
-    //        {
-    //            @Override
-    //            public void progressChanged(MediaHttpUploader mhu) throws IOException
-    //            {
-    //                switch (mhu.getUploadState()) {
-    //                    case INITIATION_STARTED:
-    //                        Log.fine("Initiation has started!");
-    //                        break;
-    //                    case INITIATION_COMPLETE:
-    //                        Log.fine("Initiation is complete!");
-    //                        break;
-    //                    case MEDIA_IN_PROGRESS:
-    //                        Log.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
-    //                        pnl.setProgress((int)(mhu.getProgress()*100.0));
-    //                        ResponsiveTaskUI.yield();
-    //                        break;
-    //                    case MEDIA_COMPLETE:
-    //                        Log.fine("Upload is complete!");
-    //                        pnl.setProgress(100);
-    //                        ResponsiveTaskUI.yield();
-    //                        break;
-    //                }
-    //            }
-    //        });
-    //    }
-
-    //    showFiles(m_currentPath, false);
-
-    //    return true;
-    //}
 
 
 

@@ -9,12 +9,17 @@ import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
+import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.WrapLayout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.dnd.DropTarget;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 
 /**
@@ -114,6 +119,15 @@ public class LocalPanel
         Log.fine("Showing root path");
         File root = m_controller.getRoot();
         responsiveShowFiles(root, false);
+
+        new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+        {
+            @Override
+            public boolean onAction_drop(List list)
+            {
+                return LocalPanel.this.onAction_drop(list);
+            }
+        });
     }
 
     @Override
@@ -155,5 +169,40 @@ public class LocalPanel
     public JPanel getFilesPanel()
     {
         return pnlFiles;
+    }
+
+    protected boolean onAction_drop(List list)
+    {
+        Log.entering("onAction_drop", new Object[]{list});
+
+        class FileHolder
+        {
+            public java.io.File content;
+            public FileItemPanel pnl;
+        }
+
+        List<FileHolder> uploadFiles = new ArrayList<>();
+
+        for (Object obj : list)
+        {
+            final File content = (File) obj;
+            final FileItemPanel pnl = createFileItemPanel(content);
+
+            pnl.showProgress(true);
+
+            FileHolder holder = new FileHolder();
+            holder.content = content;
+            holder.pnl = pnl;
+
+            uploadFiles.add(holder);
+
+            // show the new item being added
+            pnlFiles.add(pnl);
+            pnlFiles.revalidate();
+
+            ResponsiveTaskUI.yield();
+        }
+
+        return true;
     }
 }
