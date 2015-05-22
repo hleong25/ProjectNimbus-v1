@@ -12,6 +12,7 @@ import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
+import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.gui.layout.WrapLayout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
@@ -52,8 +53,7 @@ public class DropboxPanel
     {
 
         btnConnect = new javax.swing.JButton();
-        pnlScroll = new javax.swing.JScrollPane();
-        pnlFiles = new javax.swing.JPanel();
+        pnlFiles = new com.leong.nimbus.gui.layout.AllCardsPanel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -66,31 +66,7 @@ public class DropboxPanel
             }
         });
         add(btnConnect, java.awt.BorderLayout.PAGE_START);
-
-        pnlScroll.setMinimumSize(new java.awt.Dimension(400, 300));
-        pnlScroll.setPreferredSize(new java.awt.Dimension(400, 300));
-
-        pnlFiles.setBackground(new java.awt.Color(255, 255, 255));
-        WrapLayout wraplayout = new WrapLayout(FlowLayout.LEADING);
-        wraplayout.setAlignOnBaseline(true);
-        pnlFiles.setLayout(wraplayout);
-        pnlFiles.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
-                pnlFilesMouseClicked(evt);
-            }
-        });
-        pnlFiles.addKeyListener(new java.awt.event.KeyAdapter()
-        {
-            public void keyReleased(java.awt.event.KeyEvent evt)
-            {
-                pnlFilesKeyReleased(evt);
-            }
-        });
-        pnlScroll.setViewportView(pnlFiles);
-
-        add(pnlScroll, java.awt.BorderLayout.CENTER);
+        add(pnlFiles, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
@@ -105,35 +81,21 @@ public class DropboxPanel
                         // setup drag and drop once logged in
                         //new DropTarget(pnlFiles, m_dropTarget);
 
-                        new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
-                            {
-                                @Override
-                                public boolean onAction_drop(List list)
-                                {
-                                    return DropboxPanel.this.onAction_drop(list);
-                                }
-                            });
+                        //new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+                        //    {
+                        //        @Override
+                        //        public boolean onAction_drop(List list)
+                        //        {
+                        //            return DropboxPanel.this.onAction_drop(list);
+                        //        }
+                        //    });
 
-                            showFiles(m_controller.getRoot(), false);
-                        }
+                        //    showFiles(m_controller.getRoot(), false);
+                        //}
                     }
-                });
+                }
+            });
     }//GEN-LAST:event_btnConnectActionPerformed
-
-    private void pnlFilesMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_pnlFilesMouseClicked
-    {//GEN-HEADEREND:event_pnlFilesMouseClicked
-        pnlFiles.requestFocusInWindow();
-    }//GEN-LAST:event_pnlFilesMouseClicked
-
-    private void pnlFilesKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_pnlFilesKeyReleased
-    {//GEN-HEADEREND:event_pnlFilesKeyReleased
-        Log.entering("pnlFilesKeyReleased", evt);
-        if (evt.getKeyCode() == KeyEvent.VK_F5)
-        {
-            Log.fine("KeyEvent.VK_F5");
-            responsiveShowFiles(m_currentPath, false);
-        }
-    }//GEN-LAST:event_pnlFilesKeyReleased
 
     protected boolean onAction_drop(List list)
     {
@@ -217,8 +179,7 @@ public class DropboxPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
-    private javax.swing.JPanel pnlFiles;
-    private javax.swing.JScrollPane pnlScroll;
+    private com.leong.nimbus.gui.layout.AllCardsPanel pnlFiles;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -255,7 +216,7 @@ public class DropboxPanel
     }
 
     @Override
-    public JPanel getFilesPanel()
+    public AllCardsPanel getFilesPanel()
     {
         return pnlFiles;
     }

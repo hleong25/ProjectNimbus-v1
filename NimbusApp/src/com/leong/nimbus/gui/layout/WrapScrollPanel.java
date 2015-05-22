@@ -88,9 +88,15 @@ public class WrapScrollPanel extends javax.swing.JPanel
     // End of variables declaration//GEN-END:variables
 
     @Override
+    public void removeAll()
+    {
+        pnlFiles.removeAll();
+    }
+
+    @Override
     public Component add(Component comp)
     {
-        Log.entering("add", comp);
+        //Log.entering("add", comp);
         return pnlFiles.add(comp);
     }
 

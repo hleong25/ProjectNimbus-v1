@@ -5,6 +5,8 @@
  */
 package com.leong.nimbus.gui.layout;
 
+import java.awt.Component;
+
 /**
  *
  * @author henry
@@ -61,4 +63,18 @@ public class TablePanel extends javax.swing.JPanel
     private javax.swing.JScrollPane pnlScroll;
     private javax.swing.JTable pnlTable;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void removeAll()
+    {
+        pnlTable.removeAll();
+    }
+
+    @Override
+    public Component add(Component comp)
+    {
+        //Log.entering("add", comp);
+        //return pnlTable.add(comp);
+        return comp;
+    }
 }

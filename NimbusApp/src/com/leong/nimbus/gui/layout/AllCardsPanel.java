@@ -8,8 +8,11 @@ package com.leong.nimbus.gui.layout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import javax.swing.JPanel;
 
 /**
  *
@@ -35,6 +38,8 @@ public class AllCardsPanel extends javax.swing.JPanel
 
     private final CardLayout m_cards;
 
+    private final List<JPanel> m_cardPanels = new ArrayList<>();
+
     /**
      * Creates new form AllCardsPanel
      */
@@ -43,6 +48,9 @@ public class AllCardsPanel extends javax.swing.JPanel
         initComponents();
 
         m_cards = (CardLayout)pnlAllCards.getLayout();
+
+        m_cardPanels.add(pnlWrap);
+        m_cardPanels.add(pnlTable);
     }
 
     /**
@@ -75,18 +83,29 @@ public class AllCardsPanel extends javax.swing.JPanel
     private com.leong.nimbus.gui.layout.WrapScrollPanel pnlWrap;
     // End of variables declaration//GEN-END:variables
 
-    public void showView(ViewType type)
+    public void setView(ViewType type)
     {
-        Log.entering("showView", type);
-
         String cardName = ViewTypeStrings.get(type);
+
+        Log.entering("setView", new Object[]{type, cardName});
 
         m_cards.show(pnlAllCards, cardName);
     }
 
     @Override
+    public void removeAll()
+    {
+        for (JPanel pnl : m_cardPanels)
+        {
+            pnl.removeAll();
+        }
+    }
+
+    @Override
     public Component add(Component comp)
     {
+        //Log.entering("add", comp);
+
         pnlWrap.add(comp);
         pnlTable.add(comp);
 

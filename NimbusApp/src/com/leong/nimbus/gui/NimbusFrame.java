@@ -6,10 +6,15 @@
 package com.leong.nimbus.gui;
 
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
+import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +22,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class NimbusFrame extends javax.swing.JFrame
 {
+    private static final Logit Log = Logit.create(NimbusFrame.class.getName());
+
     public static enum CloudType
     {
         LOCAL_FILE_SYSTEM,
@@ -24,13 +31,18 @@ public class NimbusFrame extends javax.swing.JFrame
         DROPBOX,
     }
 
-    private static final Logit Log = Logit.create(NimbusFrame.class.getName());
+    private static final Map<CloudType, String> CloudTypeStrings;
+    static
+    {
+        CloudTypeStrings = new EnumMap<>(CloudType.class);
+        CloudTypeStrings.put(CloudType.LOCAL_FILE_SYSTEM, "Local File System");
+        CloudTypeStrings.put(CloudType.GOOGLE_DRIVE, "Google Drive");
+        CloudTypeStrings.put(CloudType.DROPBOX, "Dropbox");
+    };
 
     private final Runnable m_run;
 
-    private final static String CARD_LOCAL_FILE_SYSTEM = "Local File System";
-    private final static String CARD_GOOGLE_DRIVE = "Google Drive";
-    private final static String CARD_DROPBOX = "Dropbox";
+    private final List<ICloudPanel<?>> m_cloudPanels = new ArrayList<>();
 
     /**
      * Creates new form NimbusFrame
@@ -39,6 +51,10 @@ public class NimbusFrame extends javax.swing.JFrame
     {
         Log.entering("<init>");
         initComponents();
+
+        m_cloudPanels.add(pnlLocal);
+        m_cloudPanels.add(pnlGoogleDrive);
+        m_cloudPanels.add(pnlDropbox);
 
         m_run = new Runnable()
         {
@@ -53,25 +69,8 @@ public class NimbusFrame extends javax.swing.JFrame
     public static NimbusFrame setupMainPanel(CloudType type)
     {
         NimbusFrame frame = new NimbusFrame();
-        String cardName = "";
 
-        switch (type)
-        {
-            case LOCAL_FILE_SYSTEM:
-                cardName = CARD_LOCAL_FILE_SYSTEM;
-                break;
-
-            case GOOGLE_DRIVE:
-                cardName = CARD_GOOGLE_DRIVE;
-                break;
-
-            case DROPBOX:
-                cardName = CARD_DROPBOX;
-                break;
-
-            default:
-                return null;
-        }
+        String cardName = CloudTypeStrings.get(type);
 
         frame.setTitle(cardName);
         ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);
@@ -105,6 +104,9 @@ public class NimbusFrame extends javax.swing.JFrame
         mnubar = new javax.swing.JMenuBar();
         mnuNimbus = new javax.swing.JMenu();
         mnuOpenNewCloud = new javax.swing.JMenuItem();
+        mnuView = new javax.swing.JMenu();
+        mnuViewLargeIcons = new javax.swing.JMenuItem();
+        mnuViewDetailed = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
@@ -137,6 +139,30 @@ public class NimbusFrame extends javax.swing.JFrame
 
         mnubar.add(mnuNimbus);
 
+        mnuView.setText("View");
+
+        mnuViewLargeIcons.setText("Large Icons");
+        mnuViewLargeIcons.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                mnuViewLargeIconsActionPerformed(evt);
+            }
+        });
+        mnuView.add(mnuViewLargeIcons);
+
+        mnuViewDetailed.setText("Detailed Mode");
+        mnuViewDetailed.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                mnuViewDetailedActionPerformed(evt);
+            }
+        });
+        mnuView.add(mnuViewDetailed);
+
+        mnubar.add(mnuView);
+
         setJMenuBar(mnubar);
 
         pack();
@@ -146,6 +172,16 @@ public class NimbusFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_mnuOpenNewCloudActionPerformed
         PickCloudFrame.showMe();
     }//GEN-LAST:event_mnuOpenNewCloudActionPerformed
+
+    private void mnuViewLargeIconsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuViewLargeIconsActionPerformed
+    {//GEN-HEADEREND:event_mnuViewLargeIconsActionPerformed
+        setPanelView(ViewType.LARGE_ICONS);
+    }//GEN-LAST:event_mnuViewLargeIconsActionPerformed
+
+    private void mnuViewDetailedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuViewDetailedActionPerformed
+    {//GEN-HEADEREND:event_mnuViewDetailedActionPerformed
+        setPanelView(ViewType.DETAILED_MODE);
+    }//GEN-LAST:event_mnuViewDetailedActionPerformed
 
     @Override
     public void setTitle(String title)
@@ -183,6 +219,9 @@ public class NimbusFrame extends javax.swing.JFrame
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu mnuNimbus;
     private javax.swing.JMenuItem mnuOpenNewCloud;
+    private javax.swing.JMenu mnuView;
+    private javax.swing.JMenuItem mnuViewDetailed;
+    private javax.swing.JMenuItem mnuViewLargeIcons;
     private javax.swing.JMenuBar mnubar;
     private javax.swing.JPanel pnlCards;
     private com.leong.nimbus.clouds.dropbox.DropboxPanel pnlDropbox;
@@ -190,4 +229,12 @@ public class NimbusFrame extends javax.swing.JFrame
     private com.leong.nimbus.clouds.local.LocalPanel pnlLocal;
     private javax.swing.JPanel pnlMain;
     // End of variables declaration//GEN-END:variables
+
+    private void setPanelView(ViewType type)
+    {
+        for (ICloudPanel<?> pnl : m_cloudPanels)
+        {
+            pnl.setPanelView(type);
+        }
+    }
 }

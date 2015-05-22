@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.interfaces;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
+import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -146,6 +147,13 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
 
         // for keyreleased to work properly
         pnlFiles.requestFocusInWindow();
+    }
+
+    @Override
+    public void setPanelView(AllCardsPanel.ViewType type)
+    {
+        AllCardsPanel pnl = getFilesPanel();
+        pnl.setView(type);
     }
 
 }

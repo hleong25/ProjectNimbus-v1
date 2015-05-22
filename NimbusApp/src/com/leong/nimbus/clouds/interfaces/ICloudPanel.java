@@ -6,6 +6,8 @@
 package com.leong.nimbus.clouds.interfaces;
 
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.layout.AllCardsPanel;
+import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.JPanel;
@@ -24,7 +26,9 @@ public interface ICloudPanel<T>
     FileItemPanel createFileItemPanel(final T file);
     void responsiveShowFiles(final T path, final boolean useCache);
 
-    JPanel getFilesPanel();
+    AllCardsPanel getFilesPanel();
     List<Component> getFiles(final T parent, final boolean useCache);
     void showFiles(final T parent, final boolean useCache);
+
+    void setPanelView(ViewType type);
 }
