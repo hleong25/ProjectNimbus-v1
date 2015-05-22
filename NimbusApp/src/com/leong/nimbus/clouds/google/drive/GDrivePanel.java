@@ -13,19 +13,13 @@ import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
-import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
-import com.leong.nimbus.gui.layout.WrapLayout;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.dnd.DropTarget;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JPanel;
 
 /**
  *

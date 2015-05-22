@@ -18,7 +18,6 @@ import java.awt.dnd.DropTarget;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JPanel;
 
 /**
  *
