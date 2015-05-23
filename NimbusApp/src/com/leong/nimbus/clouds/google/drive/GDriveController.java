@@ -5,7 +5,6 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.ParentReference;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
@@ -16,11 +15,6 @@ import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
@@ -123,36 +117,6 @@ public class GDriveController implements ICloudController<com.google.api.service
         metadata.setParents(Arrays.asList(parentRef));
 
         return metadata;
-    }
-
-    public File uploadLocalFile(File metadata, java.io.File content, MediaHttpUploaderProgressListener progressListener)
-    {
-        InputStream input = null;
-
-        try
-        {
-            input = new BufferedInputStream(new FileInputStream(content));
-
-            File uploadedFile = m_model.uploadLocalFile(metadata, input, progressListener);
-            return uploadedFile;
-        }
-        catch (FileNotFoundException ex)
-        {
-            Log.throwing("uploadLocalFile", ex);
-        }
-        finally
-        {
-            try
-            {
-                input.close();
-            }
-            catch (IOException ex)
-            {
-                Log.throwing("uploadLocalFile", ex);
-            }
-        }
-
-        return null;
     }
 
     @Override

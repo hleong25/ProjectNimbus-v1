@@ -217,38 +217,6 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return list;
     }
 
-    public File uploadLocalFile(File metadata, InputStream stream, MediaHttpUploaderProgressListener progressListener)
-    {
-        // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
-        // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
-
-        Log.entering("uploadLocalFile");
-
-        try
-        {
-            InputStreamContent mediaContent = new InputStreamContent(metadata.getMimeType(), stream);
-            mediaContent.setLength(metadata.getFileSize());
-
-            Drive.Files.Insert request = m_service.files().insert(metadata, mediaContent);
-            request.getMediaHttpUploader()
-                .setChunkSize(2*MediaHttpUploader.MINIMUM_CHUNK_SIZE)
-                .setProgressListener(progressListener);
-
-            Log.fine("Start uploading file");
-            File uploadedFile = request.execute();
-
-            Log.fine("Uploaded file done");
-
-            return uploadedFile;
-        }
-        catch (IOException ex)
-        {
-            Log.throwing("uploadLocalFile", ex);
-        }
-
-        return null;
-    }
-
     public void transfer(ICloudTransfer transfer)
     {
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
