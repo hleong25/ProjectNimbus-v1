@@ -6,6 +6,8 @@
 package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudProgress;
+import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
@@ -15,7 +17,15 @@ import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,13 +142,111 @@ public class LocalPanel
         return pnlFiles;
     }
 
+    protected ICloudTransfer<File, File> createCloudUploadFile(final File content)
+    {
+        return new ICloudTransfer<File, File>()
+        {
+            private ICloudProgress m_progress = null;
+
+            @Override
+            public long getFilesize()
+            {
+                return content.length();
+            }
+
+            @Override
+            public File getSourceObject()
+            {
+                return content;
+            }
+
+            @Override
+            public File getTargetObject()
+            {
+                return new File(m_currentPath, getSourceObject().getName());
+            }
+            
+            @Override
+            public InputStream getInputStream()
+            {
+                // caller must close inputstream;
+                
+                FileInputStream fis = null;
+                try
+                {
+                    fis = new FileInputStream(getSourceObject());
+                    BufferedInputStream bis = new BufferedInputStream(fis);
+                    return bis;
+                }
+                catch (FileNotFoundException ex)
+                {
+                    //Logger.getLogger(LocalPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    Log.throwing("onAction_drop", ex);
+                    
+                    try
+                    {
+                        fis.close();
+                    }
+                    catch (IOException ex1)
+                    {
+                        Log.throwing("onAction_drop", ex1);
+                    }
+                    
+                    return null;
+                }
+            }
+
+            @Override
+            public OutputStream getOutputStream()
+            {
+                // caller must close inputstream;
+
+                FileOutputStream fos = null;
+                try
+                {
+                    fos = new FileOutputStream(getTargetObject());
+                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+                    return bos;
+                }
+                catch (FileNotFoundException ex)
+                {
+                    //Logger.getLogger(LocalPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    Log.throwing("onAction_drop", ex);
+
+                    try
+                    {
+                        fos.close();
+                    }
+                    catch (IOException ex1)
+                    {
+                        Log.throwing("onAction_drop", ex1);
+                    }
+
+                    return null;
+                }
+            }
+
+            @Override
+            public void setProgressHandler(ICloudProgress progress)
+            {
+                m_progress = progress;
+            }
+
+            @Override
+            public ICloudProgress getProgressHandler()
+            {
+                return m_progress;
+            }
+        };
+    }
+
     protected boolean onAction_drop(List list)
     {
         Log.entering("onAction_drop", new Object[]{list});
 
         class FileHolder
         {
-            public java.io.File content;
+            public ICloudTransfer<File, File> uploadFile;
             public FileItemPanel pnl;
         }
 
@@ -152,7 +260,7 @@ public class LocalPanel
             pnl.showProgress(true);
 
             FileHolder holder = new FileHolder();
-            holder.content = content;
+            holder.uploadFile = createCloudUploadFile(content);
             holder.pnl = pnl;
 
             uploadFiles.add(holder);
@@ -164,6 +272,50 @@ public class LocalPanel
             ResponsiveTaskUI.yield();
         }
 
+        // Loop them through
+        for (FileHolder holder : uploadFiles)
+        {
+            // Print out the file path
+            Log.fine("File path: "+holder.uploadFile.getTargetObject().getAbsolutePath());
+
+            final FileItemPanel pnl = holder.pnl;
+
+            holder.uploadFile.setProgressHandler(new ICloudProgress()
+            {
+                private long m_size = 0;
+
+                @Override
+                public void initalize()
+                {
+                    m_size = 0;
+                    // todo -- maybe put init and start as same method
+                }
+
+                @Override
+                public void start(long size)
+                {
+                    m_size = size;
+                }
+
+                @Override
+                public void progress(long bytesSent)
+                {
+                    pnl.setProgress((int)(bytesSent*100/m_size));
+                    ResponsiveTaskUI.yield();
+                }
+
+                @Override
+                public void finish()
+                {
+                    pnl.setProgress(100);
+                    ResponsiveTaskUI.yield();
+                }
+            });
+
+            m_controller.transfer(holder.uploadFile);
+        }
+
+        showFiles(m_currentPath, false);
         return true;
     }
 }

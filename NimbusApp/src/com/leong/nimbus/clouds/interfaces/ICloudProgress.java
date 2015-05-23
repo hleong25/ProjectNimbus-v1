@@ -9,9 +9,10 @@ package com.leong.nimbus.clouds.interfaces;
  *
  * @author henry
  */
-public interface ICloudUploadFile<T>
+public interface ICloudProgress
 {
+    void initalize();
     void start(long size);
-    void progress(double value, long bytesSent);
+    void progress(long bytesSent);
     void finish();
 }
