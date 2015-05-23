@@ -40,6 +40,12 @@ public class LogitFormatter extends SimpleFormatter
         }
         str.append("\n");
 
+        if (record.getThrown() != null)
+        {
+            str.append(record.getThrown().toString());
+            //str.append("\n");
+        }
+
         return str.toString();
     }
 }

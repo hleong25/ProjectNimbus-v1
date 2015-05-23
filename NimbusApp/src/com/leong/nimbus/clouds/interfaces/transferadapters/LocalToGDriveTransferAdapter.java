@@ -9,31 +9,31 @@ import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 
 /**
  *
  * @author henry
  */
-public class LocalToLocalTransferAdapter
-    implements ICloudTransfer<File, File>
+public class LocalToGDriveTransferAdapter
+    implements ICloudTransfer<java.io.File, com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(LocalToLocalTransferAdapter.class.getName());
+    private static final Logit Log = Logit.create(LocalToGDriveTransferAdapter.class.getName());
 
-    protected final File m_source;
-    protected final File m_target;
-    protected File m_xferred;
+    protected final java.io.File m_source;
+    protected final com.google.api.services.drive.model.File m_target;
+
+    protected com.google.api.services.drive.model.File m_xferred;
 
     private ICloudProgress m_progress;
 
-    public LocalToLocalTransferAdapter(File source, File target)
+    public LocalToGDriveTransferAdapter(java.io.File source, com.google.api.services.drive.model.File target)
     {
         m_source = source;
         m_target = target;
@@ -52,19 +52,19 @@ public class LocalToLocalTransferAdapter
     }
 
     @Override
-    public File getTargetObject()
+    public com.google.api.services.drive.model.File getTargetObject()
     {
         return m_target;
     }
 
     @Override
-    public void setTransferredObject(File obj)
+    public void setTransferredObject(com.google.api.services.drive.model.File obj)
     {
         m_xferred = obj;
     }
 
     @Override
-    public File getTransferredObject()
+    public com.google.api.services.drive.model.File getTransferredObject()
     {
         return m_xferred;
     }
@@ -103,31 +103,7 @@ public class LocalToLocalTransferAdapter
     @Override
     public OutputStream getOutputStream()
     {
-        // caller must close inputstream;
-
-        FileOutputStream fos = null;
-        try
-        {
-            fos = new FileOutputStream(getTargetObject());
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            return bos;
-        }
-        catch (FileNotFoundException ex)
-        {
-            Log.throwing("getOutputStream", ex);
-
-            try
-            {
-                if (fos != null)
-                    fos.close();
-            }
-            catch (IOException ex1)
-            {
-                Log.throwing("getOutputStream", ex1);
-            }
-
-            return null;
-        }
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

@@ -22,6 +22,8 @@ import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
+import com.leong.nimbus.clouds.interfaces.ICloudProgress;
+import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.io.IOException;
@@ -247,4 +249,67 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return null;
     }
 
+    public void transfer(ICloudTransfer transfer)
+    {
+        // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
+        // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
+
+        Log.entering("transfer");
+
+        try
+        {
+            final InputStream stream  = transfer.getInputStream();
+            final File metadata = (File)transfer.getTargetObject();
+            final ICloudProgress progressHandler = transfer.getProgressHandler();
+
+            InputStreamContent mediaContent = new InputStreamContent(metadata.getMimeType(), stream);
+            mediaContent.setLength(metadata.getFileSize());
+
+            MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener()
+            {
+                @Override
+                public void progressChanged(MediaHttpUploader mhu) throws IOException
+                {
+                    switch (mhu.getUploadState()) {
+                        case INITIATION_STARTED:
+                            Log.fine("Initiation has started!");
+                            progressHandler.initalize();
+                            progressHandler.start(metadata.getFileSize());
+                            break;
+                        case INITIATION_COMPLETE:
+                            Log.fine("Initiation is complete!");
+                            break;
+                        case MEDIA_IN_PROGRESS:
+                            //Log.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
+                            progressHandler.progress(mhu.getNumBytesUploaded());
+                            break;
+                        case MEDIA_COMPLETE:
+                            Log.fine("Upload is complete!");
+                            progressHandler.finish();
+                            break;
+                    }
+                }
+            };
+
+            Drive.Files.Insert request = m_service.files().insert(metadata, mediaContent);
+            request.getMediaHttpUploader()
+                .setChunkSize(2*MediaHttpUploader.MINIMUM_CHUNK_SIZE)
+                .setProgressListener(progressListener);
+
+            Log.fine("Start uploading file");
+            File xferredFile = request.execute();
+
+            Log.fine("Uploaded file done");
+
+            //transfer.setTransferredObject(xferredFile);
+
+            //return uploadedFile;
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("transfer", ex);
+        }
+
+        //return null;
+    }
 }

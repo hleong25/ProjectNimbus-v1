@@ -5,19 +5,21 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudProgress;
+import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToGDriveTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
+import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
-import java.io.IOException;
+import java.awt.dnd.DropTarget;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,98 +79,20 @@ public class GDrivePanel
             {
                 if (m_controller.login(GDrivePanel.this))
                 {
-                    // setup drag and drop once logged in
-                    //new DropTarget(pnlFiles, m_dropTarget);
-
-                    //new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
-                    //{
-                    //    @Override
-                    //    public boolean onAction_drop(List list)
-                    //    {
-                    //        return GDrivePanel.this.onAction_drop(list);
-                    //    }
-                    //});
+                    new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+                    {
+                        @Override
+                        public boolean onAction_drop(List list)
+                        {
+                            return GDrivePanel.this.onAction_drop(list);
+                        }
+                    });
 
                     showFiles(m_controller.getRoot(), false);
                 }
             }
         });
     }//GEN-LAST:event_btnConnectActionPerformed
-
-    protected boolean onAction_drop(List list)
-    {
-        Log.entering("onAction_drop", new Object[]{list});
-
-        class FileHolder
-        {
-            public java.io.File content;
-            public File metadata;
-            public FileItemPanel pnl;
-        }
-
-        List<FileHolder> uploadFiles = new ArrayList<>();
-
-        for (Object obj : list)
-        {
-            final java.io.File content = (java.io.File) obj;
-            final File metadata = m_controller.generateMetadata(m_currentPath, content);
-            final FileItemPanel pnl = createFileItemPanel(metadata);
-
-            pnl.showProgress(true);
-
-            FileHolder holder = new FileHolder();
-            holder.content = content;
-            holder.metadata = metadata;
-            holder.pnl = pnl;
-
-            uploadFiles.add(holder);
-
-            // show the new item being added
-            pnlFiles.add(pnl);
-            pnlFiles.revalidate();
-
-            ResponsiveTaskUI.yield();
-        }
-
-        // Loop them through
-        for (FileHolder holder : uploadFiles)
-        {
-            // Print out the file path
-            Log.fine("File path: "+holder.content.getPath());
-
-            final FileItemPanel pnl = holder.pnl;
-
-            m_controller.uploadLocalFile(holder.metadata, holder.content, new MediaHttpUploaderProgressListener()
-            {
-                @Override
-                public void progressChanged(MediaHttpUploader mhu) throws IOException
-                {
-                    switch (mhu.getUploadState()) {
-                        case INITIATION_STARTED:
-                            Log.fine("Initiation has started!");
-                            break;
-                        case INITIATION_COMPLETE:
-                            Log.fine("Initiation is complete!");
-                            break;
-                        case MEDIA_IN_PROGRESS:
-                            Log.finer("BytesSent: "+mhu.getNumBytesUploaded()+" Progress: "+mhu.getProgress());
-                            pnl.setProgress((int)(mhu.getProgress()*100.0));
-                            ResponsiveTaskUI.yield();
-                            break;
-                        case MEDIA_COMPLETE:
-                            Log.fine("Upload is complete!");
-                            pnl.setProgress(100);
-                            ResponsiveTaskUI.yield();
-                            break;
-                    }
-                }
-            });
-        }
-
-        showFiles(m_currentPath, false);
-
-        return true;
-    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -215,5 +139,84 @@ public class GDrivePanel
     public AllCardsPanel getFilesPanel()
     {
         return pnlFiles;
+    }
+
+    protected boolean onAction_drop(List list)
+    {
+        Log.entering("onAction_drop", new Object[]{list});
+
+        class XferHolder
+        {
+            public ICloudTransfer<java.io.File, com.google.api.services.drive.model.File> xfer;
+            public FileItemPanel pnl;
+        }
+
+        List<XferHolder> uploadFiles = new ArrayList<>();
+
+        for (Object obj : list)
+        {
+            final java.io.File inputFile = (java.io.File) obj;
+            final com.google.api.services.drive.model.File outputFile = m_controller.generateMetadata(m_currentPath, inputFile);
+            final FileItemPanel pnl = createFileItemPanel(outputFile);
+
+            pnl.showProgress(true);
+
+            XferHolder holder = new XferHolder();
+            holder.xfer = new LocalToGDriveTransferAdapter(inputFile, outputFile);
+            holder.pnl = pnl;
+
+            uploadFiles.add(holder);
+
+            // show the new item being added
+            pnlFiles.add(pnl);
+            pnlFiles.revalidate();
+
+            ResponsiveTaskUI.yield();
+        }
+
+        // Loop them through
+        for (XferHolder holder : uploadFiles)
+        {
+            // Print out the file path
+            Log.fine("File path: "+holder.xfer.getSourceObject().getName());
+
+            final FileItemPanel pnl = holder.pnl;
+
+            holder.xfer.setProgressHandler(new ICloudProgress()
+            {
+                private long m_size = 0;
+
+                @Override
+                public void initalize()
+                {
+                    m_size = 0;
+                }
+
+                @Override
+                public void start(long size)
+                {
+                    m_size = size;
+                }
+
+                @Override
+                public void progress(long bytesSent)
+                {
+                    pnl.setProgress((int)(bytesSent*100/m_size));
+                    ResponsiveTaskUI.yield();
+                }
+
+                @Override
+                public void finish()
+                {
+                    pnl.setProgress(100);
+                    ResponsiveTaskUI.yield();
+                }
+            });
+
+            m_controller.transfer(holder.xfer);
+        }
+
+        showFiles(m_currentPath, false);
+        return true;
     }
 }

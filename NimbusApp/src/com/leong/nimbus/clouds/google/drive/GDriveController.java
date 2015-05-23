@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.ParentReference;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
@@ -238,6 +239,11 @@ public class GDriveController implements ICloudController<com.google.api.service
         m_cachedListFiles.put(parent, files);
 
         return files;
+    }
+
+    public void transfer(ICloudTransfer transfer)
+    {
+        m_model.transfer(transfer);
     }
     
 }

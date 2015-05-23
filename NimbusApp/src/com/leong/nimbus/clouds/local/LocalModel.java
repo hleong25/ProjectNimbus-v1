@@ -83,6 +83,8 @@ public class LocalModel implements ICloudModel<java.io.File>
 
                 progress.progress(totalSent);
             }
+
+            progress.finish();
         }
         catch (IOException ex)
         {
