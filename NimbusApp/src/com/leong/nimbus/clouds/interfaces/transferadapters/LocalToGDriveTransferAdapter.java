@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -32,6 +33,8 @@ public class LocalToGDriveTransferAdapter
     protected com.google.api.services.drive.model.File m_xferred;
 
     private ICloudProgress m_progress;
+
+    private AtomicBoolean m_canTransfer;
 
     public LocalToGDriveTransferAdapter(java.io.File source, com.google.api.services.drive.model.File target)
     {
@@ -116,6 +119,18 @@ public class LocalToGDriveTransferAdapter
     public ICloudProgress getProgressHandler()
     {
         return m_progress;
+    }
+
+    @Override
+    public void setCanTransfer(AtomicBoolean canTransfer)
+    {
+        m_canTransfer = canTransfer;
+    }
+
+    @Override
+    public boolean getCanTransfer()
+    {
+        return m_canTransfer.get();
     }
 
 }

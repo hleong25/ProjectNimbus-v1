@@ -19,6 +19,7 @@ import java.util.List;
 public interface ICloudPanel<T>
 {
     void initPanel();
+    void disposePanel();
 
     void setPanelView(ViewType type);
 

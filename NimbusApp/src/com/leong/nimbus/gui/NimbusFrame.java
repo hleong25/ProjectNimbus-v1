@@ -109,6 +109,13 @@ public class NimbusFrame extends javax.swing.JFrame
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
+        addWindowListener(new java.awt.event.WindowAdapter()
+        {
+            public void windowClosing(java.awt.event.WindowEvent evt)
+            {
+                formWindowClosing(evt);
+            }
+        });
 
         pnlMain.setMinimumSize(new java.awt.Dimension(400, 300));
         pnlMain.setPreferredSize(new java.awt.Dimension(400, 300));
@@ -199,6 +206,11 @@ public class NimbusFrame extends javax.swing.JFrame
 
         proxy.refreshCurrentView();
     }//GEN-LAST:event_mnuViewRefreshActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+    {//GEN-HEADEREND:event_formWindowClosing
+        getCurrentCloudPanel().disposePanel();
+    }//GEN-LAST:event_formWindowClosing
 
     @Override
     public void setTitle(String title)

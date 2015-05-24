@@ -7,6 +7,7 @@ package com.leong.nimbus.clouds.interfaces;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -29,4 +30,7 @@ public interface ICloudTransfer<S, T>
 
     void setProgressHandler(ICloudProgress progress);
     ICloudProgress getProgressHandler();
+
+    void setCanTransfer(AtomicBoolean canTransfer);
+    boolean getCanTransfer();
 }

@@ -6,21 +6,17 @@
 package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
-import com.leong.nimbus.clouds.interfaces.ICloudProgress;
-import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToLocalTransferAdapter;
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
-import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

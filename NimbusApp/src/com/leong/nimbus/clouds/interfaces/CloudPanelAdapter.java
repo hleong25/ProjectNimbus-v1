@@ -19,13 +19,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
  *
  * @author henry
+ * @param <T> - Main data type for the cloud
+ * @param <CC> - ICloudController
  */
-public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T>>
+public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     extends javax.swing.JPanel
     implements ICloudPanel<T>,
                ILayoutToCloudPanelProxy
@@ -34,13 +38,24 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
 
     protected final Map<T, List<Component>> m_cachedComponents = new HashMap<>();
 
-    protected CONTROLLER m_controller;
+    protected AtomicBoolean m_canTransfer = new AtomicBoolean(true);
+
+    protected CC m_controller;
 
     protected T m_currentPath;
+
+    protected boolean m_xferring = false;
 
     protected CloudPanelAdapter()
     {
         Log.entering("<init>");
+    }
+
+    @Override
+    public void disposePanel()
+    {
+        Log.entering("disposePanel");
+        m_canTransfer.set(false);
     }
 
     @Override
@@ -120,7 +135,12 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
     {
         Log.entering("showFiles", new Object[]{getAbsolutePath(parent), useCache});
 
-        //txtPath.setText(parent.getAbsolutePath());
+        if (m_xferring)
+        {
+            JOptionPane.showMessageDialog(this, "Transferring in progress...", "Nimbus", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         setCurrentPath(parent);
 
         List<Component> list = getFiles(parent, useCache);
@@ -191,6 +211,7 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
         for (Object obj : list)
         {
             XferHolder holder = createXferHolder((java.io.File)obj);
+            holder.xfer.setCanTransfer(m_canTransfer);
 
             uploadFiles.add(holder);
 
@@ -209,46 +230,55 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
     {
         Log.entering("doTransferLoop", new Object[]{list});
 
-        // Loop them through
-        for (XferHolder holder : list)
+        try
         {
-            // Print out the file path
-            Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
+            m_xferring = true;
 
-            final FileItemPanel pnl = holder.pnl;
-
-            holder.xfer.setProgressHandler(new ICloudProgress()
+            // Loop them through
+            for (XferHolder holder : list)
             {
-                private long m_size = 0;
+                // Print out the file path
+                Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
 
-                @Override
-                public void initalize()
+                final FileItemPanel pnl = holder.pnl;
+
+                holder.xfer.setProgressHandler(new ICloudProgress()
                 {
-                    m_size = 0;
-                }
+                    private long m_size = 0;
 
-                @Override
-                public void start(long size)
-                {
-                    m_size = size;
-                }
+                    @Override
+                    public void initalize()
+                    {
+                        m_size = 0;
+                    }
 
-                @Override
-                public void progress(long bytesSent)
-                {
-                    pnl.setProgress((int)(bytesSent*100/m_size));
-                    ResponsiveTaskUI.yield();
-                }
+                    @Override
+                    public void start(long size)
+                    {
+                        m_size = size;
+                    }
 
-                @Override
-                public void finish()
-                {
-                    pnl.setProgress(100);
-                    ResponsiveTaskUI.yield();
-                }
-            });
+                    @Override
+                    public void progress(long bytesSent)
+                    {
+                        pnl.setProgress((int)(bytesSent*100/m_size));
+                        ResponsiveTaskUI.yield();
+                    }
 
-            m_controller.transfer(holder.xfer);
+                    @Override
+                    public void finish()
+                    {
+                        pnl.setProgress(100);
+                        ResponsiveTaskUI.yield();
+                    }
+                });
+
+                m_controller.transfer(holder.xfer);
+            }
+        }
+        finally
+        {
+            m_xferring = false;
         }
     }
 

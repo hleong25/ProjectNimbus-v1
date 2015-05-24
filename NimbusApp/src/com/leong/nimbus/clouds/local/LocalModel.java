@@ -78,7 +78,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             progress.initalize();
             progress.start(transfer.getFilesize());
 
-            while (is.available() > 0)
+            while (transfer.getCanTransfer() && is.available() > 0)
             {
                 int readSize = is.read(buffer);
                 totalSent += readSize;
@@ -88,11 +88,18 @@ public class LocalModel implements ICloudModel<java.io.File>
                 progress.progress(totalSent);
             }
 
-            progress.finish();
-
+            if (transfer.getCanTransfer())
             {
-                File outputFile = (File) transfer.getTargetObject();
-                transfer.setTransferredObject(new File(outputFile.getAbsolutePath()));
+                progress.finish();
+
+                {
+                    File outputFile = (File) transfer.getTargetObject();
+                    transfer.setTransferredObject(new File(outputFile.getAbsolutePath()));
+                }
+            }
+            else
+            {
+                Log.warning("Transferred aborted");
             }
         }
         catch (IOException ex)
