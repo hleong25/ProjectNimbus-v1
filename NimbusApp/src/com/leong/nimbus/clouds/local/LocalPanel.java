@@ -14,6 +14,7 @@ import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
+import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
@@ -135,82 +136,20 @@ public class LocalPanel
         return pnlFiles;
     }
 
-    protected boolean onAction_drop(List list)
+    @Override
+    public XferHolder createXferHolder(File file)
     {
-        Log.entering("onAction_drop", new Object[]{list});
+        final File inputFile = file;
+        final File outputFile = new File(m_currentPath, inputFile.getName());
+        final FileItemPanel pnl = createFileItemPanel(inputFile);
 
-        class XferHolder
-        {
-            public ICloudTransfer<File, File> xfer;
-            public FileItemPanel pnl;
-        }
+        pnl.showProgress(true);
 
-        List<XferHolder> uploadFiles = new ArrayList<>();
+        XferHolder<File, File> holder = new XferHolder<>();
+        holder.xfer = new LocalToLocalTransferAdapter(inputFile, outputFile);
+        holder.pnl = pnl;
 
-        for (Object obj : list)
-        {
-            final File inputFile = (File) obj;
-            final File outputFile = new File(m_currentPath, inputFile.getName());
-            final FileItemPanel pnl = createFileItemPanel(inputFile);
-
-            pnl.showProgress(true);
-
-            XferHolder holder = new XferHolder();
-            holder.xfer = new LocalToLocalTransferAdapter(inputFile, outputFile);
-            holder.pnl = pnl;
-
-            uploadFiles.add(holder);
-
-            // show the new item being added
-            pnlFiles.add(pnl);
-            pnlFiles.revalidate();
-
-            ResponsiveTaskUI.yield();
-        }
-
-        // Loop them through
-        for (XferHolder holder : uploadFiles)
-        {
-            // Print out the file path
-            Log.fine("File path: "+holder.xfer.getTargetObject().getAbsolutePath());
-
-            final FileItemPanel pnl = holder.pnl;
-
-            holder.xfer.setProgressHandler(new ICloudProgress()
-            {
-                private long m_size = 0;
-
-                @Override
-                public void initalize()
-                {
-                    m_size = 0;
-                }
-
-                @Override
-                public void start(long size)
-                {
-                    m_size = size;
-                }
-
-                @Override
-                public void progress(long bytesSent)
-                {
-                    pnl.setProgress((int)(bytesSent*100/m_size));
-                    ResponsiveTaskUI.yield();
-                }
-
-                @Override
-                public void finish()
-                {
-                    pnl.setProgress(100);
-                    ResponsiveTaskUI.yield();
-                }
-            });
-
-            m_controller.transfer(holder.xfer);
-        }
-
-        showFiles(m_currentPath, false);
-        return true;
+        return holder;
     }
+
 }

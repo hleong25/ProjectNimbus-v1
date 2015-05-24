@@ -8,6 +8,8 @@ package com.leong.nimbus.clouds.interfaces;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
+import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
+import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
@@ -177,4 +179,89 @@ public abstract class CloudPanelAdapter<T, CONTROLLER extends ICloudController<T
         responsiveShowFiles(m_currentPath, false);
     }
 
+    @Override
+    public List<XferHolder> generateTransferList(List list)
+    {
+        Log.entering("generateTransferList", new Object[]{list});
+
+        final List<XferHolder> uploadFiles = new ArrayList<>();
+
+        final JPanel pnlFiles = getFilesPanel();
+
+        for (Object obj : list)
+        {
+            XferHolder holder = createXferHolder((java.io.File)obj);
+
+            uploadFiles.add(holder);
+
+            // show the new item being added
+            pnlFiles.add(holder.pnl);
+            pnlFiles.revalidate();
+
+            ResponsiveTaskUI.yield();
+        }
+
+        return uploadFiles;
+    }
+
+    @Override
+    public void doTransferLoop(List<XferHolder> list)
+    {
+        Log.entering("doTransferLoop", new Object[]{list});
+
+        // Loop them through
+        for (XferHolder holder : list)
+        {
+            // Print out the file path
+            Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
+
+            final FileItemPanel pnl = holder.pnl;
+
+            holder.xfer.setProgressHandler(new ICloudProgress()
+            {
+                private long m_size = 0;
+
+                @Override
+                public void initalize()
+                {
+                    m_size = 0;
+                }
+
+                @Override
+                public void start(long size)
+                {
+                    m_size = size;
+                }
+
+                @Override
+                public void progress(long bytesSent)
+                {
+                    pnl.setProgress((int)(bytesSent*100/m_size));
+                    ResponsiveTaskUI.yield();
+                }
+
+                @Override
+                public void finish()
+                {
+                    pnl.setProgress(100);
+                    ResponsiveTaskUI.yield();
+                }
+            });
+
+            m_controller.transfer(holder.xfer);
+        }
+    }
+
+    @Override
+    public boolean onAction_drop(List list)
+    {
+        Log.entering("onAction_drop", new Object[]{list});
+
+        List<XferHolder> uploadFiles = generateTransferList(list);
+
+        doTransferLoop(uploadFiles);
+
+        showFiles(m_currentPath, false);
+        return true;
+    }
 }

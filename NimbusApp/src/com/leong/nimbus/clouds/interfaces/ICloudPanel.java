@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.interfaces;
 
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import java.awt.Component;
@@ -19,15 +20,23 @@ public interface ICloudPanel<T>
 {
     void initPanel();
 
+    void setPanelView(ViewType type);
+
     String getAbsolutePath(T item);
     void setCurrentPath(T path);
 
-    FileItemPanel createFileItemPanel(final T file);
-    void responsiveShowFiles(final T path, final boolean useCache);
-
     AllCardsPanel getFilesPanel();
+    FileItemPanel createFileItemPanel(final T file);
+
     List<Component> getFiles(final T parent, final boolean useCache);
     void showFiles(final T parent, final boolean useCache);
+    void responsiveShowFiles(final T path, final boolean useCache);
 
-    void setPanelView(ViewType type);
+    XferHolder createXferHolder(java.io.File file);
+    List<XferHolder> generateTransferList(List list);
+    void doTransferLoop(List<XferHolder> list);
+
+    boolean onAction_drop(List list);
+
+
 }
