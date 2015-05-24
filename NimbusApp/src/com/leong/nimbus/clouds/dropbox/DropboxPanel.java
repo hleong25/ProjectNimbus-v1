@@ -115,7 +115,7 @@ public class DropboxPanel
     @Override
     public String getAbsolutePath(DbxEntry item)
     {
-        Log.entering("getAbsolutePath", new Object[]{item.toStringMultiline()});
+        //Log.entering("getAbsolutePath", new Object[]{item.toStringMultiline()});
         return item.path;
     }
 

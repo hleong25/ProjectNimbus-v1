@@ -21,15 +21,11 @@ import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -177,29 +173,6 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         return null;
     }
-
-    //public DbxEntry.File uploadLocalFile(InputStream stream)
-    //{
-    //    DbxEntry.File aaa;
-    //    m_client.uploadFileChunked(chunkSize, APP_KEY, null, numBytes, null);
-
-    //    final int BUFFSIZE = 256*1024;
-    //    byte outbuff[BUFFSIZE] = new byte[];
-    //    BufferedInputStream bis = new BufferedInputStream(stream, BUFFSIZE);
-
-    //    bis.read(outbuff);
-    //
-    //    DbxStreamWriter<RuntimeException> bbb = new DbxStreamWriter<RuntimeException>()
-    //    {
-
-    //        @Override
-    //        public void write(NoThrowOutputStream out) throws RuntimeException
-    //        {
-    //        }
-    //    }
-
-    //    return null;
-    //}
 
     @Override
     public void transfer(ICloudTransfer<?, ?> transfer)
