@@ -82,8 +82,6 @@ public class LocalPanel
         Log.fine("Showing root path");
         File root = m_controller.getRoot();
         responsiveShowFiles(root, false);
-        //showFiles(root, false);
-
 
         new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
         {

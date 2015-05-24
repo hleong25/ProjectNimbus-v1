@@ -9,20 +9,16 @@ import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItem;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
-import com.leong.nimbus.clouds.interfaces.ICloudProgress;
-import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToDropboxTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
-import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,11 +50,16 @@ public class DropboxPanel
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents()
     {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        pnlTop = new javax.swing.JPanel();
         btnConnect = new javax.swing.JButton();
+        txtPath = new javax.swing.JTextField();
         pnlFiles = new com.leong.nimbus.gui.layout.AllCardsPanel();
 
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new java.awt.BorderLayout(0, 2));
+
+        pnlTop.setLayout(new java.awt.GridBagLayout());
 
         btnConnect.setText("Connect to Dropbox!");
         btnConnect.addActionListener(new java.awt.event.ActionListener()
@@ -68,7 +69,24 @@ public class DropboxPanel
                 btnConnectActionPerformed(evt);
             }
         });
-        add(btnConnect, java.awt.BorderLayout.PAGE_START);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+        pnlTop.add(btnConnect, gridBagConstraints);
+
+        txtPath.setText("Path");
+        txtPath.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
+        pnlTop.add(txtPath, gridBagConstraints);
+
+        add(pnlTop, java.awt.BorderLayout.NORTH);
         add(pnlFiles, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -81,8 +99,6 @@ public class DropboxPanel
             {
                 if (m_controller.login(DropboxPanel.this))
                 {
-                    showFiles(m_controller.getRoot(), false);
-
                     new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
                     {
                         @Override
@@ -102,6 +118,8 @@ public class DropboxPanel
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
     private com.leong.nimbus.gui.layout.AllCardsPanel pnlFiles;
+    private javax.swing.JPanel pnlTop;
+    private javax.swing.JTextField txtPath;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -111,6 +129,8 @@ public class DropboxPanel
         m_controller = new DropboxController();
 
         pnlFiles.setProxy(this);
+
+        txtPath.setText("");
     }
 
     @Override
@@ -118,6 +138,15 @@ public class DropboxPanel
     {
         //Log.entering("getAbsolutePath", new Object[]{item.toStringMultiline()});
         return item.path;
+    }
+
+    @Override
+    public void setCurrentPath(DbxEntry path)
+    {
+        Log.entering("setCurrentPath", new Object[]{path.path});
+
+        super.setCurrentPath(path);
+        txtPath.setText(getAbsolutePath(path));
     }
 
     @Override
