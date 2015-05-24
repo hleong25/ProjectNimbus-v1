@@ -58,9 +58,9 @@ public class LocalToLocalTransferAdapter
     }
 
     @Override
-    public void setTransferredObject(File obj)
+    public void setTransferredObject(Object obj)
     {
-        m_xferred = obj;
+        m_xferred = (File) obj;
     }
 
     @Override

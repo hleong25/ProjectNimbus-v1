@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
+import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
@@ -16,24 +17,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
 /**
  *
  * @author henry
  */
-public class LocalToGDriveTransferAdapter
-    implements ICloudTransfer<java.io.File, com.google.api.services.drive.model.File>
+public class LocalToDropboxTransferAdapter
+    implements ICloudTransfer<java.io.File, DbxEntry.File>
 {
-    private static final Logit Log = Logit.create(LocalToGDriveTransferAdapter.class.getName());
+    private static final Logit Log = Logit.create(LocalToDropboxTransferAdapter.class.getName());
 
     protected final java.io.File m_source;
-    protected final com.google.api.services.drive.model.File m_target;
+    protected final DbxEntry.File m_target;
 
-    protected com.google.api.services.drive.model.File m_xferred;
+    protected DbxEntry.File m_xferred;
 
     private ICloudProgress m_progress;
 
-    public LocalToGDriveTransferAdapter(java.io.File source, com.google.api.services.drive.model.File target)
+    public LocalToDropboxTransferAdapter(java.io.File source, DbxEntry.File target)
     {
         m_source = source;
         m_target = target;
@@ -52,7 +52,7 @@ public class LocalToGDriveTransferAdapter
     }
 
     @Override
-    public com.google.api.services.drive.model.File getTargetObject()
+    public DbxEntry.File getTargetObject()
     {
         return m_target;
     }
@@ -60,11 +60,11 @@ public class LocalToGDriveTransferAdapter
     @Override
     public void setTransferredObject(Object obj)
     {
-        m_xferred = (com.google.api.services.drive.model.File) obj;
+        m_xferred = (DbxEntry.File) obj;
     }
 
     @Override
-    public com.google.api.services.drive.model.File getTransferredObject()
+    public DbxEntry.File getTransferredObject()
     {
         return m_xferred;
     }

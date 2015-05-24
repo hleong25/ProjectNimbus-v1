@@ -7,6 +7,7 @@ package com.leong.nimbus.clouds.dropbox;
 
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
@@ -184,6 +185,26 @@ public class DropboxController implements ICloudController<DbxEntry>
         m_cachedListFiles.put(parent, files);
 
         return files;
+    }
+
+    @Override
+    public void transfer(ICloudTransfer<?,?> transfer)
+    {
+        m_model.transfer(transfer);
+    }
+
+    public DbxEntry.File generateFile(String parent, java.io.File content)
+    {
+        String path = parent + "/" + content.getName();
+        String iconName = null;
+        boolean mightHaveThumbnail = true;
+        long numBytes = content.length();
+        String humanSize = String.valueOf(numBytes);
+        java.util.Date lastModified = new java.util.Date(content.lastModified());
+        java.util.Date clientMtime = lastModified;
+        String rev = "1";
+
+        return new DbxEntry.File(path, iconName, mightHaveThumbnail, numBytes, humanSize, lastModified, clientMtime, rev);
     }
 
 }

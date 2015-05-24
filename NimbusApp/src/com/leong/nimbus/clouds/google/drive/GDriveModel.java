@@ -269,15 +269,11 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
             Log.fine("Uploaded file done");
 
-            //transfer.setTransferredObject(xferredFile);
-
-            //return uploadedFile;
+            transfer.setTransferredObject(xferredFile);
         }
         catch (IOException ex)
         {
             Log.throwing("transfer", ex);
         }
-
-        //return null;
     }
 }

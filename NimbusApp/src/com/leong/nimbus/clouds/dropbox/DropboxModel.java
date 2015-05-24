@@ -11,14 +11,25 @@ import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.DbxStreamWriter;
 import com.dropbox.core.DbxWebAuthNoRedirect;
+import com.dropbox.core.DbxWriteMode;
+import com.dropbox.core.NoThrowOutputStream;
 import com.dropbox.core.util.Collector;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
+import com.leong.nimbus.clouds.interfaces.ICloudProgress;
+import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -189,4 +200,69 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
     //    return null;
     //}
+
+    @Override
+    public void transfer(ICloudTransfer<?, ?> transfer)
+    {
+        final InputStream is = transfer.getInputStream();
+
+        try
+        {
+            final DbxEntry.File outputInfo = (DbxEntry.File) transfer.getTargetObject();
+
+            final ICloudProgress progress = transfer.getProgressHandler();
+
+            DbxStreamWriter<RuntimeException> writer = new DbxStreamWriter<RuntimeException>()
+            {
+                @Override
+                public void write(NoThrowOutputStream out) throws RuntimeException
+                {
+                    try
+                    {
+                        final int BUFFER_SIZE = 256*1024;
+                        byte[] buffer = new byte[BUFFER_SIZE];
+
+                        long totalSent = 0;
+
+                        while (is.available() > 0)
+                        {
+                            int readSize = is.read(buffer);
+                            totalSent += readSize;
+
+                            out.write(buffer, 0, readSize);
+
+                            progress.progress(totalSent);
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        Log.throwing("transfer.write", ex);
+                    }
+                }
+            };
+
+            progress.initalize();
+            progress.start(transfer.getFilesize());
+
+            DbxEntry.File outputFile = m_client.uploadFile(outputInfo.path, DbxWriteMode.add(), transfer.getFilesize(), writer);
+            transfer.setTransferredObject(outputFile);
+
+            progress.finish();
+        }
+        catch (DbxException | RuntimeException ex)
+        {
+            Log.throwing("transfer", ex);
+        }
+        finally
+        {
+            try
+            {
+                is.close();
+            }
+            catch (IOException ex)
+            {
+                Log.throwing("transfer", ex);
+            }
+        }
+    }
 }

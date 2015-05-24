@@ -17,4 +17,7 @@ public interface ICloudController<T>
     T getItemById(String id, boolean useCache);
     T getParent(T item);
     List<T> getChildrenItems(T parent, boolean useCache);
+
+    void transfer(ICloudTransfer<?,?> transfer);
+
 }

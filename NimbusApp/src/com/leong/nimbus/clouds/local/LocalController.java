@@ -93,6 +93,7 @@ public class LocalController implements ICloudController<java.io.File>
         return files;
     }
 
+    @Override
     public void transfer(ICloudTransfer<?,?> transfer)
     {
         m_model.transfer(transfer);

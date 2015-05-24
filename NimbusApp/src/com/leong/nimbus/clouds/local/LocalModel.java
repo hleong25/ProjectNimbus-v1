@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.local;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.Logit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,8 @@ import javax.swing.filechooser.FileSystemView;
  */
 public class LocalModel implements ICloudModel<java.io.File>
 {
+    private static final Logit Log = Logit.create(LocalModel.class.getName());
+
     public LocalModel()
     {
     }
@@ -57,7 +60,8 @@ public class LocalModel implements ICloudModel<java.io.File>
         return list;
     }
 
-    public void transfer(ICloudTransfer transfer)
+    @Override
+    public void transfer(ICloudTransfer<?,?> transfer)
     {
         InputStream is = transfer.getInputStream();
         OutputStream os = transfer.getOutputStream();
@@ -85,11 +89,15 @@ public class LocalModel implements ICloudModel<java.io.File>
             }
 
             progress.finish();
+
+            {
+                File outputFile = (File) transfer.getTargetObject();
+                transfer.setTransferredObject(new File(outputFile.getAbsolutePath()));
+            }
         }
         catch (IOException ex)
         {
-            //Logger.getLogger(LocalModel.class.getName()).log(Level.SEVERE, null, ex);
-            // todo log
+            Log.throwing("transfer", ex);
         }
         finally
         {
@@ -99,15 +107,16 @@ public class LocalModel implements ICloudModel<java.io.File>
             }
             catch (IOException ex)
             {
-                // todo log
+                Log.throwing("transfer", ex);
             }
+
             try
             {
                 os.close();
             }
             catch (IOException ex)
             {
-                // todo log
+                Log.throwing("transfer", ex);
             }
         }
 

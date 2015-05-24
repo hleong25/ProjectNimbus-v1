@@ -16,4 +16,6 @@ public interface ICloudModel<T>
     T getRoot();
     T getItemById(String id);
     List<T> getChildrenItems(T parent);
+
+    void transfer(ICloudTransfer<?,?> transfer);
 }
