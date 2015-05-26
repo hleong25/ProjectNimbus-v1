@@ -240,38 +240,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
                 // Print out the file path
                 Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
 
-                final FileItemPanel pnl = holder.pnl;
-
-                holder.xfer.setProgressHandler(new ICloudProgress()
-                {
-                    private long m_size = 0;
-
-                    @Override
-                    public void initalize()
-                    {
-                        m_size = 0;
-                    }
-
-                    @Override
-                    public void start(long size)
-                    {
-                        m_size = size;
-                    }
-
-                    @Override
-                    public void progress(long bytesSent)
-                    {
-                        pnl.setProgress((int)(bytesSent*100/m_size));
-                        ResponsiveTaskUI.yield();
-                    }
-
-                    @Override
-                    public void finish()
-                    {
-                        pnl.setProgress(100);
-                        ResponsiveTaskUI.yield();
-                    }
-                });
+                holder.xfer.setProgressHandler(new CloudProgressAdapter(holder.pnl));
 
                 m_controller.transfer(holder.xfer);
             }
