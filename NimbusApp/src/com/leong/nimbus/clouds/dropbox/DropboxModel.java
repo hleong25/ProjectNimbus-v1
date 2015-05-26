@@ -237,7 +237,5 @@ public class DropboxModel implements ICloudModel<DbxEntry>
                 Log.throwing("transfer", ex);
             }
         }
-
-        Tools.notifyAll(transfer);
     }
 }

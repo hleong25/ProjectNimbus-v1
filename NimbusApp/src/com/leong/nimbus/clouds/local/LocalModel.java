@@ -127,7 +127,5 @@ public class LocalModel implements ICloudModel<java.io.File>
                 Log.throwing("transfer", ex);
             }
         }
-
-        Tools.notifyAll(transfer);
     }
 }

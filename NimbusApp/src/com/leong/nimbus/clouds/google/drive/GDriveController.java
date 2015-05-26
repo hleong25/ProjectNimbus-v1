@@ -209,6 +209,8 @@ public class GDriveController implements ICloudController<com.google.api.service
     public void transfer(ICloudTransfer transfer)
     {
         m_model.transfer(transfer);
+
+        Tools.notifyAll(transfer);
     }
     
 }

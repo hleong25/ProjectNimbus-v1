@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.local;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.Tools;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -97,5 +98,7 @@ public class LocalController implements ICloudController<java.io.File>
     public void transfer(ICloudTransfer<?,?> transfer)
     {
         m_model.transfer(transfer);
+
+        Tools.notifyAll(transfer);
     }
 }
