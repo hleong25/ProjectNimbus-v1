@@ -5,7 +5,9 @@
  */
 package com.leong.nimbus.utils;
 
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
@@ -15,6 +17,8 @@ import java.util.logging.SimpleFormatter;
  */
 public class LogitFormatter extends SimpleFormatter
 {
+    private static final DateFormat TIMESTAMP = new SimpleDateFormat("HH:mm:ss:SSS ");
+
     public LogitFormatter()
     {
     }
@@ -25,6 +29,8 @@ public class LogitFormatter extends SimpleFormatter
         //return super.format(record);
 
         StringBuilder str = new StringBuilder();
+
+        str.append(TIMESTAMP.format(record.getMillis()));
         str.append("["+record.getLevel()+"] ");
         str.append(record.getSourceClassName());
         str.append(".");
@@ -42,8 +48,16 @@ public class LogitFormatter extends SimpleFormatter
 
         if (record.getThrown() != null)
         {
-            str.append(record.getThrown().toString());
-            //str.append("\n");
+            Throwable t = record.getThrown();
+
+            if (t.getMessage() != null)
+            {
+                str.append("Exception message:" + t.getMessage());
+                str.append("\n");
+            }
+
+            str.append(t.toString());
+            str.append("\n");
         }
 
         return str.toString();

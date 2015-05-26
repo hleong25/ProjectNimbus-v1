@@ -35,7 +35,7 @@ public interface ICloudPanel<T>
 
     XferHolder createXferHolder(java.io.File file);
     List<XferHolder> generateTransferList(List list);
-    void doTransferLoop(List<XferHolder> list);
+    boolean doTransferLoop(List<XferHolder> list);
 
     boolean onAction_drop(List list);
 

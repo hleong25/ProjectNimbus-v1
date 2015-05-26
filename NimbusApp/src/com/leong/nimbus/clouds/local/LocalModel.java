@@ -9,6 +9,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.Tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -127,5 +128,6 @@ public class LocalModel implements ICloudModel<java.io.File>
             }
         }
 
+        Tools.notifyAll(transfer);
     }
 }

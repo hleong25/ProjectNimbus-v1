@@ -13,6 +13,7 @@ import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.Tools;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
     protected T m_currentPath;
 
-    protected boolean m_xferring = false;
+    protected /*ICloudTransfer*/ Object m_xferObject;
 
     protected CloudPanelAdapter()
     {
@@ -56,6 +57,8 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     {
         Log.entering("disposePanel");
         m_canTransfer.set(false);
+
+        Tools.wait(m_xferObject);
     }
 
     @Override
@@ -135,7 +138,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     {
         Log.entering("showFiles", new Object[]{getAbsolutePath(parent), useCache});
 
-        if (m_xferring)
+        if (m_xferObject != null)
         {
             JOptionPane.showMessageDialog(this, "Transferring in progress...", "Nimbus", JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -226,29 +229,31 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     }
 
     @Override
-    public void doTransferLoop(List<XferHolder> list)
+    public boolean doTransferLoop(List<XferHolder> list)
     {
         Log.entering("doTransferLoop", new Object[]{list});
 
-        try
+        // Loop them through
+        for (XferHolder holder : list)
         {
-            m_xferring = true;
+            // Print out the file path
+            Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
 
-            // Loop them through
-            for (XferHolder holder : list)
+            holder.xfer.setProgressHandler(new CloudProgressAdapter(holder.pnl));
+
+            m_xferObject = holder.xfer;
+
+            m_controller.transfer(holder.xfer);
+
+            if (!m_canTransfer.get())
             {
-                // Print out the file path
-                Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
-
-                holder.xfer.setProgressHandler(new CloudProgressAdapter(holder.pnl));
-
-                m_controller.transfer(holder.xfer);
+                return false;
             }
         }
-        finally
-        {
-            m_xferring = false;
-        }
+
+        m_xferObject = null;
+
+        return true;
     }
 
     @Override
@@ -258,9 +263,11 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         List<XferHolder> uploadFiles = generateTransferList(list);
 
-        doTransferLoop(uploadFiles);
+        if (doTransferLoop(uploadFiles))
+        {
+            showFiles(m_currentPath, false);
+        }
 
-        showFiles(m_currentPath, false);
         return true;
     }
 }

@@ -75,6 +75,11 @@ public final class Logit extends Logger
         super.entering(this.getName(), sourceMethod, params);
     }
 
+    public void exiting(String sourceMethod)
+    {
+        super.exiting(this.getName(), sourceMethod);
+    }
+
     public void throwing(String sourceMethod, Throwable ex)
     {
         super.throwing(this.getName(), sourceMethod, ex);

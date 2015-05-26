@@ -275,5 +275,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         {
             Log.throwing("transfer", ex);
         }
+
+        Tools.notifyAll(transfer);
     }
 }
