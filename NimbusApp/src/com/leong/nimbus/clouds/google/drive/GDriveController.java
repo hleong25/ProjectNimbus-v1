@@ -65,14 +65,20 @@ public class GDriveController implements ICloudController<com.google.api.service
         return new GDriveController();
     }
 
-    public boolean login(Component parentComponent)
+    public boolean login(Component parentComponent, String userid)
     {
-        Log.entering("login", parentComponent);
+        Log.entering("login", new Object[]{"parentComponent", userid});
 
-        String authUrl = m_model.getAuthUrl();
+        if (m_model.login(userid))
+        {
+            Log.info("Login successful for '"+userid+"'");
+            return true;
+        }
 
         try
         {
+            final String authUrl = m_model.getAuthUrl();
+
             // TODO: does not work with OSX -- i think...
             BrowserLauncher launcher = new BrowserLauncher();
             launcher.setNewWindowPolicy(true);
@@ -96,7 +102,7 @@ public class GDriveController implements ICloudController<com.google.api.service
         authCode = authCode.trim();
         Log.info("Auth code: "+authCode);
 
-        return m_model.login(authCode);
+        return m_model.login(userid, authCode);
     }
 
     public File generateMetadata(File parent, java.io.File content)

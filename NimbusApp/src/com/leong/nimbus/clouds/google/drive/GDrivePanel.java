@@ -100,7 +100,7 @@ public class GDrivePanel
                 @Override
                 public void run()
                 {
-                    if (m_controller.login(GDrivePanel.this))
+                    if (m_controller.login(GDrivePanel.this, "henry"))
                     {
                         new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
                             {

@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -15,6 +16,7 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.About;
@@ -58,11 +60,24 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
 
-        //Tools.logit("new GoogleAuthorizationCodeFlow()");
-        m_flow = new GoogleAuthorizationCodeFlow
+        GoogleAuthorizationCodeFlow.Builder flowBuilder = new GoogleAuthorizationCodeFlow
                 .Builder(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
-                .setAccessType("online")
-                .setApprovalPrompt("auto").build();
+                .setAccessType("offline")
+                .setApprovalPrompt("auto");
+
+        try
+        {
+            java.io.File credentialsDataStore = new java.io.File(System.getProperty("user.home"), "tmp/nimbus");
+            FileDataStoreFactory datastore = new FileDataStoreFactory(credentialsDataStore);
+
+            flowBuilder.setDataStoreFactory(datastore);
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("<init>", ex);
+        }
+
+        m_flow = flowBuilder.build();
     }
 
     public String getAuthUrl()
@@ -73,32 +88,30 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return url;
     }
 
-    public boolean login(String authCode)
+    public boolean login(String userid)
     {
-        Log.entering("login", new Object[]{authCode});
+        Log.entering("login", new Object[]{userid});
 
-        if (m_flow == null)
-        {
-            Log.severe("Google flow not initialized");
-            return false;
-        }
+        Credential creds;
 
-        HttpTransport httpTransport = m_flow.getTransport();
-        JsonFactory jsonFactory = m_flow.getJsonFactory();
-
-        m_service = null; // make sure the previous object is released
-
-        if (Tools.isNullOrEmpty(authCode))
-        {
-            Log.severe("Auth code not valid");
-            return false;
-        }
-
-        GoogleTokenResponse response = null;
         try
         {
-            Log.fine("new token request");
-            response = m_flow.newTokenRequest(authCode).setRedirectUri(REDIRECT_URI).execute();
+            creds = m_flow.loadCredential(userid);
+            if (creds == null)
+            {
+                Log.warning("Loading credentials for '"+userid+"' failed.");
+                return false;
+            }
+
+            if (creds.getExpiresInSeconds() <= 60)
+            {
+                if (!creds.refreshToken())
+                {
+                    Log.warning("Failed to refresh stored credentials.");
+                    return false;
+                }
+            }
+
         }
         catch (IOException ex)
         {
@@ -106,31 +119,66 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             return false;
         }
 
-        if ((response == null) || response.isEmpty())
-        {
-            Log.severe("Response is null or empty");
-            return false;
-        }
-        else
-        {
-            Log.fine("Response is " + response.toString());
-        }
+        HttpTransport httpTransport = m_flow.getTransport();
+        JsonFactory jsonFactory = m_flow.getJsonFactory();
 
-        Log.fine("new GoogleCredential()");
+        Log.fine("Creating new GoogleCredential using stored credentials");
         GoogleCredential credential = new GoogleCredential.Builder()
-                .setJsonFactory(jsonFactory)
-                .setTransport(httpTransport)
-                .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
-                .build()
-                .setFromTokenResponse(response);
+            .setJsonFactory(jsonFactory)
+            .setTransport(httpTransport)
+            .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
+            .build()
+            .setAccessToken(creds.getAccessToken())
+            .setRefreshToken(creds.getRefreshToken())
+            .setExpirationTimeMilliseconds(creds.getExpirationTimeMilliseconds());
 
         //Create a new authorized API client
-        Log.fine("new Drive.Builder()");
+        Log.fine("Creating the new Google Drive client");
         m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
-                .setApplicationName("Nimbus")
-                .build();
+            .setApplicationName("Nimbus")
+            .build();
 
         return true;
+    }
+
+    public boolean login(String userid, String authCode)
+    {
+        Log.entering("login", new Object[]{userid, authCode});
+
+        m_service = null; // make sure the previous object is released
+
+        HttpTransport httpTransport = m_flow.getTransport();
+        JsonFactory jsonFactory = m_flow.getJsonFactory();
+
+        if (Tools.isNullOrEmpty(authCode))
+        {
+            Log.severe("Auth code is empty");
+            return false;
+        }
+
+        try
+        {
+            Log.fine("Requesting new token");
+            GoogleTokenResponse response = m_flow.newTokenRequest(authCode).setRedirectUri(REDIRECT_URI).execute();
+            
+            if ((response == null) || response.isEmpty())
+            {
+                Log.severe("Response is null or empty");
+                return false;
+            }
+
+            Log.fine("Response is " + response.toString());
+            
+            Log.fine("Storing credentials for '"+userid+"'");
+            m_flow.createAndStoreCredential(response, userid);
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("login", ex);
+            return false;
+        }
+        
+        return login(userid);
     }
 
     @Override
