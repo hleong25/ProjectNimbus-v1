@@ -60,6 +60,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
 
+        Log.fine("Creating new authorization flow");
         GoogleAuthorizationCodeFlow.Builder flowBuilder = new GoogleAuthorizationCodeFlow
                 .Builder(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
                 .setAccessType("offline")
@@ -67,6 +68,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         try
         {
+            Log.fine("Loading credential data store");
             java.io.File credentialsDataStore = new java.io.File(System.getProperty("user.home"), "tmp/nimbus");
             FileDataStoreFactory datastore = new FileDataStoreFactory(credentialsDataStore);
 
@@ -77,6 +79,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             Log.throwing("<init>", ex);
         }
 
+        Log.fine("Building new authorization flow");
         m_flow = flowBuilder.build();
     }
 
@@ -146,9 +149,6 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         Log.entering("login", new Object[]{userid, authCode});
 
         m_service = null; // make sure the previous object is released
-
-        HttpTransport httpTransport = m_flow.getTransport();
-        JsonFactory jsonFactory = m_flow.getJsonFactory();
 
         if (Tools.isNullOrEmpty(authCode))
         {
