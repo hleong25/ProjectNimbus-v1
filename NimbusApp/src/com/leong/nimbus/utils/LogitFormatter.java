@@ -5,6 +5,9 @@
  */
 package com.leong.nimbus.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -52,11 +55,20 @@ public class LogitFormatter extends SimpleFormatter
 
             if (t.getMessage() != null)
             {
-                str.append("Exception message:" + t.getMessage());
+                str.append("Exception message: " + t.getMessage());
                 str.append("\n");
             }
 
-            str.append(t.toString());
+            {
+                OutputStream os = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(os);
+
+                t.printStackTrace(ps);
+                ps.flush();
+
+                str.append(os.toString());
+            }
+
             str.append("\n");
         }
 
