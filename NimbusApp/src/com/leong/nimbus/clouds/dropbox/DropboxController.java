@@ -57,9 +57,15 @@ public class DropboxController implements ICloudController<DbxEntry>
         };
     }
 
-    public boolean login(Component parentComponent)
+    public boolean login(Component parentComponent, String userid)
     {
-        Log.entering("login", parentComponent);
+        Log.entering("login", new Object[]{"parentComponent", userid});
+
+        if (m_model.login(userid))
+        {
+            Log.info("Login successful for '"+userid+"'");
+            return true;
+        }
 
         String authUrl = m_model.getAuthUrl();
 
@@ -88,7 +94,7 @@ public class DropboxController implements ICloudController<DbxEntry>
         authCode = authCode.trim();
         Log.info("Auth code: "+authCode);
 
-        return m_model.login(authCode);
+        return m_model.login(userid, authCode);
     }
 
     @Override

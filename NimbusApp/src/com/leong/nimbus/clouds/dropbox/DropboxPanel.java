@@ -18,7 +18,6 @@ import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
-import java.io.File;
 import java.util.List;
 
 /**
@@ -97,7 +96,7 @@ public class DropboxPanel
             @Override
             public void run()
             {
-                if (m_controller.login(DropboxPanel.this))
+                if (m_controller.login(DropboxPanel.this, "henry"))
                 {
                     new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
                     {
