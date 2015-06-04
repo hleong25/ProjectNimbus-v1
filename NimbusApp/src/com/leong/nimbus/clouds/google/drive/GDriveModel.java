@@ -16,7 +16,6 @@ import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.About;
@@ -26,8 +25,11 @@ import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.FileUtils;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -62,22 +64,9 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         Log.fine("Creating new authorization flow");
         GoogleAuthorizationCodeFlow.Builder flowBuilder = new GoogleAuthorizationCodeFlow
-                .Builder(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
-                .setAccessType("offline")
-                .setApprovalPrompt("auto");
-
-        try
-        {
-            Log.fine("Loading credential data store");
-            java.io.File credentialsDataStore = new java.io.File(System.getProperty("user.home"), "tmp/nimbus");
-            FileDataStoreFactory datastore = new FileDataStoreFactory(credentialsDataStore);
-
-            flowBuilder.setDataStoreFactory(datastore);
-        }
-        catch (IOException ex)
-        {
-            Log.throwing("<init>", ex);
-        }
+            .Builder(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
+            .setAccessType("offline")
+            .setApprovalPrompt("auto");
 
         Log.fine("Building new authorization flow");
         m_flow = flowBuilder.build();
@@ -95,32 +84,39 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     {
         Log.entering("login", new Object[]{userid});
 
-        Credential creds;
+        BufferedReader reader = FileUtils.getReader("/tmp/nimbus/creds/googledrive_"+userid);
+
+        if (reader == null)
+        {
+            return false;
+        }
+
+        String accessToken = null;
+        String refreshToken = null;
 
         try
         {
-            creds = m_flow.loadCredential(userid);
-            if (creds == null)
-            {
-                Log.warning("Loading credentials for '"+userid+"' failed.");
-                return false;
-            }
-
-            if (creds.getExpiresInSeconds() <= 60)
-            {
-                if (!creds.refreshToken())
-                {
-                    Log.warning("Failed to refresh stored credentials.");
-                    return false;
-                }
-            }
-
+            accessToken = reader.readLine();
+            refreshToken = reader.readLine();
         }
         catch (IOException ex)
         {
             Log.throwing("login", ex);
+        }
+
+        if (Tools.isNullOrEmpty(accessToken))
+        {
+            Log.warning("Access token is emtpy");
             return false;
         }
+
+        if (Tools.isNullOrEmpty(refreshToken))
+        {
+            Log.warning("Refresh token is emtpy");
+            return false;
+        }
+
+        Log.fine("Using stored credentials");
 
         HttpTransport httpTransport = m_flow.getTransport();
         JsonFactory jsonFactory = m_flow.getJsonFactory();
@@ -131,9 +127,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             .setTransport(httpTransport)
             .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
             .build()
-            .setAccessToken(creds.getAccessToken())
-            .setRefreshToken(creds.getRefreshToken())
-            .setExpirationTimeMilliseconds(creds.getExpirationTimeMilliseconds());
+            .setAccessToken(accessToken)
+            .setRefreshToken(refreshToken);
 
         //Create a new authorized API client
         Log.fine("Creating the new Google Drive client");
@@ -168,9 +163,19 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             }
 
             Log.fine("Response is " + response.toString());
-            
-            Log.fine("Storing credentials for '"+userid+"'");
-            m_flow.createAndStoreCredential(response, userid);
+
+            Credential creds = m_flow.createAndStoreCredential(response, null);
+
+            // save the access and refresh tokens
+            {
+                BufferedWriter writer = FileUtils.getWriter("/tmp/nimbus/creds/googledrive_"+userid);
+
+                String credstr = creds.getAccessToken() + "\n" + creds.getRefreshToken();
+                writer.write(credstr, 0, credstr.length());
+                writer.newLine();
+                writer.flush();
+                writer.close();
+            }
         }
         catch (IOException ex)
         {

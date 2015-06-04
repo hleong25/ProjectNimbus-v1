@@ -19,12 +19,11 @@ import com.dropbox.core.util.Collector;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.FileUtils;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -67,35 +66,31 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     {
         Log.entering("login", new Object[]{userid});
 
-        String accessToken = null;
+        BufferedReader reader = FileUtils.getReader("/tmp/nimbus/creds/dropbox_"+userid);
 
+        if (reader == null)
         {
-            java.io.File infile = new java.io.File(System.getProperty("user.home"), "tmp/nimbus/dropbox."+userid);
-
-            try
-            {
-                if (!infile.exists())
-                {
-                    Log.warning("Saved access token not found");
-                    return false;
-                }
-
-                BufferedReader reader = new BufferedReader(new FileReader(infile));
-                accessToken = reader.readLine();
-            }
-            catch (IOException ex)
-            {
-                Log.throwing("login", ex);
-            }
+            return false;
         }
 
-        Log.info("User '"+userid+"' reusing access token '"+accessToken+"'");
+        String accessToken = null;
+
+        try
+        {
+            accessToken = reader.readLine();
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("login", ex);
+        }
 
         if (Tools.isNullOrEmpty(accessToken))
         {
-            Log.fine("Loaded access token is empty");
+            Log.warning("Access token is emtpy");
             return false;
         }
+
+        Log.fine("Using stored credentials");
 
         // getting the client
         m_client = new DbxClient(m_config, accessToken);
@@ -145,28 +140,19 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
 
         // save the access token for reuse
+        try
         {
-            java.io.File outfile = new java.io.File(System.getProperty("user.home"), "tmp/nimbus/dropbox."+userid);
+            BufferedWriter writer = FileUtils.getWriter("/tmp/nimbus/creds/dropbox_"+userid);
 
-            try
-            {
-                if (!outfile.exists())
-                {
-                    Log.fine("Creating file: "+outfile.getAbsolutePath());
-                    outfile.createNewFile();
-                }
-
-                BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
-                writer.write(accessToken, 0, accessToken.length());
-                writer.flush();
-                writer.close();
-
-                Log.fine("Saved access token");
-            }
-            catch (IOException ex)
-            {
-                Log.throwing("login", ex);
-            }
+            writer.write(accessToken, 0, accessToken.length());
+            writer.newLine();
+            writer.flush();
+            writer.close();
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("login", ex);
+            return false;
         }
 
         return login(userid);
