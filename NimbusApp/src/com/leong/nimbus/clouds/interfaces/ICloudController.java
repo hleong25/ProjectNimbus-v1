@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import java.awt.Component;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ import java.util.List;
  */
 public interface ICloudController<T>
 {
+    boolean login(Component parentComponent, String userid);
+
     T getRoot();
     T getItemById(String id, boolean useCache);
     T getParent(T item);

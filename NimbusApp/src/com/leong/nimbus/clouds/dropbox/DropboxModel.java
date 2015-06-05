@@ -54,6 +54,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         Log.entering("<init>");
     }
 
+    @Override
     public String getAuthUrl()
     {
         Log.entering("getAuthUrl");
@@ -62,6 +63,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         return url;
     }
 
+    @Override
     public boolean login(String userid)
     {
         Log.entering("login", new Object[]{userid});
@@ -111,6 +113,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         return true;
     }
 
+    @Override
     public boolean login(String userid, String authCode)
     {
         Log.entering("login", new Object[]{userid, authCode});

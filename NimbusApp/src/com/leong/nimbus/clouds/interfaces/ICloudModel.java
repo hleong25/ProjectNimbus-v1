@@ -13,6 +13,10 @@ import java.util.List;
  */
 public interface ICloudModel<T>
 {
+    boolean login(String userid);
+    boolean login(String userid, String authCode);
+    String getAuthUrl();
+
     T getRoot();
     T getItemById(String id);
     List<T> getChildrenItems(T parent);

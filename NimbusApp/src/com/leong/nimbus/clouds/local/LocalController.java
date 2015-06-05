@@ -9,6 +9,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
+import java.awt.Component;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -49,6 +50,12 @@ public class LocalController implements ICloudController<java.io.File>
             }
         };
 
+    }
+
+    @Override
+    public boolean login(Component parentComponent, String userid)
+    {
+        return true;
     }
 
     @Override
