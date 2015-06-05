@@ -117,11 +117,11 @@ public class GDrivePanel
     }
 
     @Override
-    public boolean login()
+    public boolean login(String userid)
     {
-        Log.entering("login");
+        Log.entering("login", new Object[]{userid});
 
-        if (m_controller.login(GDrivePanel.this, "henry"))
+        if (m_controller.login(GDrivePanel.this, userid))
         {
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {

@@ -90,7 +90,7 @@ public class LocalPanel
     }
 
     @Override
-    public boolean login()
+    public boolean login(String userid)
     {
         Log.entering("login");
         return true;

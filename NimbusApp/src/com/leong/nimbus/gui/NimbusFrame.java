@@ -89,7 +89,7 @@ public class NimbusFrame extends javax.swing.JFrame
             @Override
             public void run()
             {
-                if (!pnl.login())
+                if (!pnl.login("henry"))
                 {
                     Log.severe("Failed to login");
                 }
