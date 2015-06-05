@@ -95,26 +95,6 @@ public class GDrivePanel
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
     {//GEN-HEADEREND:event_btnConnectActionPerformed
-        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
-            {
-                @Override
-                public void run()
-                {
-                    if (m_controller.login(GDrivePanel.this, "henry"))
-                    {
-                        new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
-                            {
-                                @Override
-                                public boolean onAction_drop(List list)
-                                {
-                                    return GDrivePanel.this.onAction_drop(list);
-                                }
-                            });
-
-                            showFiles(m_controller.getRoot(), false);
-                        }
-                    }
-                });
     }//GEN-LAST:event_btnConnectActionPerformed
 
 
@@ -134,6 +114,29 @@ public class GDrivePanel
         pnlFiles.setProxy(this);
 
         txtPath.setText("");
+    }
+
+    @Override
+    public boolean login()
+    {
+        Log.entering("login");
+
+        if (m_controller.login(GDrivePanel.this, "henry"))
+        {
+            new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+            {
+                @Override
+                public boolean onAction_drop(List list)
+                {
+                    return GDrivePanel.this.onAction_drop(list);
+                }
+            });
+
+            showFiles(m_controller.getRoot(), false);
+            return true;
+        }
+
+        return false;
     }
 
     @Override

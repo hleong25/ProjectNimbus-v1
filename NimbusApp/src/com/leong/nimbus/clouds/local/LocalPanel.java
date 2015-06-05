@@ -90,6 +90,13 @@ public class LocalPanel
     }
 
     @Override
+    public boolean login()
+    {
+        Log.entering("login");
+        return true;
+    }
+
+    @Override
     public String getAbsolutePath(File item)
     {
         Log.entering("getAbsolutePath", new Object[]{item});

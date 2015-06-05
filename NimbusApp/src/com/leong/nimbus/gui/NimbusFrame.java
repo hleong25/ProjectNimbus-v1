@@ -6,9 +6,11 @@
 package com.leong.nimbus.gui;
 
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
+import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.Tools;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
@@ -69,6 +71,8 @@ public class NimbusFrame extends javax.swing.JFrame
 
     public static NimbusFrame setupMainPanel(CloudType type)
     {
+        Log.entering("setupMainPanel");
+
         NimbusFrame frame = new NimbusFrame();
 
         String cardName = CloudTypeStrings.get(type);
@@ -76,8 +80,20 @@ public class NimbusFrame extends javax.swing.JFrame
         frame.setTitle(cardName);
         ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);
 
-        ICloudPanel<?> pnl = frame.getCurrentCloudPanel();
+        final ICloudPanel<?> pnl = frame.getCurrentCloudPanel();
         pnl.initPanel();
+
+        BusyTaskCursor.doTask(frame, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                if (!pnl.login())
+                {
+                    Log.severe("Failed to login");
+                }
+            }
+        });
 
         return frame;
     }

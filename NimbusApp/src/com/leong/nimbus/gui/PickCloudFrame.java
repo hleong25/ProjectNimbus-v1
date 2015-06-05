@@ -181,7 +181,7 @@ public class PickCloudFrame extends javax.swing.JFrame
         }
         else
         {
-            Log.warning(MessageFormat.format("Unknown type: {0}", type.toString()));
+            //Log.warning(MessageFormat.format("Unknown type: {0}", type.toString()));
         }
 
         // kill me

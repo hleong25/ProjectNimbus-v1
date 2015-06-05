@@ -96,19 +96,6 @@ public class DropboxPanel
             @Override
             public void run()
             {
-                if (m_controller.login(DropboxPanel.this, "henry"))
-                {
-                    new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
-                    {
-                        @Override
-                        public boolean onAction_drop(List list)
-                        {
-                            return DropboxPanel.this.onAction_drop(list);
-                        }
-                    });
-
-                    showFiles(m_controller.getRoot(), false);
-                }
             }
         });
     }//GEN-LAST:event_btnConnectActionPerformed
@@ -130,6 +117,29 @@ public class DropboxPanel
         pnlFiles.setProxy(this);
 
         txtPath.setText("");
+    }
+
+    @Override
+    public boolean login()
+    {
+        Log.entering("login");
+
+        if (m_controller.login(DropboxPanel.this, "henry"))
+        {
+            new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+            {
+                @Override
+                public boolean onAction_drop(List list)
+                {
+                    return DropboxPanel.this.onAction_drop(list);
+                }
+            });
+
+            showFiles(m_controller.getRoot(), false);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
