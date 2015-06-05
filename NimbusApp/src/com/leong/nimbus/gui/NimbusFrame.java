@@ -72,6 +72,7 @@ public class NimbusFrame extends javax.swing.JFrame
     public static NimbusFrame setupMainPanel(CloudType type)
     {
         Log.entering("setupMainPanel");
+        // TODO: param userid to pass to pnl.login
 
         NimbusFrame frame = new NimbusFrame();
 
