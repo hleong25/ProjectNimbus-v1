@@ -22,7 +22,7 @@ public interface ICloudTransfer<S, T>
     S getSourceObject();
     T getTargetObject();
 
-    void setTransferredObject(Object obj); // function has cast
+    void setTransferredObject(T obj);
     T getTransferredObject();
 
     InputStream getInputStream();

@@ -6,70 +6,32 @@
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.dropbox.core.DbxEntry;
-import com.leong.nimbus.clouds.interfaces.ICloudProgress;
-import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  * @author henry
  */
 public class LocalToDropboxTransferAdapter
-    implements ICloudTransfer<java.io.File, DbxEntry.File>
+    extends CloudTransferAdapter<java.io.File, DbxEntry.File>
 {
     private static final Logit Log = Logit.create(LocalToDropboxTransferAdapter.class.getName());
 
-    protected final java.io.File m_source;
-    protected final DbxEntry.File m_target;
-
-    protected DbxEntry.File m_xferred;
-
-    private ICloudProgress m_progress;
-
-    private AtomicBoolean m_canTransfer;
-
     public LocalToDropboxTransferAdapter(java.io.File source, DbxEntry.File target)
     {
-        m_source = source;
-        m_target = target;
+        super(source, target);
     }
 
     @Override
     public long getFilesize()
     {
         return m_source.length();
-    }
-
-    @Override
-    public File getSourceObject()
-    {
-        return m_source;
-    }
-
-    @Override
-    public DbxEntry.File getTargetObject()
-    {
-        return m_target;
-    }
-
-    @Override
-    public void setTransferredObject(Object obj)
-    {
-        m_xferred = (DbxEntry.File) obj;
-    }
-
-    @Override
-    public DbxEntry.File getTransferredObject()
-    {
-        return m_xferred;
     }
 
     @Override
@@ -108,29 +70,4 @@ public class LocalToDropboxTransferAdapter
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    @Override
-    public void setProgressHandler(ICloudProgress progress)
-    {
-        m_progress = progress;
-    }
-
-    @Override
-    public ICloudProgress getProgressHandler()
-    {
-        return m_progress;
-    }
-
-    @Override
-    public void setCanTransfer(AtomicBoolean canTransfer)
-    {
-        m_canTransfer = canTransfer;
-    }
-
-    @Override
-    public boolean getCanTransfer()
-    {
-        return m_canTransfer.get();
-    }
-
 }

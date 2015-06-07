@@ -195,7 +195,7 @@ public class DropboxController implements ICloudController<DbxEntry>
     }
 
     @Override
-    public void transfer(ICloudTransfer<?,?> transfer)
+    public void transfer(ICloudTransfer<?,? super DbxEntry> transfer)
     {
         m_model.transfer(transfer);
 

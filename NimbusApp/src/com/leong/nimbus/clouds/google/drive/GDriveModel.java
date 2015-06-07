@@ -273,7 +273,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return list;
     }
 
-    public void transfer(ICloudTransfer transfer)
+    public void transfer(ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
     {
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java

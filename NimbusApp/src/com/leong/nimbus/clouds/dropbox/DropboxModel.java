@@ -230,7 +230,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     }
 
     @Override
-    public void transfer(ICloudTransfer<?, ?> transfer)
+    public void transfer(ICloudTransfer<?, ? super DbxEntry> transfer)
     {
         final InputStream is = transfer.getInputStream();
 

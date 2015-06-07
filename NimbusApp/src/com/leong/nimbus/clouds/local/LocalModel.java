@@ -79,7 +79,7 @@ public class LocalModel implements ICloudModel<java.io.File>
     }
 
     @Override
-    public void transfer(ICloudTransfer<?,?> transfer)
+    public void transfer(ICloudTransfer<?,? super java.io.File> transfer)
     {
         InputStream is = transfer.getInputStream();
         OutputStream os = transfer.getOutputStream();

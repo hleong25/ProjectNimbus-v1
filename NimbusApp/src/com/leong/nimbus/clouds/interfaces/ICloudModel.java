@@ -21,5 +21,6 @@ public interface ICloudModel<T>
     T getItemById(String id);
     List<T> getChildrenItems(T parent);
 
-    void transfer(ICloudTransfer<?,?> transfer);
+    // target must be of type T
+    void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
 }

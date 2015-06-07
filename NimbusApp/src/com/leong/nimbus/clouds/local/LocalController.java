@@ -102,7 +102,7 @@ public class LocalController implements ICloudController<java.io.File>
     }
 
     @Override
-    public void transfer(ICloudTransfer<?,?> transfer)
+    public void transfer(ICloudTransfer<?,? super java.io.File> transfer)
     {
         m_model.transfer(transfer);
 

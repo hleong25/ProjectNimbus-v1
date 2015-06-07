@@ -21,6 +21,7 @@ public interface ICloudController<T>
     T getParent(T item);
     List<T> getChildrenItems(T parent, boolean useCache);
 
-    void transfer(ICloudTransfer<?,?> transfer);
+    // target must be of type T
+    void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
 
 }
