@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui.helpers;
 
+import com.leong.nimbus.gui.datatransfer.TransferableAdapter;
 import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -26,6 +27,8 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
         // do nothing
     }
 
+    public abstract boolean onAction_drop(List list);
+
     @Override
     public void drop(DropTargetDropEvent dtde)
     {
@@ -45,25 +48,50 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
         {
             try
             {
+                final List files;
+
                 // If the drop items are files
                 if (flavor.isFlavorJavaFileListType())
                 {
+                    Log.fine("Drag&Drop from system");
+                    Log.fine("Flavor mime: "+flavor.getMimeType());
                     // Get all of the dropped files
-                    final List files = (List) transferable.getTransferData(flavor);
-
-                    ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            onAction_drop(files);
-                        }
-                    });
+                    files = (List) transferable.getTransferData(flavor);
+                }
+                else if (flavor == TransferableAdapter.LocalFileFlavor)
+                {
+                    Log.fine("Drag&Drop from local file");
+                    Log.fine("Flavor mime: "+flavor.getMimeType());
+                    files = (List)transferable.getTransferData(flavor);
+                }
+                else if (flavor == TransferableAdapter.GDriveFileFlavor)
+                {
+                    Log.fine("Drag&Drop from gdrive file");
+                    Log.fine("Flavor mime: "+flavor.getMimeType());
+                    files = (List)transferable.getTransferData(flavor);
+                }
+                else if (flavor == TransferableAdapter.DropboxFileFlavor)
+                {
+                    Log.fine("Drag&Drop from dropbox file");
+                    Log.fine("Flavor mime: "+flavor.getMimeType());
+                    files = (List)transferable.getTransferData(flavor);
                 }
                 else
                 {
-                    //Log.fine("Unknown flavor: "+flavor);
+                    files = null;
                 }
+
+                ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (files != null)
+                        {
+                            onAction_drop(files);
+                        }
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -74,6 +102,4 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
         // Inform that the drop is complete
         dtde.dropComplete(true);
     }
-
-    public abstract boolean onAction_drop(List list);
 }

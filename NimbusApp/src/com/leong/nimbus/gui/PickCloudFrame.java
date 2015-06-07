@@ -5,8 +5,8 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.utils.Logit;
-import java.text.MessageFormat;
 import javax.swing.ImageIcon;
 
 /**
@@ -103,17 +103,17 @@ public class PickCloudFrame extends javax.swing.JFrame
 
     private void btnGoogleDriveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnGoogleDriveActionPerformed
     {//GEN-HEADEREND:event_btnGoogleDriveActionPerformed
-        showAndDispose(NimbusFrame.CloudType.GOOGLE_DRIVE);
+        showAndDispose(CloudType.GOOGLE_DRIVE);
     }//GEN-LAST:event_btnGoogleDriveActionPerformed
 
     private void btnLocalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLocalActionPerformed
     {//GEN-HEADEREND:event_btnLocalActionPerformed
-        showAndDispose(NimbusFrame.CloudType.LOCAL_FILE_SYSTEM);
+        showAndDispose(CloudType.LOCAL_FILE_SYSTEM);
     }//GEN-LAST:event_btnLocalActionPerformed
 
     private void btnDropboxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnDropboxActionPerformed
     {//GEN-HEADEREND:event_btnDropboxActionPerformed
-        showAndDispose(NimbusFrame.CloudType.DROPBOX);
+        showAndDispose(CloudType.DROPBOX);
     }//GEN-LAST:event_btnDropboxActionPerformed
 
     public static void showMe()
@@ -168,7 +168,7 @@ public class PickCloudFrame extends javax.swing.JFrame
         });
     }
 
-    protected void showAndDispose(NimbusFrame.CloudType type)
+    protected void showAndDispose(CloudType type)
     {
         NimbusFrame frame = NimbusFrame.setupMainPanel(type);
 

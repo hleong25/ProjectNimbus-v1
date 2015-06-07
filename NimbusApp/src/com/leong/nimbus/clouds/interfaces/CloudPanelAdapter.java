@@ -213,6 +213,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         for (Object obj : list)
         {
+            if (true) throw new RuntimeException("TODO: setup createXferHolder for each cloud type");
             XferHolder holder = createXferHolder((java.io.File)obj);
             holder.xfer.setCanTransfer(m_canTransfer);
 
@@ -262,6 +263,8 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
         Log.entering("onAction_drop", new Object[]{list});
 
         List<XferHolder> uploadFiles = generateTransferList(list);
+
+        if (true) return true;
 
         if (doTransferLoop(uploadFiles))
         {

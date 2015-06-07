@@ -10,7 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  *
@@ -71,5 +70,10 @@ public class FileItemPanelGroup
             oldPnls.setHighlight(false);
         }
         m_selectedPanels.clear();
+    }
+
+    public final List<FileItemPanel> getSelected()
+    {
+        return m_selectedPanels;
     }
 }

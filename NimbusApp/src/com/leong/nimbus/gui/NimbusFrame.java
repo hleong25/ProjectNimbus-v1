@@ -5,19 +5,17 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import com.leong.nimbus.utils.Logit;
-import com.leong.nimbus.utils.Tools;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -26,22 +24,6 @@ import java.util.Map;
 public class NimbusFrame extends javax.swing.JFrame
 {
     private static final Logit Log = Logit.create(NimbusFrame.class.getName());
-
-    public static enum CloudType
-    {
-        LOCAL_FILE_SYSTEM,
-        GOOGLE_DRIVE,
-        DROPBOX,
-    }
-
-    private static final Map<CloudType, String> CloudTypeStrings;
-    static
-    {
-        CloudTypeStrings = new EnumMap<>(CloudType.class);
-        CloudTypeStrings.put(CloudType.LOCAL_FILE_SYSTEM, "Local File System");
-        CloudTypeStrings.put(CloudType.GOOGLE_DRIVE, "Google Drive");
-        CloudTypeStrings.put(CloudType.DROPBOX, "Dropbox");
-    };
 
     private final Runnable m_run;
 
@@ -76,7 +58,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
         NimbusFrame frame = new NimbusFrame();
 
-        String cardName = CloudTypeStrings.get(type);
+        String cardName = type.toString();
 
         frame.setTitle(cardName);
         ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);

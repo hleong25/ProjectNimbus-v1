@@ -10,6 +10,7 @@ import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToLocalTransferA
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.datatransfer.ListLocalTransferable;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;

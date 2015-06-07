@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.google.drive.gui;
 
 import com.google.api.services.drive.model.File;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.google.drive.GDriveConstants;
 import com.leong.nimbus.gui.components.IFileItem;
 import com.leong.nimbus.utils.Logit;
@@ -15,7 +16,7 @@ import javax.swing.ImageIcon;
  *
  * @author henry
  */
-public class GDriveFileItem implements IFileItem
+public class GDriveFileItem implements IFileItem<File>
 {
     private static final Logit Log = Logit.create(GDriveFileItem.class.getName());
 
@@ -24,6 +25,18 @@ public class GDriveFileItem implements IFileItem
     public GDriveFileItem(File item)
     {
         m_item = item;
+    }
+
+    @Override
+    public CloudType getCloudType()
+    {
+        return CloudType.GOOGLE_DRIVE;
+    }
+
+    @Override
+    public File getCloudObject()
+    {
+        return m_item;
     }
 
     @Override

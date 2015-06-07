@@ -11,7 +11,7 @@ import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToGDriveTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
-import com.leong.nimbus.gui.helpers.BusyTaskCursor;
+import com.leong.nimbus.gui.datatransfer.ListGDriveTransferable;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;

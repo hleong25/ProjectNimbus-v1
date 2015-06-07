@@ -1,6 +1,7 @@
 package com.leong.nimbus.clouds.local.gui;
 
 
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.gui.components.IFileItem;
 import java.io.File;
 import javax.swing.ImageIcon;
@@ -15,13 +16,25 @@ import javax.swing.ImageIcon;
  *
  * @author henry
  */
-public class LocalFileItem implements IFileItem
+public class LocalFileItem implements IFileItem<File>
 {
     protected final File m_item;
 
     public LocalFileItem(File item)
     {
         m_item = item;
+    }
+
+    @Override
+    public CloudType getCloudType()
+    {
+        return CloudType.LOCAL_FILE_SYSTEM;
+    }
+
+    @Override
+    public File getCloudObject()
+    {
+        return m_item;
     }
 
     @Override
@@ -50,5 +63,4 @@ public class LocalFileItem implements IFileItem
     {
         return m_item.getName();
     }
-
 }

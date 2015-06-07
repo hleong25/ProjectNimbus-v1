@@ -5,18 +5,33 @@
  */
 package com.leong.nimbus.gui.components;
 
+import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.gui.datatransfer.ListDropboxTransferable;
+import com.leong.nimbus.gui.datatransfer.ListGDriveTransferable;
+import com.leong.nimbus.gui.datatransfer.ListLocalTransferable;
 import com.leong.nimbus.gui.helpers.ColorFactory;
 import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
-import com.leong.nimbus.utils.Tools;
-import java.awt.Color;
+import com.leong.nimbus.utils.Logit;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.util.List;
 
 /**
  *
  * @author henry
  */
-public class FileItemPanel extends javax.swing.JPanel
+public class FileItemPanel
+    extends javax.swing.JPanel
+    implements DragGestureListener
 {
+    private static final Logit Log = Logit.create(FileItemPanel.class.getName());
+
+    protected final IFileItem m_item;
     protected FileItemPanelGroup m_group = null;
 
     /**
@@ -28,13 +43,15 @@ public class FileItemPanel extends javax.swing.JPanel
 
         m_item = item;
 
+        DragSource ds = new DragSource();
+        ds.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY, this);
+
         lblIcon.setIcon(m_item.getIcon());
         lblIcon.setText(null);
 
         lblLabel.setText(getHtmlLabel(m_item.getLabel()));
 
         progbar.setVisible(false);
-
     }
 
     /**
@@ -75,8 +92,6 @@ public class FileItemPanel extends javax.swing.JPanel
     private javax.swing.JLabel lblLabel;
     private javax.swing.JProgressBar progbar;
     // End of variables declaration//GEN-END:variables
-
-    protected IFileItem m_item;
 
     public IFileItem getFileItem()
     {
@@ -146,5 +161,49 @@ public class FileItemPanel extends javax.swing.JPanel
     public FileItemPanelGroup getGroup()
     {
         return m_group;
+    }
+
+    @Override
+    public void dragGestureRecognized(DragGestureEvent dge)
+    {
+        Log.entering("dragGestureRecognized");
+
+        if (m_group == null)
+        {
+            Log.finer("Panel group not defined.");
+            return;
+        }
+
+        Cursor cursor = null;
+
+        if (dge.getDragAction() == DnDConstants.ACTION_COPY)
+        {
+            cursor = DragSource.DefaultCopyDrop;
+        }
+
+        Transferable transferableObjects = null;
+
+        if (m_item.getCloudType() == CloudType.LOCAL_FILE_SYSTEM)
+        {
+            transferableObjects = ListLocalTransferable.createInstance(m_group.getSelected());
+        }
+        else if (m_item.getCloudType() == CloudType.GOOGLE_DRIVE)
+        {
+            transferableObjects = ListGDriveTransferable.createInstance(m_group.getSelected());
+        }
+        else if (m_item.getCloudType() == CloudType.DROPBOX)
+        {
+            transferableObjects = ListDropboxTransferable.createInstance(m_group.getSelected());
+        }
+        else
+        {
+            Log.fine("not supported drag type");
+            return;
+        }
+
+        if (transferableObjects != null)
+        {
+            dge.startDrag(cursor, transferableObjects);
+        }
     }
 }
