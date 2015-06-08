@@ -5,7 +5,9 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import com.leong.nimbus.clouds.CloudType;
 import java.awt.Component;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -13,7 +15,10 @@ import java.util.List;
  * @author henry
  */
 public interface ICloudController<T>
+    extends java.io.Serializable
 {
+    CloudType getCloudType();
+
     boolean login(Component parentComponent, String userid);
 
     T getRoot();
@@ -23,5 +28,6 @@ public interface ICloudController<T>
 
     // target must be of type T
     void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
+    InputStream getDownloadStream(T downloadFile);
 
 }

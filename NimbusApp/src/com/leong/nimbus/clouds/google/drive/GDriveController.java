@@ -7,6 +7,7 @@ package com.leong.nimbus.clouds.google.drive;
 
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.ParentReference;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
@@ -15,6 +16,7 @@ import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
+import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+
+// TODO: this class has an unchecked or unsafe operation
 
 /**
  *
@@ -34,9 +38,9 @@ public class GDriveController implements ICloudController<com.google.api.service
 
     private final GDriveModel m_model = new GDriveModel();
 
-    private final Comparator<File> m_comparatorFiles;
-    private final Map<File, List<File>> m_cachedListFiles = new HashMap<>();
-    private final Map<String, File> m_cachedFiles = new HashMap<>();
+    private final transient Comparator<File> m_comparatorFiles;
+    private final transient Map<File, List<File>> m_cachedListFiles = new HashMap<>();
+    private final transient Map<String, File> m_cachedFiles = new HashMap<>();
 
     public GDriveController()
     {
@@ -63,6 +67,25 @@ public class GDriveController implements ICloudController<com.google.api.service
     public static GDriveController createInstance()
     {
         return new GDriveController();
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws java.io.IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+        throws java.io.IOException, ClassNotFoundException
+
+    {
+        in.defaultReadObject();
+    }
+
+    @Override
+    public CloudType getCloudType()
+    {
+        return CloudType.GOOGLE_DRIVE;
     }
 
     @Override
@@ -218,6 +241,12 @@ public class GDriveController implements ICloudController<com.google.api.service
         m_model.transfer(transfer);
 
         Tools.notifyAll(transfer);
+    }
+
+    @Override
+    public InputStream getDownloadStream(File downloadFile)
+    {
+        return m_model.getDownloadStream(downloadFile);
     }
     
 }

@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.dropbox;
 
 import com.dropbox.core.DbxEntry;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
@@ -14,6 +15,7 @@ import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,9 +33,9 @@ public class DropboxController implements ICloudController<DbxEntry>
 
     private final DropboxModel m_model = new DropboxModel();
 
-    private final Comparator<DbxEntry> m_comparatorFiles;
-    private final Map<DbxEntry, List<DbxEntry>> m_cachedListFiles = new HashMap<>();
-    private final Map<String, DbxEntry> m_cachedFiles = new HashMap<>();
+    private final transient Comparator<DbxEntry> m_comparatorFiles;
+    private final transient Map<DbxEntry, List<DbxEntry>> m_cachedListFiles = new HashMap<>();
+    private final transient Map<String, DbxEntry> m_cachedFiles = new HashMap<>();
 
     public DropboxController()
     {
@@ -55,6 +57,25 @@ public class DropboxController implements ICloudController<DbxEntry>
                 return f1.name.compareTo(f2.name);
             }
         };
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws java.io.IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+        throws java.io.IOException, ClassNotFoundException
+
+    {
+        in.defaultReadObject();
+    }
+
+    @Override
+    public CloudType getCloudType()
+    {
+        return CloudType.DROPBOX;
     }
 
     @Override
@@ -214,6 +235,12 @@ public class DropboxController implements ICloudController<DbxEntry>
         String rev = "1";
 
         return new DbxEntry.File(path, iconName, mightHaveThumbnail, numBytes, humanSize, lastModified, clientMtime, rev);
+    }
+
+    @Override
+    public InputStream getDownloadStream(DbxEntry downloadFile)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

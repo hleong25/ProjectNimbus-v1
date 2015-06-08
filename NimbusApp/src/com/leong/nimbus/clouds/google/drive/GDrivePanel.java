@@ -6,12 +6,13 @@
 package com.leong.nimbus.clouds.google.drive;
 
 import com.google.api.services.drive.model.File;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToGDriveTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
-import com.leong.nimbus.gui.datatransfer.ListGDriveTransferable;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
@@ -126,9 +127,9 @@ public class GDrivePanel
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {
                 @Override
-                public boolean onAction_drop(List list)
+                public boolean onAction_drop(CloudType type, ICloudController controller, List list)
                 {
-                    return GDrivePanel.this.onAction_drop(list);
+                    return GDrivePanel.this.onAction_drop(type, controller, list);
                 }
             });
 
@@ -183,7 +184,7 @@ public class GDrivePanel
     @Override
     public FileItemPanel createFileItemPanel(File file)
     {
-        FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(file));
+        FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(m_controller, file));
 
         pnl.setBackground(Color.WHITE);
 
@@ -206,18 +207,20 @@ public class GDrivePanel
     }
 
     @Override
-    public XferHolder createXferHolder(java.io.File file)
+    public XferHolder createXferHolder(CloudType inputType, ICloudController inputController, Object input)
     {
-        final java.io.File inputFile = file;
-        final com.google.api.services.drive.model.File outputFile = m_controller.generateMetadata(m_currentPath, inputFile);
-        final FileItemPanel pnl = createFileItemPanel(outputFile);
+        return null;
+        //final java.io.File inputFile = file;
+        //final com.google.api.services.drive.model.File outputFile = m_controller.generateMetadata(m_currentPath, inputFile);
+        //final FileItemPanel pnl = createFileItemPanel(outputFile);
 
-        pnl.showProgress(true);
+        //pnl.showProgress(true);
 
-        XferHolder<java.io.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
-        holder.xfer = new LocalToGDriveTransferAdapter(inputFile, outputFile);
-        holder.pnl = pnl;
+        //XferHolder<java.io.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
+        //holder.xfer = new LocalToGDriveTransferAdapter(inputFile, outputFile);
+        //holder.pnl = pnl;
 
-        return holder;
+        //return holder;
     }
+
 }

@@ -5,12 +5,14 @@
  */
 package com.leong.nimbus.clouds.local;
 
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Component;
 import java.io.File;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,8 +30,8 @@ public class LocalController implements ICloudController<java.io.File>
 
     private final LocalModel m_model = new LocalModel();
 
-    private final Comparator<File> m_comparatorFiles;
-    private final Map<File, List<File>> m_cachedChildren = new HashMap<>();
+    private final transient Comparator<File> m_comparatorFiles;
+    private final transient Map<File, List<File>> m_cachedChildren = new HashMap<>();
 
     public LocalController()
     {
@@ -50,6 +52,25 @@ public class LocalController implements ICloudController<java.io.File>
             }
         };
 
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws java.io.IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+        throws java.io.IOException, ClassNotFoundException
+
+    {
+        in.defaultReadObject();
+    }
+
+    @Override
+    public CloudType getCloudType()
+    {
+        return CloudType.LOCAL_FILE_SYSTEM;
     }
 
     @Override
@@ -107,5 +128,11 @@ public class LocalController implements ICloudController<java.io.File>
         m_model.transfer(transfer);
 
         Tools.notifyAll(transfer);
+    }
+
+    @Override
+    public InputStream getDownloadStream(File downloadFile)
+    {
+        return m_model.getDownloadStream(downloadFile);
     }
 }

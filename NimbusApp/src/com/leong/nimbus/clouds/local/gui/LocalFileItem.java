@@ -2,6 +2,7 @@ package com.leong.nimbus.clouds.local.gui;
 
 
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.IFileItem;
 import java.io.File;
 import javax.swing.ImageIcon;
@@ -18,17 +19,19 @@ import javax.swing.ImageIcon;
  */
 public class LocalFileItem implements IFileItem<File>
 {
+    protected final ICloudController<File> m_controller;
     protected final File m_item;
 
-    public LocalFileItem(File item)
+    public LocalFileItem(ICloudController<File> controller, File item)
     {
+        m_controller = controller;
         m_item = item;
     }
 
     @Override
-    public CloudType getCloudType()
+    public ICloudController<File> getCloudController()
     {
-        return CloudType.LOCAL_FILE_SYSTEM;
+        return m_controller;
     }
 
     @Override

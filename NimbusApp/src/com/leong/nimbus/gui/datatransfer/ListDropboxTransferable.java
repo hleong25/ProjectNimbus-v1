@@ -7,6 +7,7 @@ package com.leong.nimbus.gui.datatransfer;
 
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
@@ -25,9 +26,9 @@ public class ListDropboxTransferable
         DropboxFileFlavor
     };
 
-    public ListDropboxTransferable()
+    public ListDropboxTransferable(ICloudController controller)
     {
-        // empty
+        super(controller);
     }
 
     @Override
@@ -36,9 +37,9 @@ public class ListDropboxTransferable
         return DropboxFlavors;
     }
 
-    public static ListDropboxTransferable createInstance(List<FileItemPanel> pnls)
+    public static ListDropboxTransferable createInstance(ICloudController controller, List<FileItemPanel> pnls)
     {
-        ListDropboxTransferable list = new ListDropboxTransferable();
+        ListDropboxTransferable list = new ListDropboxTransferable(controller);
 
         for (FileItemPanel pnl : pnls)
         {

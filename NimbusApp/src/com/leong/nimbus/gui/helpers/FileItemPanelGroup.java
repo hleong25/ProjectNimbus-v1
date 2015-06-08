@@ -6,6 +6,7 @@
 package com.leong.nimbus.gui.helpers;
 
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.utils.Logit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.List;
  */
 public class FileItemPanelGroup
 {
+    private static final Logit Log = Logit.create(FileItemPanelGroup.class.getName());
+
     private final List<FileItemPanel> m_allPanels = new ArrayList<>();
     private final List<FileItemPanel> m_selectedPanels = new ArrayList<>();
 
@@ -74,6 +77,7 @@ public class FileItemPanelGroup
 
     public final List<FileItemPanel> getSelected()
     {
+        Log.fine("count:"+m_selectedPanels.size());
         return m_selectedPanels;
     }
 }

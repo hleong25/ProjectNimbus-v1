@@ -54,6 +54,19 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         Log.entering("<init>");
     }
 
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws java.io.IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+        throws java.io.IOException, ClassNotFoundException
+
+    {
+        in.defaultReadObject();
+    }
+
     @Override
     public String getAuthUrl()
     {
@@ -292,5 +305,11 @@ public class DropboxModel implements ICloudModel<DbxEntry>
                 Log.throwing("transfer", ex);
             }
         }
+    }
+
+    @Override
+    public InputStream getDownloadStream(DbxEntry downloadFile)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

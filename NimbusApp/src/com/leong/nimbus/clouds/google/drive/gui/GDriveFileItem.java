@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.google.drive.gui;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.google.drive.GDriveConstants;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.IFileItem;
 import com.leong.nimbus.utils.Logit;
 import javax.swing.ImageIcon;
@@ -20,17 +21,19 @@ public class GDriveFileItem implements IFileItem<File>
 {
     private static final Logit Log = Logit.create(GDriveFileItem.class.getName());
 
+    protected final ICloudController<File> m_controller;
     protected final File m_item;
 
-    public GDriveFileItem(File item)
+    public GDriveFileItem(ICloudController<File> controller, File item)
     {
+        m_controller = controller;
         m_item = item;
     }
 
     @Override
-    public CloudType getCloudType()
+    public ICloudController<File> getCloudController()
     {
-        return CloudType.GOOGLE_DRIVE;
+        return m_controller;
     }
 
     @Override

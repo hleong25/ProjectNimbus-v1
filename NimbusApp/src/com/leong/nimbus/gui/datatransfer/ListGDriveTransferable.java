@@ -7,6 +7,7 @@ package com.leong.nimbus.gui.datatransfer;
 
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
@@ -25,9 +26,9 @@ public class ListGDriveTransferable
         GDriveFileFlavor
     };
 
-    public ListGDriveTransferable()
+    public ListGDriveTransferable(ICloudController controller)
     {
-        // empty
+        super(controller);
     }
 
     @Override
@@ -36,9 +37,9 @@ public class ListGDriveTransferable
         return GDriveFlavors;
     }
 
-    public static ListGDriveTransferable createInstance(List<FileItemPanel> pnls)
+    public static ListGDriveTransferable createInstance(ICloudController controller, List<FileItemPanel> pnls)
     {
-        ListGDriveTransferable list = new ListGDriveTransferable();
+        ListGDriveTransferable list = new ListGDriveTransferable(controller);
 
         for (FileItemPanel pnl : pnls)
         {

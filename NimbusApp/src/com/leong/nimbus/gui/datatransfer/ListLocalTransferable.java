@@ -6,6 +6,7 @@
 package com.leong.nimbus.gui.datatransfer;
 
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
@@ -25,9 +26,9 @@ public class ListLocalTransferable
         LocalFileFlavor
     };
 
-    public ListLocalTransferable()
+    public ListLocalTransferable(ICloudController controller)
     {
-        // empty
+        super(controller);
     }
 
     @Override
@@ -36,13 +37,16 @@ public class ListLocalTransferable
         return LocalFlavors;
     }
 
-    public static ListLocalTransferable createInstance(List<FileItemPanel> pnls)
+    public static ListLocalTransferable createInstance(ICloudController controller, List<FileItemPanel> pnls)
     {
-        ListLocalTransferable list = new ListLocalTransferable();
+        Log.entering("createInstance", new Object[] {controller, pnls});
+
+        ListLocalTransferable list = new ListLocalTransferable(controller);
 
         for (FileItemPanel pnl : pnls)
         {
-            if (pnl.getFileItem().getCloudType() != CloudType.LOCAL_FILE_SYSTEM)
+            Log.fine(pnl.getFileItem().getCloudController().getCloudType().toString());
+            if (pnl.getFileItem().getCloudController().getCloudType() != CloudType.LOCAL_FILE_SYSTEM)
             {
                 continue;
             }

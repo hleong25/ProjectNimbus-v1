@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -70,6 +72,19 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         Log.fine("Building new authorization flow");
         m_flow = flowBuilder.build();
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws java.io.IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+        throws java.io.IOException, ClassNotFoundException
+
+    {
+        in.defaultReadObject();
     }
 
     @Override
@@ -331,5 +346,26 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         {
             Log.throwing("transfer", ex);
         }
+    }
+
+    @Override
+    public InputStream getDownloadStream(File downloadFile)
+    {
+        if (Tools.isNullOrEmpty(downloadFile.getDownloadUrl()))
+        {
+            Log.warning("Download stream URL is empty");
+            return null;
+        }
+
+        try
+        {
+            return m_service.files().get(downloadFile.getId()).executeMediaAsInputStream();
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("getDownloadStream", ex);
+        }
+
+        return null;
     }
 }

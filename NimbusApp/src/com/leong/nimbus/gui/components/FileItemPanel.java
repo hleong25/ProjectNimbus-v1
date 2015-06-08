@@ -19,7 +19,6 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
-import java.util.List;
 
 /**
  *
@@ -183,17 +182,17 @@ public class FileItemPanel
 
         Transferable transferableObjects = null;
 
-        if (m_item.getCloudType() == CloudType.LOCAL_FILE_SYSTEM)
+        if (m_item.getCloudController().getCloudType() == CloudType.LOCAL_FILE_SYSTEM)
         {
-            transferableObjects = ListLocalTransferable.createInstance(m_group.getSelected());
+            transferableObjects = ListLocalTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
         }
-        else if (m_item.getCloudType() == CloudType.GOOGLE_DRIVE)
+        else if (m_item.getCloudController().getCloudType() == CloudType.GOOGLE_DRIVE)
         {
-            transferableObjects = ListGDriveTransferable.createInstance(m_group.getSelected());
+            transferableObjects = ListGDriveTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
         }
-        else if (m_item.getCloudType() == CloudType.DROPBOX)
+        else if (m_item.getCloudController().getCloudType() == CloudType.DROPBOX)
         {
-            transferableObjects = ListDropboxTransferable.createInstance(m_group.getSelected());
+            transferableObjects = ListDropboxTransferable.createInstance(m_item.getCloudController(), m_group.getSelected());
         }
         else
         {

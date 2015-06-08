@@ -5,7 +5,10 @@
  */
 package com.leong.nimbus.gui.helpers;
 
+import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.datatransfer.TransferableAdapter;
+import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -27,7 +30,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
         // do nothing
     }
 
-    public abstract boolean onAction_drop(List list);
+    public abstract boolean onAction_drop(TransferableContainer tc);
 
     @Override
     public void drop(DropTargetDropEvent dtde)
@@ -48,7 +51,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
         {
             try
             {
-                final List files;
+                final TransferableContainer tc;
 
                 // If the drop items are files
                 if (flavor.isFlavorJavaFileListType())
@@ -56,29 +59,20 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                     Log.fine("Drag&Drop from system");
                     Log.fine("Flavor mime: "+flavor.getMimeType());
                     // Get all of the dropped files
-                    files = (List) transferable.getTransferData(flavor);
+                    // HL: this might not work
+                    // TODO: check for unchecked or unsafe operations
+                    tc = new TransferableContainer(null, (List) transferable.getTransferData(flavor));
                 }
-                else if (flavor == TransferableAdapter.LocalFileFlavor)
+                else if (TransferableAdapter.isNimbusDataFlavorSupported(flavor))
                 {
-                    Log.fine("Drag&Drop from local file");
+                    Log.fine("Nimbus Drag&Drop");
                     Log.fine("Flavor mime: "+flavor.getMimeType());
-                    files = (List)transferable.getTransferData(flavor);
-                }
-                else if (flavor == TransferableAdapter.GDriveFileFlavor)
-                {
-                    Log.fine("Drag&Drop from gdrive file");
-                    Log.fine("Flavor mime: "+flavor.getMimeType());
-                    files = (List)transferable.getTransferData(flavor);
-                }
-                else if (flavor == TransferableAdapter.DropboxFileFlavor)
-                {
-                    Log.fine("Drag&Drop from dropbox file");
-                    Log.fine("Flavor mime: "+flavor.getMimeType());
-                    files = (List)transferable.getTransferData(flavor);
+                    Log.fine(transferable.toString());
+                    tc = (TransferableContainer) transferable.getTransferData(flavor);
                 }
                 else
                 {
-                    files = null;
+                    tc = null;
                 }
 
                 ResponsiveTaskUI.doTask(new ResponsiveTaskUI.IResponsiveTask()
@@ -86,9 +80,9 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                     @Override
                     public void run()
                     {
-                        if (files != null)
+                        if (tc != null)
                         {
-                            onAction_drop(files);
+                            onAction_drop(tc);
                         }
                     }
                 });

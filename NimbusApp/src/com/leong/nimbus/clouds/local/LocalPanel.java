@@ -5,12 +5,16 @@
  */
 package com.leong.nimbus.clouds.local;
 
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.clouds.interfaces.transferadapters.DropboxToLocalTransferAdapter;
+import com.leong.nimbus.clouds.interfaces.transferadapters.GDriveToLocalTransferAdapter;
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToLocalTransferAdapter;
 import com.leong.nimbus.clouds.local.gui.LocalFileItem;
 import com.leong.nimbus.clouds.local.gui.LocalFileItemPanelMouseAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
-import com.leong.nimbus.gui.datatransfer.ListLocalTransferable;
+import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
@@ -18,6 +22,7 @@ import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -83,9 +88,9 @@ public class LocalPanel
         new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
         {
             @Override
-            public boolean onAction_drop(List list)
+            public boolean onAction_drop(TransferableContainer tc)
             {
-                return LocalPanel.this.onAction_drop(list);
+                return LocalPanel.this.onAction_drop(tc);
             }
         });
     }
@@ -116,7 +121,7 @@ public class LocalPanel
     @Override
     public FileItemPanel createFileItemPanel(File file)
     {
-        FileItemPanel pnl = new FileItemPanel(new LocalFileItem(file));
+        FileItemPanel pnl = new FileItemPanel(new LocalFileItem(m_controller, file));
 
         pnl.setBackground(Color.WHITE);
 
@@ -139,19 +144,74 @@ public class LocalPanel
     }
 
     @Override
-    public XferHolder createXferHolder(File file)
+    public XferHolder createXferHolder(ICloudController inputController, Object input)
     {
-        final File inputFile = file;
-        final File outputFile = new File(m_currentPath, inputFile.getName());
-        final FileItemPanel pnl = createFileItemPanel(inputFile);
+        switch (inputController.getCloudType())
+        {
+            case LOCAL_FILE_SYSTEM:
+            {
+                final File inputFile = (File)input;
+                final File outputFile = new File(m_currentPath, inputFile.getName());
+                final FileItemPanel pnl = createFileItemPanel(outputFile);
 
-        pnl.showProgress(true);
+                pnl.showProgress(true);
 
-        XferHolder<File, File> holder = new XferHolder<>();
-        holder.xfer = new LocalToLocalTransferAdapter(inputFile, outputFile);
-        holder.pnl = pnl;
+                XferHolder<File, File> holder = new XferHolder<>();
+                holder.xfer = new LocalToLocalTransferAdapter(inputFile, outputFile);
+                holder.pnl = pnl;
 
-        return holder;
+                return holder;
+            }
+
+            case GOOGLE_DRIVE:
+            {
+                final com.google.api.services.drive.model.File inputFile = (com.google.api.services.drive.model.File)input;
+                final InputStream stream = inputController.getDownloadStream(inputFile);
+
+                if (stream == null)
+                {
+                    Log.severe("Failed to get download stream");
+                    return null;
+                }
+
+                final File outputFile = new File(m_currentPath, inputFile.getTitle());
+                final FileItemPanel pnl = createFileItemPanel(outputFile);
+
+                pnl.showProgress(true);
+
+                XferHolder<com.google.api.services.drive.model.File, java.io.File> holder = new XferHolder<>();
+                holder.xfer = new GDriveToLocalTransferAdapter(stream, inputFile, outputFile);
+                holder.pnl = pnl;
+
+                return holder;
+            }
+
+            case DROPBOX:
+            {
+                final com.dropbox.core.DbxEntry inputFile = (com.dropbox.core.DbxEntry)input;
+                final InputStream stream = inputController.getDownloadStream(inputFile);
+
+                if (stream == null)
+                {
+                    Log.severe("Failed to get download stream");
+                    return null;
+                }
+
+                final File outputFile = new File(m_currentPath, inputFile.name);
+                final FileItemPanel pnl = createFileItemPanel(outputFile);
+
+                pnl.showProgress(true);
+
+                XferHolder<com.dropbox.core.DbxEntry, java.io.File> holder = new XferHolder<>();
+                holder.xfer = new DropboxToLocalTransferAdapter(stream, inputFile, outputFile);
+                holder.pnl = pnl;
+
+                return holder;
+            }
+
+            default:
+                return null;
+        }
     }
 
 }

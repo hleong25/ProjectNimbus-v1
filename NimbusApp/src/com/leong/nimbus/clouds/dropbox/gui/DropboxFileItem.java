@@ -7,6 +7,7 @@ package com.leong.nimbus.clouds.dropbox.gui;
 
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.IFileItem;
 import javax.swing.ImageIcon;
 
@@ -16,17 +17,19 @@ import javax.swing.ImageIcon;
  */
 public class DropboxFileItem implements IFileItem<DbxEntry>
 {
+    protected final ICloudController<DbxEntry> m_controller;
     protected DbxEntry m_entry;
 
-    public DropboxFileItem(DbxEntry entry)
+    public DropboxFileItem(ICloudController<DbxEntry> controller, DbxEntry entry)
     {
+        m_controller = controller;
         m_entry = entry;
     }
 
     @Override
-    public CloudType getCloudType()
+    public ICloudController<DbxEntry> getCloudController()
     {
-        return CloudType.DROPBOX;
+        return m_controller;
     }
 
     @Override

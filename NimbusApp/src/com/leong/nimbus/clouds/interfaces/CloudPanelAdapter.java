@@ -5,7 +5,9 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.FileItemPanelGroup;
 import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
@@ -203,18 +205,21 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     }
 
     @Override
-    public List<XferHolder> generateTransferList(List list)
+    public List<XferHolder> generateTransferList(TransferableContainer tc)
     {
-        Log.entering("generateTransferList", new Object[]{list});
+        Log.entering("generateTransferList", new Object[]{tc});
 
         final List<XferHolder> uploadFiles = new ArrayList<>();
 
         final JPanel pnlFiles = getFilesPanel();
 
-        for (Object obj : list)
+        final ICloudController controller = tc.getController();
+
+        for (Object obj : tc.getList())
         {
-            if (true) throw new RuntimeException("TODO: setup createXferHolder for each cloud type");
-            XferHolder holder = createXferHolder((java.io.File)obj);
+            Log.fine(obj.toString());
+
+            XferHolder holder = createXferHolder(controller, obj);
             holder.xfer.setCanTransfer(m_canTransfer);
 
             uploadFiles.add(holder);
@@ -258,13 +263,11 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     }
 
     @Override
-    public boolean onAction_drop(List list)
+    public boolean onAction_drop(TransferableContainer tc)
     {
-        Log.entering("onAction_drop", new Object[]{list});
+        Log.entering("onAction_drop", new Object[]{tc});
 
-        List<XferHolder> uploadFiles = generateTransferList(list);
-
-        if (true) return true;
+        List<XferHolder> uploadFiles = generateTransferList(tc);
 
         if (doTransferLoop(uploadFiles))
         {

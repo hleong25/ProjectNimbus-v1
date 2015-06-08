@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ import java.util.List;
  * @author henry
  */
 public interface ICloudModel<T>
+    extends java.io.Serializable
 {
     boolean login(String userid);
     boolean login(String userid, String authCode);
@@ -23,4 +25,5 @@ public interface ICloudModel<T>
 
     // target must be of type T
     void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
+    InputStream getDownloadStream(T downloadFile);
 }

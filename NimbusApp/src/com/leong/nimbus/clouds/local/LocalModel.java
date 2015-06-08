@@ -9,7 +9,10 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.Logit;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +31,19 @@ public class LocalModel implements ICloudModel<java.io.File>
 
     public LocalModel()
     {
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws java.io.IOException
+    {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+        throws java.io.IOException, ClassNotFoundException
+
+    {
+        in.defaultReadObject();
     }
 
     @Override
@@ -144,5 +160,24 @@ public class LocalModel implements ICloudModel<java.io.File>
                 Log.throwing("transfer", ex);
             }
         }
+    }
+
+    @Override
+    public InputStream getDownloadStream(File downloadFile)
+    {
+        // caller must close stream
+        try
+        {
+            final int BUFFER_SIZE = 256*1024;
+            InputStream is = new BufferedInputStream(new FileInputStream(downloadFile), BUFFER_SIZE);
+            return is;
+        }
+        catch (FileNotFoundException ex)
+        {
+            Log.throwing("getDownloadStream", ex);
+        }
+
+        return null;
+
     }
 }

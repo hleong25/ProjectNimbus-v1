@@ -6,10 +6,11 @@
 package com.leong.nimbus.clouds.dropbox;
 
 import com.dropbox.core.DbxEntry;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItem;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
-import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToDropboxTransferAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
@@ -129,9 +130,9 @@ public class DropboxPanel
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {
                 @Override
-                public boolean onAction_drop(List list)
+                public boolean onAction_drop(CloudType type, ICloudController controller, List list)
                 {
-                    return DropboxPanel.this.onAction_drop(list);
+                    return DropboxPanel.this.onAction_drop(type, controller, list);
                 }
             });
 
@@ -161,7 +162,7 @@ public class DropboxPanel
     @Override
     public FileItemPanel createFileItemPanel(DbxEntry file)
     {
-        FileItemPanel pnl = new FileItemPanel(new DropboxFileItem(file));
+        FileItemPanel pnl = new FileItemPanel(new DropboxFileItem(m_controller, file));
 
         pnl.setBackground(Color.WHITE);
 
@@ -184,19 +185,21 @@ public class DropboxPanel
     }
 
     @Override
-    public XferHolder createXferHolder(java.io.File file)
+    public XferHolder createXferHolder(CloudType inputType, ICloudController inputController, Object input)
     {
-        final java.io.File inputFile = (java.io.File) file;
-        final DbxEntry.File outputFile = m_controller.generateFile(m_currentPath.path, inputFile);
-        final FileItemPanel pnl = createFileItemPanel(outputFile);
+        //final java.io.File inputFile = (java.io.File) file;
+        //final DbxEntry.File outputFile = m_controller.generateFile(m_currentPath.path, inputFile);
+        //final FileItemPanel pnl = createFileItemPanel(outputFile);
 
-        pnl.showProgress(true);
+        //pnl.showProgress(true);
 
-        XferHolder<java.io.File, DbxEntry.File> holder = new XferHolder<>();
-        holder.xfer = new LocalToDropboxTransferAdapter(inputFile, outputFile);
-        holder.pnl = pnl;
+        //XferHolder<java.io.File, DbxEntry.File> holder = new XferHolder<>();
+        //holder.xfer = new LocalToDropboxTransferAdapter(inputFile, outputFile);
+        //holder.pnl = pnl;
 
-        return holder;
+        //return holder;
+
+        return null;
     }
 
 }
