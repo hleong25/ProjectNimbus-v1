@@ -125,9 +125,16 @@ public class LocalController implements ICloudController<java.io.File>
     @Override
     public void transfer(ICloudTransfer<?,? super java.io.File> transfer)
     {
-        m_model.transfer(transfer);
-
-        Tools.notifyAll(transfer);
+        Log.entering("transfering");
+        try
+        {
+            m_model.transfer(transfer);
+        }
+        finally
+        {
+            Tools.notifyAll(transfer);
+        }
+        Log.exiting("transfering");
     }
 
     @Override

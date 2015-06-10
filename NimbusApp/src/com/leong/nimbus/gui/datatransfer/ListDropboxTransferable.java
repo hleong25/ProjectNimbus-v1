@@ -43,7 +43,7 @@ public class ListDropboxTransferable
 
         for (FileItemPanel pnl : pnls)
         {
-            if (pnl.getFileItem().getCloudType() != CloudType.DROPBOX)
+            if (pnl.getFileItem().getCloudController().getCloudType() != CloudType.DROPBOX)
             {
                 continue;
             }

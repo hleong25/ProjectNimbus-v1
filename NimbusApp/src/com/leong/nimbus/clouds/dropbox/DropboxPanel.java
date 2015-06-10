@@ -6,12 +6,12 @@
 package com.leong.nimbus.clouds.dropbox;
 
 import com.dropbox.core.DbxEntry;
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItem;
 import com.leong.nimbus.clouds.dropbox.gui.DropboxFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
@@ -19,7 +19,6 @@ import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
-import java.util.List;
 
 /**
  *
@@ -130,9 +129,9 @@ public class DropboxPanel
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {
                 @Override
-                public boolean onAction_drop(CloudType type, ICloudController controller, List list)
+                public boolean onAction_drop(TransferableContainer tc)
                 {
-                    return DropboxPanel.this.onAction_drop(type, controller, list);
+                    return DropboxPanel.this.onAction_drop(tc);
                 }
             });
 
@@ -185,7 +184,7 @@ public class DropboxPanel
     }
 
     @Override
-    public XferHolder createXferHolder(CloudType inputType, ICloudController inputController, Object input)
+    public XferHolder createXferHolder(ICloudController inputController, Object input)
     {
         //final java.io.File inputFile = (java.io.File) file;
         //final DbxEntry.File outputFile = m_controller.generateFile(m_currentPath.path, inputFile);

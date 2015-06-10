@@ -5,7 +5,6 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;

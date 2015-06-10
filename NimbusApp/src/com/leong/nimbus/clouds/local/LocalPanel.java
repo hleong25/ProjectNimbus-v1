@@ -5,7 +5,6 @@
  */
 package com.leong.nimbus.clouds.local;
 
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.transferadapters.DropboxToLocalTransferAdapter;
@@ -23,7 +22,6 @@ import java.awt.Color;
 import java.awt.dnd.DropTarget;
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  *

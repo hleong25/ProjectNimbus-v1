@@ -15,7 +15,6 @@ import java.util.List;
  * @author henry
  */
 public interface ICloudController<T>
-    extends java.io.Serializable
 {
     CloudType getCloudType();
 

@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.local;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -33,17 +34,10 @@ public class LocalModel implements ICloudModel<java.io.File>
     {
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-        throws java.io.IOException
+    @Override
+    public String getGlobalCacheKey()
     {
-        out.defaultWriteObject();
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-        throws java.io.IOException, ClassNotFoundException
-
-    {
-        in.defaultReadObject();
+        return GlobalCache.getInstance().getKey(this);
     }
 
     @Override
@@ -95,8 +89,10 @@ public class LocalModel implements ICloudModel<java.io.File>
     }
 
     @Override
-    public void transfer(ICloudTransfer<?,? super java.io.File> transfer)
+    public void transfer(final ICloudTransfer<?,? super java.io.File> transfer)
     {
+        Log.entering("transfering", new Object[]{transfer});
+
         InputStream is = transfer.getInputStream();
         OutputStream os = transfer.getOutputStream();
 
@@ -106,15 +102,15 @@ public class LocalModel implements ICloudModel<java.io.File>
             byte[] buffer = new byte[BUFFER_SIZE];
 
             long totalSent = 0;
+            int readSize = 0;
 
             ICloudProgress progress = transfer.getProgressHandler();
 
             progress.initalize();
             progress.start(transfer.getFilesize());
 
-            while (transfer.getCanTransfer() && is.available() > 0)
+            while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
             {
-                int readSize = is.read(buffer);
                 totalSent += readSize;
 
                 os.write(buffer, 0, readSize);
@@ -124,12 +120,12 @@ public class LocalModel implements ICloudModel<java.io.File>
 
             if (transfer.getCanTransfer())
             {
+                Log.fine("Transfer finished");
+
                 progress.finish();
 
-                {
-                    File outputFile = (File) transfer.getTargetObject();
-                    transfer.setTransferredObject(new File(outputFile.getAbsolutePath()));
-                }
+                File outputFile = (File) transfer.getTargetObject();
+                transfer.setTransferredObject(new File(outputFile.getAbsolutePath()));
             }
             else
             {
@@ -144,6 +140,7 @@ public class LocalModel implements ICloudModel<java.io.File>
         {
             try
             {
+                Log.fine("Closing input stream");
                 is.close();
             }
             catch (IOException ex)
@@ -153,6 +150,8 @@ public class LocalModel implements ICloudModel<java.io.File>
 
             try
             {
+                Log.fine("Closing output stream");
+                os.flush();
                 os.close();
             }
             catch (IOException ex)

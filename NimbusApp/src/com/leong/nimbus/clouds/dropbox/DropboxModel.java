@@ -20,6 +20,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.FileUtils;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.io.BufferedReader;
@@ -54,17 +55,10 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         Log.entering("<init>");
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-        throws java.io.IOException
+    @Override
+    public String getGlobalCacheKey()
     {
-        out.defaultWriteObject();
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-        throws java.io.IOException, ClassNotFoundException
-
-    {
-        in.defaultReadObject();
+        return GlobalCache.getInstance().getKey(this);
     }
 
     @Override
@@ -243,7 +237,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     }
 
     @Override
-    public void transfer(ICloudTransfer<?, ? super DbxEntry> transfer)
+    public void transfer(final ICloudTransfer<?, ? super DbxEntry> transfer)
     {
         final InputStream is = transfer.getInputStream();
 
@@ -264,10 +258,10 @@ public class DropboxModel implements ICloudModel<DbxEntry>
                         byte[] buffer = new byte[BUFFER_SIZE];
 
                         long totalSent = 0;
+                        int readSize = 0;
 
-                        while (is.available() > 0)
+                        while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
                         {
-                            int readSize = is.read(buffer);
                             totalSent += readSize;
 
                             out.write(buffer, 0, readSize);
@@ -279,16 +273,31 @@ public class DropboxModel implements ICloudModel<DbxEntry>
                     {
                         Log.throwing("transfer.write", ex);
                     }
+                    finally
+                    {
+                        Log.fine("Closing output stream");
+                        out.flush();
+                        out.close();
+                    }
                 }
             };
 
             progress.initalize();
             progress.start(transfer.getFilesize());
 
-            DbxEntry.File outputFile = m_client.uploadFile(outputInfo.path, DbxWriteMode.add(), transfer.getFilesize(), writer);
-            transfer.setTransferredObject(outputFile);
+            if (transfer.getCanTransfer())
+            {
+                Log.fine("Transfer finished");
 
-            progress.finish();
+                progress.finish();
+
+                DbxEntry.File outputFile = m_client.uploadFile(outputInfo.path, DbxWriteMode.add(), transfer.getFilesize(), writer);
+                transfer.setTransferredObject(outputFile);
+            }
+            else
+            {
+                Log.warning("Transferred aborted");
+            }
         }
         catch (DbxException | RuntimeException ex)
         {
@@ -298,6 +307,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         {
             try
             {
+                Log.fine("Closing input stream");
                 is.close();
             }
             catch (IOException ex)

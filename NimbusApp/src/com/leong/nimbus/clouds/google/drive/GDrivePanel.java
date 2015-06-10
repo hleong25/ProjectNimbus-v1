@@ -6,13 +6,12 @@
 package com.leong.nimbus.clouds.google.drive;
 
 import com.google.api.services.drive.model.File;
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
-import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToGDriveTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
+import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
@@ -127,9 +126,9 @@ public class GDrivePanel
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {
                 @Override
-                public boolean onAction_drop(CloudType type, ICloudController controller, List list)
+                public boolean onAction_drop(TransferableContainer tc)
                 {
-                    return GDrivePanel.this.onAction_drop(type, controller, list);
+                    return GDrivePanel.this.onAction_drop(tc);
                 }
             });
 
@@ -207,7 +206,7 @@ public class GDrivePanel
     }
 
     @Override
-    public XferHolder createXferHolder(CloudType inputType, ICloudController inputController, Object input)
+    public XferHolder createXferHolder(ICloudController inputController, Object input)
     {
         return null;
         //final java.io.File inputFile = file;

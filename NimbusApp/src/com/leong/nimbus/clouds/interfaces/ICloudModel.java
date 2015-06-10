@@ -13,8 +13,9 @@ import java.util.List;
  * @author henry
  */
 public interface ICloudModel<T>
-    extends java.io.Serializable
 {
+    String getGlobalCacheKey();
+
     boolean login(String userid);
     boolean login(String userid, String authCode);
     String getAuthUrl();
@@ -24,6 +25,6 @@ public interface ICloudModel<T>
     List<T> getChildrenItems(T parent);
 
     // target must be of type T
-    void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
+    void transfer(final ICloudTransfer</*source*/?, /*target*/? super T> transfer);
     InputStream getDownloadStream(T downloadFile);
 }

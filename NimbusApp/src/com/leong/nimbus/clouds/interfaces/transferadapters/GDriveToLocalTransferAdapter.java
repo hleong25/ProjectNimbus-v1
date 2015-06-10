@@ -7,6 +7,9 @@ package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.utils.Logit;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -44,7 +47,16 @@ public class GDriveToLocalTransferAdapter
     @Override
     public OutputStream getOutputStream()
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try
+        {
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(m_target));
+            return os;
+        }
+        catch (FileNotFoundException ex)
+        {
+            Log.throwing("getOutputStream", ex);
+        }
+        return null;
     }
 
 }

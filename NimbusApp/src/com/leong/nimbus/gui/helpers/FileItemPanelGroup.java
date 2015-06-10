@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -38,19 +39,24 @@ public class FileItemPanelGroup
         pnl.setGroup(this);
         pnl.addMouseListener(new MouseAdapter()
         {
+
             @Override
-            public void mouseClicked(MouseEvent e)
+            public void mousePressed(MouseEvent e)
             {
+                if (!SwingUtilities.isLeftMouseButton(e))
+                {
+                    return;
+                }
+               
                 if (!e.isControlDown())
                 {
                     reset();
                 }
 
                 FileItemPanel thispnl = (FileItemPanel) e.getSource();
-                thispnl.setHighlight(true);
                 m_selectedPanels.add(thispnl);
+                thispnl.setHighlight(true);
             }
-
         });
     }
 

@@ -218,9 +218,14 @@ public class DropboxController implements ICloudController<DbxEntry>
     @Override
     public void transfer(ICloudTransfer<?,? super DbxEntry> transfer)
     {
-        m_model.transfer(transfer);
-
-        Tools.notifyAll(transfer);
+        try
+        {
+            m_model.transfer(transfer);
+        }
+        finally
+        {
+            Tools.notifyAll(transfer);
+        }
     }
 
     public DbxEntry.File generateFile(String parent, java.io.File content)

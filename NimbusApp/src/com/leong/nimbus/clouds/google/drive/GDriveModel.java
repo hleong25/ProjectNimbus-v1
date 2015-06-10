@@ -9,6 +9,8 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.media.MediaHttpDownloader;
+import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
 import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.HttpTransport;
@@ -26,8 +28,10 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.FileUtils;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -35,8 +39,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -74,17 +76,10 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         m_flow = flowBuilder.build();
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-        throws java.io.IOException
+    @Override
+    public String getGlobalCacheKey()
     {
-        out.defaultWriteObject();
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-        throws java.io.IOException, ClassNotFoundException
-
-    {
-        in.defaultReadObject();
+        return GlobalCache.getInstance().getKey(this);
     }
 
     @Override
@@ -288,7 +283,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return list;
     }
 
-    public void transfer(ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
+    @Override
+    public void transfer(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
     {
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
@@ -351,6 +347,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public InputStream getDownloadStream(File downloadFile)
     {
+        Log.entering("getDownloadStream", new Object[]{downloadFile.getTitle()});
+
         if (Tools.isNullOrEmpty(downloadFile.getDownloadUrl()))
         {
             Log.warning("Download stream URL is empty");
@@ -359,7 +357,46 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         try
         {
-            return m_service.files().get(downloadFile.getId()).executeMediaAsInputStream();
+            MediaHttpDownloaderProgressListener progressListener = new MediaHttpDownloaderProgressListener()
+            {
+                @Override
+                public void progressChanged(MediaHttpDownloader downloader) throws IOException
+                {
+                    Log.entering("progressChanged");
+                    switch (downloader.getDownloadState())
+                    {
+                        case NOT_STARTED:
+                            Log.fine("Download State: NOT_STARTED");
+                            break;
+                        case MEDIA_IN_PROGRESS:
+                            Log.fine("BytesRecieved: "+downloader.getNumBytesDownloaded()+" Progress: "+downloader.getProgress());
+                            break;
+                        case MEDIA_COMPLETE:
+                            Log.fine("Download complete");
+                            break;
+                    }
+                }
+            };
+
+            Log.fine("Setting up the download: "+downloadFile.getTitle());
+            Log.fine("Download size: "+downloadFile.getFileSize());
+            Log.fine(downloadFile.toString());
+
+            final int CHUNK_SIZE = 2*MediaHttpUploader.MINIMUM_CHUNK_SIZE;
+
+            Drive.Files.Get request = m_service.files().get(downloadFile.getId());
+            request.getMediaHttpDownloader()
+                .setChunkSize(CHUNK_SIZE) // yes, it is using the uploader min size
+                .setProgressListener(progressListener);
+
+            InputStream is = request.executeMediaAsInputStream();
+
+            Log.fine("ChunkSize: " + CHUNK_SIZE);
+            Log.fine("Media ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
+
+            BufferedInputStream bis = new BufferedInputStream(is, request.getMediaHttpDownloader().getChunkSize());
+
+            return bis;
         }
         catch (IOException ex)
         {

@@ -43,7 +43,7 @@ public class ListGDriveTransferable
 
         for (FileItemPanel pnl : pnls)
         {
-            if (pnl.getFileItem().getCloudType() != CloudType.GOOGLE_DRIVE)
+            if (pnl.getFileItem().getCloudController().getCloudType() != CloudType.GOOGLE_DRIVE)
             {
                 continue;
             }
