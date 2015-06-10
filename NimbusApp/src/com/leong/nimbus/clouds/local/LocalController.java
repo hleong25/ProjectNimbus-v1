@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.local;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Component;
@@ -28,6 +29,8 @@ public class LocalController implements ICloudController<java.io.File>
 {
     private static final Logit Log = Logit.create(LocalController.class.getName());
 
+    private final GlobalCache.IProperties m_gcprops;
+
     private final LocalModel m_model = new LocalModel();
 
     private final transient Comparator<File> m_comparatorFiles;
@@ -35,6 +38,15 @@ public class LocalController implements ICloudController<java.io.File>
 
     public LocalController()
     {
+        m_gcprops = new GlobalCache.IProperties()
+        {
+            @Override
+            public String getPackageName()
+            {
+                return "controllers/"+LocalController.class.getName();
+            }
+        };
+
         m_comparatorFiles = new Comparator<File>()
         {
             @Override
@@ -54,19 +66,6 @@ public class LocalController implements ICloudController<java.io.File>
 
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-        throws java.io.IOException
-    {
-        out.defaultWriteObject();
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-        throws java.io.IOException, ClassNotFoundException
-
-    {
-        in.defaultReadObject();
-    }
-
     @Override
     public CloudType getCloudType()
     {
@@ -76,6 +75,7 @@ public class LocalController implements ICloudController<java.io.File>
     @Override
     public boolean login(Component parentComponent, String userid)
     {
+        GlobalCache.getInstance().put(m_gcprops, userid, this);
         return true;
     }
 

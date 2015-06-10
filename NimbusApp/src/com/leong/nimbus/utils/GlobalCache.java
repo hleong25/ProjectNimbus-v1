@@ -7,7 +7,6 @@ package com.leong.nimbus.utils;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.mortbay.log.Log;
 
 /**
  *
@@ -16,7 +15,12 @@ import org.mortbay.log.Log;
 public final class GlobalCache
     extends HashMap<String, Object>
 {
-    //private static final Logit Log = Logit.create(GlobalCache.class.getName());
+    private static final Logit Log = Logit.create(GlobalCache.class.getName());
+
+    public interface IProperties
+    {
+        String getPackageName();
+    }
 
     private static GlobalCache m_global = null;
 
@@ -35,23 +39,31 @@ public final class GlobalCache
         return m_global;
     }
 
+
     @Override
     public Object put(String key, Object value)
     {
-        if (!Tools.isNullOrEmpty(key) && (value != null))
+        throw new NoSuchMethodError("Use put(IProperties, String, Object)");
+    }
+
+    public Object put(final IProperties props, String key, Object value)
+    {
+        String pkgkey = ((props != null) ? props.getPackageName()+"/" : "")+key;
+
+        if (!Tools.isNullOrEmpty(pkgkey) && (value != null))
         {
-            if (containsKey(key) && (get(key) != value))
+            if (containsKey(pkgkey) && (get(pkgkey) != value))
             {
-                Log.info("Overriding cache: "+key);
+                Log.info("Overriding cache: "+pkgkey);
             }
 
-            return super.put(key, value);
+            return super.put(pkgkey, value);
         }
-        Log.warn("Adding cache failed.");
+        Log.warning("Adding cache failed.");
         return null;
     }
 
-    public String getKey(Object needle)
+    public String getKey(final Object needle)
     {
         for (Map.Entry<String, Object> entry : entrySet())
         {

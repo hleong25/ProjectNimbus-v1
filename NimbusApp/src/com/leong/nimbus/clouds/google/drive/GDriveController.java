@@ -10,6 +10,7 @@ import com.google.api.services.drive.model.ParentReference;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
@@ -36,6 +37,8 @@ public class GDriveController implements ICloudController<com.google.api.service
 {
     private static final Logit Log = Logit.create(GDriveController.class.getName());
 
+    private final GlobalCache.IProperties m_gcprops;
+
     private final GDriveModel m_model = new GDriveModel();
 
     private final transient Comparator<File> m_comparatorFiles;
@@ -45,6 +48,15 @@ public class GDriveController implements ICloudController<com.google.api.service
     public GDriveController()
     {
         Log.entering("<init>");
+
+        m_gcprops = new GlobalCache.IProperties()
+        {
+            @Override
+            public String getPackageName()
+            {
+                return "controllers/"+GDriveController.class.getName();
+            }
+        };
 
         m_comparatorFiles = new Comparator<File>()
         {
@@ -64,24 +76,6 @@ public class GDriveController implements ICloudController<com.google.api.service
         };
     }
 
-    public static GDriveController createInstance()
-    {
-        return new GDriveController();
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out)
-        throws java.io.IOException
-    {
-        out.defaultWriteObject();
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-        throws java.io.IOException, ClassNotFoundException
-
-    {
-        in.defaultReadObject();
-    }
-
     @Override
     public CloudType getCloudType()
     {
@@ -96,6 +90,7 @@ public class GDriveController implements ICloudController<com.google.api.service
         if (m_model.login(userid))
         {
             Log.info("Login successful for '"+userid+"'");
+            GlobalCache.getInstance().put(m_gcprops, userid, this);
             return true;
         }
 
@@ -126,7 +121,12 @@ public class GDriveController implements ICloudController<com.google.api.service
         authCode = authCode.trim();
         Log.info("Auth code: "+authCode);
 
-        return m_model.login(userid, authCode);
+        boolean successLogin = m_model.login(userid, authCode);
+        if (successLogin)
+        {
+            GlobalCache.getInstance().put(m_gcprops, userid, this);
+        }
+        return successLogin;
     }
 
     public File generateMetadata(File parent, java.io.File content)

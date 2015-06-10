@@ -9,6 +9,7 @@ import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import edu.stanford.ejalbert.BrowserLauncher;
@@ -31,6 +32,8 @@ public class DropboxController implements ICloudController<DbxEntry>
 {
     private static final Logit Log = Logit.create(DropboxController.class.getName());
 
+    private final GlobalCache.IProperties m_gcprops;
+
     private final DropboxModel m_model = new DropboxModel();
 
     private final transient Comparator<DbxEntry> m_comparatorFiles;
@@ -40,6 +43,15 @@ public class DropboxController implements ICloudController<DbxEntry>
     public DropboxController()
     {
         Log.entering("<init>");
+
+        m_gcprops = new GlobalCache.IProperties()
+        {
+            @Override
+            public String getPackageName()
+            {
+                return "controllers/"+DropboxController.class.getName();
+            }
+        };
 
         m_comparatorFiles = new Comparator<DbxEntry>()
         {
@@ -59,19 +71,6 @@ public class DropboxController implements ICloudController<DbxEntry>
         };
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-        throws java.io.IOException
-    {
-        out.defaultWriteObject();
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-        throws java.io.IOException, ClassNotFoundException
-
-    {
-        in.defaultReadObject();
-    }
-
     @Override
     public CloudType getCloudType()
     {
@@ -86,6 +85,7 @@ public class DropboxController implements ICloudController<DbxEntry>
         if (m_model.login(userid))
         {
             Log.info("Login successful for '"+userid+"'");
+            GlobalCache.getInstance().put(m_gcprops, userid, this);
             return true;
         }
 
@@ -116,7 +116,12 @@ public class DropboxController implements ICloudController<DbxEntry>
         authCode = authCode.trim();
         Log.info("Auth code: "+authCode);
 
-        return m_model.login(userid, authCode);
+        boolean successLogin = m_model.login(userid, authCode);
+        if (successLogin)
+        {
+            GlobalCache.getInstance().put(m_gcprops, userid, this);
+        }
+        return successLogin;
     }
 
     @Override

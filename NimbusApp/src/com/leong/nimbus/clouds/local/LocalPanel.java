@@ -75,6 +75,7 @@ public class LocalPanel
     {
         Log.entering("initPanel");
         m_controller = new LocalController();
+        m_controller.login(this, "local");
 
         pnlFiles.setProxy(this);
         pnlFiles.setView(AllCardsPanel.ViewType.LARGE_ICONS);
