@@ -17,6 +17,7 @@ import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
@@ -142,10 +143,12 @@ public class LocalPanel
         return pnlFiles;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public XferHolder createXferHolder(ICloudController inputController, Object input)
+    public XferHolder<?, File> createXferHolder(String globalCacheKey, Object input)
     {
-        switch (inputController.getCloudType())
+        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
+        switch (genericInputController.getCloudType())
         {
             case LOCAL_FILE_SYSTEM:
             {
@@ -165,7 +168,7 @@ public class LocalPanel
             case GOOGLE_DRIVE:
             {
                 final com.google.api.services.drive.model.File inputFile = (com.google.api.services.drive.model.File)input;
-                final InputStream stream = inputController.getDownloadStream(inputFile);
+                final InputStream stream = genericInputController.getDownloadStream(inputFile); //TODO: unchecked
 
                 if (stream == null)
                 {
@@ -188,7 +191,7 @@ public class LocalPanel
             case DROPBOX:
             {
                 final com.dropbox.core.DbxEntry inputFile = (com.dropbox.core.DbxEntry)input;
-                final InputStream stream = inputController.getDownloadStream(inputFile);
+                final InputStream stream = genericInputController.getDownloadStream(inputFile); //TODO: unchecked
 
                 if (stream == null)
                 {

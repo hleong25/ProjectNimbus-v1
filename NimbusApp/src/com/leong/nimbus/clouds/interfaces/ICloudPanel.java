@@ -37,9 +37,9 @@ public interface ICloudPanel<T>
     void showFiles(final T parent, final boolean useCache);
     void responsiveShowFiles(final T path, final boolean useCache);
 
-    XferHolder createXferHolder(ICloudController inputController, Object input);
-    List<XferHolder> generateTransferList(TransferableContainer tc);
-    boolean doTransferLoop(List<XferHolder> list);
+    XferHolder<?, T> createXferHolder(String globalCacheKey, Object input);
+    List<XferHolder<?, T>> generateTransferList(TransferableContainer tc);
+    boolean doTransferLoop(List<XferHolder<?, T>> list);
 
     boolean onAction_drop(TransferableContainer tc);
 

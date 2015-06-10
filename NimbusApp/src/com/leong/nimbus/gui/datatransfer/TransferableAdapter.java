@@ -8,6 +8,7 @@ package com.leong.nimbus.gui.datatransfer;
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.utils.GlobalCache;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -26,17 +27,17 @@ public abstract class TransferableAdapter<T>
     public static final DataFlavor GDriveFileFlavor = new DataFlavor(com.google.api.services.drive.model.File.class, "Nimbus Google Drive File");
     public static final DataFlavor DropboxFileFlavor = new DataFlavor(DbxEntry.class, "Nimbus Google Drive File");
 
-    protected final ICloudController m_controller;
+    protected final String m_globalCacheKey;
     protected List<T> m_list = new ArrayList<>();
 
     protected TransferableAdapter(ICloudController controller)
     {
-        m_controller = controller;
+        m_globalCacheKey = GlobalCache.getInstance().getKey(controller);
     }
 
-    public ICloudController getCloudController()
+    public String getGlobalCacheKey()
     {
-        return m_controller;
+        return m_globalCacheKey;
     }
 
     public void add(T obj)
@@ -80,7 +81,7 @@ public abstract class TransferableAdapter<T>
             throw new UnsupportedFlavorException(flavor);
         }
 
-        return new TransferableContainer<T>(m_controller, m_list);
+        return new TransferableContainer<T>(m_globalCacheKey, m_list);
     }
 
 }

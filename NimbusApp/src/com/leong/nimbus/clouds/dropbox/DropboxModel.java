@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -315,6 +317,18 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public InputStream getDownloadStream(DbxEntry downloadFile)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Log.entering("getDownloadStream", new Object[]{downloadFile.path});
+
+        try
+        {
+            DbxClient.Downloader downloader = m_client.startGetFile(downloadFile.path, downloadFile.asFile().rev);
+            return downloader.body;
+        }
+        catch (DbxException ex)
+        {
+            Log.throwing("getDownloadStream", ex);
+        }
+
+        return null;
     }
 }

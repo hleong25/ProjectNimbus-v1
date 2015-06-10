@@ -16,18 +16,18 @@ import java.util.List;
 public class TransferableContainer<T>
     implements Serializable
 {
-    protected ICloudController m_controller;
+    protected String m_globalCacheKey;
     protected List<T> m_list;
 
-    public TransferableContainer(ICloudController controller, List<T> list)
+    public TransferableContainer(String globalCacheKey, List<T> list)
     {
-        m_controller = controller;
+        m_globalCacheKey = globalCacheKey;
         m_list = list;
     }
 
-    public ICloudController getController()
+    public String getGlobalCacheKey()
     {
-        return m_controller;
+        return m_globalCacheKey;
     }
 
     public List<T> getList()
@@ -37,7 +37,7 @@ public class TransferableContainer<T>
 
     public String toString()
     {
-        return "[TransferableContainer] type:"+m_controller.getCloudType()+" count:"+m_list.size();
+        return "[TransferableContainer] "+m_globalCacheKey+" count:"+m_list.size();
     }
 
 }

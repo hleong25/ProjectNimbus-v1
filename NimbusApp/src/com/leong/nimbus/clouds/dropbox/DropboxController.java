@@ -250,7 +250,7 @@ public class DropboxController implements ICloudController<DbxEntry>
     @Override
     public InputStream getDownloadStream(DbxEntry downloadFile)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return m_model.getDownloadStream(downloadFile);
     }
 
 }

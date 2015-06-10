@@ -184,7 +184,7 @@ public class DropboxPanel
     }
 
     @Override
-    public XferHolder createXferHolder(ICloudController inputController, Object input)
+    public XferHolder<?, DbxEntry> createXferHolder(String globalCacheKey, Object input)
     {
         //final java.io.File inputFile = (java.io.File) file;
         //final DbxEntry.File outputFile = m_controller.generateFile(m_currentPath.path, inputFile);

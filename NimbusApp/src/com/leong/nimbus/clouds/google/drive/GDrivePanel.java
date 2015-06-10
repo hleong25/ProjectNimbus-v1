@@ -5,11 +5,9 @@
  */
 package com.leong.nimbus.clouds.google.drive;
 
-import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
-import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
@@ -27,11 +25,11 @@ import java.util.ListIterator;
  * @author henry
  */
 public class GDrivePanel
-    extends CloudPanelAdapter<File, GDriveController>
+    extends CloudPanelAdapter<com.google.api.services.drive.model.File, GDriveController>
 {
     private static final Logit Log = Logit.create(GDrivePanel.class.getName());
 
-    private final List<File> m_trailPaths = new ArrayList<>();
+    private final List<com.google.api.services.drive.model.File> m_trailPaths = new ArrayList<>();
 
     /**
      * Creates new form GDrivePanel
@@ -140,14 +138,14 @@ public class GDrivePanel
     }
 
     @Override
-    public String getAbsolutePath(File item)
+    public String getAbsolutePath(com.google.api.services.drive.model.File item)
     {
         Log.entering("getAbsolutePath", new Object[]{item});
         return item.getId();
     }
 
     @Override
-    public void setCurrentPath(File path)
+    public void setCurrentPath(com.google.api.services.drive.model.File path)
     {
         Log.entering("setCurrentPath", new Object[]{path.getId()});
 
@@ -160,7 +158,7 @@ public class GDrivePanel
 
             int idx = m_trailPaths.indexOf(path);
 
-            ListIterator<File> itr = m_trailPaths.listIterator(idx + 1);
+            ListIterator<com.google.api.services.drive.model.File> itr = m_trailPaths.listIterator(idx + 1);
             while (itr.hasNext())
             {
                 m_trailPaths.remove(itr.next());
@@ -172,7 +170,7 @@ public class GDrivePanel
         }
 
         String pathStr = "";
-        for (File trail : m_trailPaths)
+        for (com.google.api.services.drive.model.File trail : m_trailPaths)
         {
             pathStr += "/" + trail.getTitle();
         }
@@ -181,7 +179,7 @@ public class GDrivePanel
     }
 
     @Override
-    public FileItemPanel createFileItemPanel(File file)
+    public FileItemPanel createFileItemPanel(com.google.api.services.drive.model.File file)
     {
         FileItemPanel pnl = new FileItemPanel(new GDriveFileItem(m_controller, file));
 
@@ -190,7 +188,7 @@ public class GDrivePanel
         pnl.addMouseListener(new GDriveFileItemPanelMouseAdapter(file)
         {
             @Override
-            public void onOpenFolder(final File item)
+            public void onOpenFolder(final com.google.api.services.drive.model.File item)
             {
                 responsiveShowFiles(item, true);
             }
@@ -206,7 +204,7 @@ public class GDrivePanel
     }
 
     @Override
-    public XferHolder createXferHolder(ICloudController inputController, Object input)
+    public XferHolder<?, com.google.api.services.drive.model.File> createXferHolder(String globalCacheKey, Object input)
     {
         return null;
         //final java.io.File inputFile = file;

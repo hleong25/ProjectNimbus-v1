@@ -204,21 +204,21 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     }
 
     @Override
-    public List<XferHolder> generateTransferList(TransferableContainer tc)
+    public List<XferHolder<?, T>> generateTransferList(TransferableContainer tc)
     {
         Log.entering("generateTransferList", new Object[]{tc});
 
-        final List<XferHolder> uploadFiles = new ArrayList<>();
+        final List<XferHolder<?, T>> uploadFiles = new ArrayList<>();
 
         final JPanel pnlFiles = getFilesPanel();
 
-        final ICloudController controller = tc.getController();
+        final String globalCacheKey = tc.getGlobalCacheKey();
 
         for (Object obj : tc.getList())
         {
             Log.fine(obj.toString());
 
-            XferHolder holder = createXferHolder(controller, obj);
+            XferHolder<?, T> holder = createXferHolder(globalCacheKey, obj);
             holder.xfer.setCanTransfer(m_canTransfer);
 
             uploadFiles.add(holder);
@@ -234,12 +234,12 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     }
 
     @Override
-    public boolean doTransferLoop(List<XferHolder> list)
+    public boolean doTransferLoop(List<XferHolder<?, T>> list)
     {
         Log.entering("doTransferLoop", new Object[]{list});
 
         // Loop them through
-        for (XferHolder holder : list)
+        for (XferHolder<?, T> holder : list)
         {
             // Print out the file path
             Log.fine("Source: "+holder.xfer.getSourceObject()+"\nTarget: "+holder.xfer.getTargetObject());
@@ -266,7 +266,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     {
         Log.entering("onAction_drop", new Object[]{tc});
 
-        List<XferHolder> uploadFiles = generateTransferList(tc);
+        List<XferHolder<?, T>> uploadFiles = generateTransferList(tc);
 
         if (doTransferLoop(uploadFiles))
         {
