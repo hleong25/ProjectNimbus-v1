@@ -27,9 +27,9 @@ import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
-import com.leong.nimbus.utils.FileUtils;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.NimbusDatastore;
 import com.leong.nimbus.utils.Tools;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -96,18 +96,13 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     {
         Log.entering("login", new Object[]{userid});
 
-        BufferedReader reader = FileUtils.getReader("/tmp/nimbus/creds/googledrive_"+userid);
-
-        if (reader == null)
-        {
-            return false;
-        }
-
         String accessToken = null;
         String refreshToken = null;
 
         try
         {
+            BufferedReader reader = NimbusDatastore.getReader("creds", "googledrive_"+userid);
+
             accessToken = reader.readLine();
             refreshToken = reader.readLine();
         }
@@ -181,7 +176,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
             // save the access and refresh tokens
             {
-                BufferedWriter writer = FileUtils.getWriter("/tmp/nimbus/creds/googledrive_"+userid);
+                BufferedWriter writer = NimbusDatastore.getWriter("creds", "googledrive_"+userid);
 
                 String credstr = creds.getAccessToken() + "\n" + creds.getRefreshToken();
                 writer.write(credstr, 0, credstr.length());

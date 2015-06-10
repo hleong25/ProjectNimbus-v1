@@ -19,9 +19,9 @@ import com.dropbox.core.util.Collector;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
-import com.leong.nimbus.utils.FileUtils;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.NimbusDatastore;
 import com.leong.nimbus.utils.Tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -75,17 +75,12 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     {
         Log.entering("login", new Object[]{userid});
 
-        BufferedReader reader = FileUtils.getReader("/tmp/nimbus/creds/dropbox_"+userid);
-
-        if (reader == null)
-        {
-            return false;
-        }
-
         String accessToken = null;
 
         try
         {
+            BufferedReader reader = NimbusDatastore.getReader("creds", "dropbox_"+userid);
+
             accessToken = reader.readLine();
         }
         catch (IOException ex)
@@ -152,7 +147,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         // save the access token for reuse
         try
         {
-            BufferedWriter writer = FileUtils.getWriter("/tmp/nimbus/creds/dropbox_"+userid);
+            BufferedWriter writer = NimbusDatastore.getWriter("creds", "dropbox_"+userid);
 
             writer.write(accessToken, 0, accessToken.length());
             writer.newLine();
