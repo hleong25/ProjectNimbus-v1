@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.gui.components;
 
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import javax.swing.ImageIcon;
 
 /**
@@ -70,6 +71,18 @@ public class DefaultFileItem implements IFileItem
     public String getLabel()
     {
         return m_label;
+    }
+
+    @Override
+    public ICloudController getCloudController()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getCloudObject()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

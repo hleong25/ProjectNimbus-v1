@@ -32,6 +32,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
 
     public abstract boolean onAction_drop(TransferableContainer tc);
 
+    @SuppressWarnings("unchecked")
     @Override
     public void drop(DropTargetDropEvent dtde)
     {
