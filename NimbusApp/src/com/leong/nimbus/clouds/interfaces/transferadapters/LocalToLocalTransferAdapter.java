@@ -22,9 +22,12 @@ public class LocalToLocalTransferAdapter
 {
     private static final Logit Log = Logit.create(LocalToLocalTransferAdapter.class.getName());
 
-    public LocalToLocalTransferAdapter(String sourceCacheKey, File source, File target)
+    public LocalToLocalTransferAdapter(String sourceCacheKey,
+                                       File source,
+                                       String targetCacheKey,
+                                       File target)
     {
-        super(sourceCacheKey, source, target);
+        super(sourceCacheKey, source, targetCacheKey, target);
     }
 
     @Override
@@ -33,33 +36,4 @@ public class LocalToLocalTransferAdapter
         return m_source.length();
     }
 
-    @Override
-    public OutputStream getOutputStream()
-    {
-        // caller must close inputstream;
-
-        FileOutputStream fos = null;
-        try
-        {
-            fos = new FileOutputStream(getTargetObject());
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            return bos;
-        }
-        catch (FileNotFoundException ex)
-        {
-            Log.throwing("getOutputStream", ex);
-
-            try
-            {
-                if (fos != null)
-                    fos.close();
-            }
-            catch (IOException ex1)
-            {
-                Log.throwing("getOutputStream", ex1);
-            }
-
-            return null;
-        }
-    }
 }

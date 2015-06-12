@@ -17,6 +17,7 @@ import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -251,6 +252,12 @@ public class DropboxController implements ICloudController<DbxEntry>
     public InputStream getDownloadStream(DbxEntry downloadFile)
     {
         return m_model.getDownloadStream(downloadFile);
+    }
+
+    @Override
+    public OutputStream getUploadStream(DbxEntry uploadFile)
+    {
+        return m_model.getUploadStream(uploadFile);
     }
 
 }

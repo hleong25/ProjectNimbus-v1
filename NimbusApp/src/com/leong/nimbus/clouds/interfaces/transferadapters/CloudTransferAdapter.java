@@ -10,6 +10,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -23,6 +24,8 @@ public abstract class CloudTransferAdapter<S, T>
 {
     protected final String m_sourceCacheKey;
     protected final S m_source;
+
+    protected final String m_targetCacheKey;
     protected final T m_target;
 
     // the returned object after it was transfered
@@ -32,10 +35,15 @@ public abstract class CloudTransferAdapter<S, T>
 
     protected AtomicBoolean m_canTransfer;
 
-    public CloudTransferAdapter(String sourceCacheKey, S source, T target)
+    public CloudTransferAdapter(String sourceCacheKey,
+                                S source,
+                                String targetCacheKey,
+                                T target)
     {
         m_sourceCacheKey = sourceCacheKey;
         m_source = source;
+
+        m_targetCacheKey = targetCacheKey;
         m_target = target;
     }
 
@@ -69,6 +77,14 @@ public abstract class CloudTransferAdapter<S, T>
         // caller must close inputstream;
         ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_sourceCacheKey);
         return controller.getDownloadStream(getSourceObject());
+    }
+
+    @Override
+    public OutputStream getOutputStream()
+    {
+        // caller must close outputstream;
+        ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_targetCacheKey);
+        return controller.getUploadStream(getTargetObject());
     }
 
     @Override

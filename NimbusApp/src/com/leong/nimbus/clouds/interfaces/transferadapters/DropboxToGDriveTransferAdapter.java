@@ -16,15 +16,15 @@ import java.io.OutputStream;
  *
  * @author henry
  */
-public class DropboxToLocalTransferAdapter
-    extends CloudTransferAdapter<com.dropbox.core.DbxEntry, java.io.File>
+public class DropboxToGDriveTransferAdapter
+    extends CloudTransferAdapter<com.dropbox.core.DbxEntry, com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(DropboxToLocalTransferAdapter.class.getName());
+    private static final Logit Log = Logit.create(DropboxToGDriveTransferAdapter.class.getName());
 
-    public DropboxToLocalTransferAdapter(String sourceCacheKey,
-                                         com.dropbox.core.DbxEntry source,
-                                         String targetCacheKey,
-                                         java.io.File target)
+    public DropboxToGDriveTransferAdapter(String sourceCacheKey,
+                                          com.dropbox.core.DbxEntry source,
+                                          String targetCacheKey,
+                                          com.google.api.services.drive.model.File target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);
     }

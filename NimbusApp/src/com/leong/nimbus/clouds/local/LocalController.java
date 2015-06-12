@@ -14,6 +14,7 @@ import com.leong.nimbus.utils.Tools;
 import java.awt.Component;
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -141,5 +142,11 @@ public class LocalController implements ICloudController<java.io.File>
     public InputStream getDownloadStream(File downloadFile)
     {
         return m_model.getDownloadStream(downloadFile);
+    }
+
+    @Override
+    public OutputStream getUploadStream(File uploadFile)
+    {
+        return m_model.getUploadStream(uploadFile);
     }
 }

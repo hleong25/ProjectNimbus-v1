@@ -11,9 +11,11 @@ import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -164,6 +166,7 @@ public class LocalModel implements ICloudModel<java.io.File>
     @Override
     public InputStream getDownloadStream(File downloadFile)
     {
+        // TODO: error checking
         // caller must close stream
         try
         {
@@ -177,6 +180,24 @@ public class LocalModel implements ICloudModel<java.io.File>
         }
 
         return null;
+    }
 
+    @Override
+    public OutputStream getUploadStream(File uploadFile)
+    {
+        // TODO: error checking
+        // caller must close stream
+        try
+        {
+            final int BUFFER_SIZE = 256*1024;
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(uploadFile), BUFFER_SIZE);
+            return os;
+        }
+        catch (FileNotFoundException ex)
+        {
+            Log.throwing("getUploadStream", ex);
+        }
+
+        return null;
     }
 }

@@ -18,15 +18,15 @@ import java.io.OutputStream;
  *
  * @author henry
  */
-public class LocalToGDriveTransferAdapter
-    extends CloudTransferAdapter<java.io.File, com.google.api.services.drive.model.File>
+public class GDriveToGDriveTransferAdapter
+    extends CloudTransferAdapter<com.google.api.services.drive.model.File, com.google.api.services.drive.model.File>
 {
-    private static final Logit Log = Logit.create(LocalToGDriveTransferAdapter.class.getName());
+    private static final Logit Log = Logit.create(GDriveToGDriveTransferAdapter.class.getName());
 
-    public LocalToGDriveTransferAdapter(String sourceCacheKey,
-                                        java.io.File source,
-                                        String targetCacheKey,
-                                        com.google.api.services.drive.model.File target)
+    public GDriveToGDriveTransferAdapter(String sourceCacheKey,
+                                         com.google.api.services.drive.model.File source,
+                                         String targetCacheKey,
+                                         com.google.api.services.drive.model.File target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);
     }
@@ -34,7 +34,7 @@ public class LocalToGDriveTransferAdapter
     @Override
     public long getFilesize()
     {
-        return m_source.length();
+        return m_source.getFileSize();
     }
 
 }

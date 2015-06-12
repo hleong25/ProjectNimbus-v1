@@ -8,6 +8,7 @@ package com.leong.nimbus.clouds.interfaces;
 import com.leong.nimbus.clouds.CloudType;
 import java.awt.Component;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -28,5 +29,5 @@ public interface ICloudController<T>
     // target must be of type T
     void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
     InputStream getDownloadStream(T downloadFile);
-
+    OutputStream getUploadStream(T uploadFile);
 }

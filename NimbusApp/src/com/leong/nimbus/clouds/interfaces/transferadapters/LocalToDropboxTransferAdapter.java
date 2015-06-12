@@ -7,25 +7,22 @@ package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.utils.Logit;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  *
  * @author henry
  */
 public class LocalToDropboxTransferAdapter
-    extends CloudTransferAdapter<java.io.File, DbxEntry.File>
+    extends CloudTransferAdapter<java.io.File, DbxEntry>
 {
     private static final Logit Log = Logit.create(LocalToDropboxTransferAdapter.class.getName());
 
-    public LocalToDropboxTransferAdapter(String sourceCacheKey, java.io.File source, DbxEntry.File target)
+    public LocalToDropboxTransferAdapter(String sourceCacheKey,
+                                         java.io.File source,
+                                         String targetCacheKey,
+                                         DbxEntry target)
     {
-        super(sourceCacheKey, source, target);
+        super(sourceCacheKey, source, targetCacheKey, target);
     }
 
     @Override
@@ -34,9 +31,4 @@ public class LocalToDropboxTransferAdapter
         return m_source.length();
     }
 
-    @Override
-    public OutputStream getOutputStream()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

@@ -36,6 +36,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -399,5 +400,11 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
 
         return null;
+    }
+
+    @Override
+    public OutputStream getUploadStream(File uploadFile)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

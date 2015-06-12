@@ -8,11 +8,17 @@ package com.leong.nimbus.clouds.google.drive;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItem;
 import com.leong.nimbus.clouds.google.drive.gui.GDriveFileItemPanelMouseAdapter;
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.clouds.interfaces.transferadapters.CloudFileUtils;
+import com.leong.nimbus.clouds.interfaces.transferadapters.DropboxToGDriveTransferAdapter;
+import com.leong.nimbus.clouds.interfaces.transferadapters.GDriveToGDriveTransferAdapter;
+import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToGDriveTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
@@ -206,18 +212,58 @@ public class GDrivePanel
     @Override
     public XferHolder<?, com.google.api.services.drive.model.File> createXferHolder(String globalCacheKey, Object input)
     {
-        return null;
-        //final java.io.File inputFile = file;
-        //final com.google.api.services.drive.model.File outputFile = m_controller.generateMetadata(m_currentPath, inputFile);
-        //final FileItemPanel pnl = createFileItemPanel(outputFile);
+        final String targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
+        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
+        switch (genericInputController.getCloudType())
+        {
+            case LOCAL_FILE_SYSTEM:
+            {
+                final java.io.File inputFile = (java.io.File)input;
+                final com.google.api.services.drive.model.File outputFile = CloudFileUtils.convertToGDrive(m_currentPath, inputFile);
+                final FileItemPanel pnl = createFileItemPanel(outputFile);
 
-        //pnl.showProgress(true);
+                pnl.showProgress(true);
 
-        //XferHolder<java.io.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
-        //holder.xfer = new LocalToGDriveTransferAdapter(inputFile, outputFile);
-        //holder.pnl = pnl;
+                XferHolder<java.io.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
+                holder.xfer = new LocalToGDriveTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.pnl = pnl;
 
-        //return holder;
+                return holder;
+            }
+
+            case GOOGLE_DRIVE:
+            {
+                final com.google.api.services.drive.model.File inputFile = (com.google.api.services.drive.model.File)input;
+                final com.google.api.services.drive.model.File outputFile = CloudFileUtils.convertToGDrive(m_currentPath, inputFile);
+                final FileItemPanel pnl = createFileItemPanel(outputFile);
+
+                pnl.showProgress(true);
+
+                XferHolder<com.google.api.services.drive.model.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
+                holder.xfer = new GDriveToGDriveTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.pnl = pnl;
+
+                return holder;
+            }
+
+            case DROPBOX:
+            {
+                final com.dropbox.core.DbxEntry inputFile = (com.dropbox.core.DbxEntry)input;
+                final com.google.api.services.drive.model.File outputFile = CloudFileUtils.convertToGDrive(m_currentPath, inputFile);
+                final FileItemPanel pnl = createFileItemPanel(outputFile);
+
+                pnl.showProgress(true);
+
+                XferHolder<com.dropbox.core.DbxEntry, com.google.api.services.drive.model.File> holder = new XferHolder<>();
+                holder.xfer = new DropboxToGDriveTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.pnl = pnl;
+
+                return holder;
+            }
+
+            default:
+                return null;
+        }
     }
 
 }

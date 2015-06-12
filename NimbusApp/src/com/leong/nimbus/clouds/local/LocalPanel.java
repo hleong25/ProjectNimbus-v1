@@ -147,6 +147,7 @@ public class LocalPanel
     @Override
     public XferHolder<?, File> createXferHolder(String globalCacheKey, Object input)
     {
+        final String targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
         final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
         switch (genericInputController.getCloudType())
         {
@@ -159,7 +160,7 @@ public class LocalPanel
                 pnl.showProgress(true);
 
                 XferHolder<File, File> holder = new XferHolder<>();
-                holder.xfer = new LocalToLocalTransferAdapter(globalCacheKey, inputFile, outputFile);
+                holder.xfer = new LocalToLocalTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -174,7 +175,7 @@ public class LocalPanel
                 pnl.showProgress(true);
 
                 XferHolder<com.google.api.services.drive.model.File, java.io.File> holder = new XferHolder<>();
-                holder.xfer = new GDriveToLocalTransferAdapter(globalCacheKey, inputFile, outputFile);
+                holder.xfer = new GDriveToLocalTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -189,7 +190,7 @@ public class LocalPanel
                 pnl.showProgress(true);
 
                 XferHolder<com.dropbox.core.DbxEntry, java.io.File> holder = new XferHolder<>();
-                holder.xfer = new DropboxToLocalTransferAdapter(globalCacheKey, inputFile, outputFile);
+                holder.xfer = new DropboxToLocalTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;

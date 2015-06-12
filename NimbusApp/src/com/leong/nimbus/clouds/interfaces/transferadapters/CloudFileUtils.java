@@ -148,14 +148,14 @@ public class CloudFileUtils
             throw new IllegalArgumentException("Input cloud type '"+inputObject.getClass().getName()+"' not supported");
         }
 
-        final DbxEntry.File outputFile = new DbxEntry.File(path,
-                                                           iconName,
-                                                           mightHaveThumbnail,
-                                                           numBytes,
-                                                           humanSize,
-                                                           lastModified,
-                                                           clientMtime,
-                                                           rev);
+        final DbxEntry outputFile = new DbxEntry.File(path,
+                                                      iconName,
+                                                      mightHaveThumbnail,
+                                                      numBytes,
+                                                      humanSize,
+                                                      lastModified,
+                                                      clientMtime,
+                                                      rev);
 
         return outputFile;
     }

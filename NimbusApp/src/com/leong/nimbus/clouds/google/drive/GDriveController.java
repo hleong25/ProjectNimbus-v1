@@ -18,6 +18,7 @@ import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
@@ -129,26 +130,6 @@ public class GDriveController implements ICloudController<com.google.api.service
         return successLogin;
     }
 
-    private File generateMetadata(File parent, java.io.File content)
-    {
-        Log.entering("generateMetadata", new Object[]{parent, content});
-
-        //String mimeType = URLConnection.guessContentTypeFromName(content.getName());
-
-        //Log.fine("Mime: "+mimeType);
-
-        ParentReference parentRef = new ParentReference();
-        parentRef.setId(parent.getId());
-
-        File metadata = new File();
-        metadata.setTitle(content.getName());
-        metadata.setFileSize(content.length());
-        //metadata.setMimeType(mimeType);
-        metadata.setParents(Arrays.asList(parentRef));
-
-        return metadata;
-    }
-
     @Override
     public File getRoot()
     {
@@ -252,6 +233,12 @@ public class GDriveController implements ICloudController<com.google.api.service
     public InputStream getDownloadStream(File downloadFile)
     {
         return m_model.getDownloadStream(downloadFile);
+    }
+
+    @Override
+    public OutputStream getUploadStream(File uploadFile)
+    {
+        return m_model.getUploadStream(uploadFile);
     }
     
 }

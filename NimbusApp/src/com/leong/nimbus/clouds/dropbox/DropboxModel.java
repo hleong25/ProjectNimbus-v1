@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -274,7 +275,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
                     {
                         Log.fine("Closing output stream");
                         out.flush();
-                        out.close();
+                        //out.close();
                     }
                 }
             };
@@ -288,7 +289,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
                 progress.finish();
 
-                DbxEntry.File outputFile = m_client.uploadFile(outputInfo.path, DbxWriteMode.add(), transfer.getFilesize(), writer);
+                DbxEntry.File outputFile = m_client.uploadFileChunked(256*1024, outputInfo.path, DbxWriteMode.add(), transfer.getFilesize(), writer);
                 transfer.setTransferredObject(outputFile);
             }
             else
@@ -317,7 +318,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     @Override
     public InputStream getDownloadStream(DbxEntry downloadFile)
     {
-        Log.entering("getDownloadStream", new Object[]{downloadFile.path});
+        Log.entering("getDownloadStream", new Object[]{downloadFile});
 
         try
         {
@@ -331,4 +332,24 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         return null;
     }
+
+    @Override
+    public OutputStream getUploadStream(DbxEntry uploadFile)
+    {
+        Log.entering("getUploadStream", new Object[]{uploadFile});
+
+        //try
+        //{
+        //    DbxClient.Uploader uploader = m_client.startUploadFile(uploadFile.path, DbxWriteMode.add(), uploadFile.asFile().numBytes);
+        //    return uploader.getBody();
+        //}
+        //catch (DbxException ex)
+        //{
+        //    Log.throwing("getDownloadStream", ex);
+        //}
+
+        DbxClient.Uploader uploader = m_client.startUploadFileChunked(256*1024, uploadFile.path, DbxWriteMode.add(), uploadFile.asFile().numBytes);
+        return uploader.getBody();
+    }
+
 }

@@ -5,29 +5,23 @@
  */
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
+import com.dropbox.core.DbxEntry;
 import com.google.api.services.drive.model.File;
-import com.leong.nimbus.clouds.interfaces.ICloudController;
-import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  *
  * @author henry
  */
-public class GDriveToLocalTransferAdapter
-    extends CloudTransferAdapter<com.google.api.services.drive.model.File, java.io.File>
+public class GDriveToDropboxTransferAdapter
+    extends CloudTransferAdapter<com.google.api.services.drive.model.File, DbxEntry>
 {
-    private static final Logit Log = Logit.create(GDriveToLocalTransferAdapter.class.getName());
+    private static final Logit Log = Logit.create(GDriveToDropboxTransferAdapter.class.getName());
 
-    public GDriveToLocalTransferAdapter(String sourceCacheKey,
+    public GDriveToDropboxTransferAdapter(String sourceCacheKey,
                                         File source,
                                         String targetCacheKey,
-                                        java.io.File target)
+                                        DbxEntry target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);
     }
