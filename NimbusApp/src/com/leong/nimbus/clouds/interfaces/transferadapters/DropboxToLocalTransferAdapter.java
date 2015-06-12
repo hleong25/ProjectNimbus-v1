@@ -21,25 +21,15 @@ public class DropboxToLocalTransferAdapter
 {
     private static final Logit Log = Logit.create(DropboxToLocalTransferAdapter.class.getName());
 
-    protected final InputStream m_sourceStream;
-
-    public DropboxToLocalTransferAdapter(InputStream sourceStream, com.dropbox.core.DbxEntry source, java.io.File target)
+    public DropboxToLocalTransferAdapter(String sourceCacheKey, com.dropbox.core.DbxEntry source, java.io.File target)
     {
-        super(source, target);
-
-        m_sourceStream = sourceStream;
+        super(sourceCacheKey, source, target);
     }
 
     @Override
     public long getFilesize()
     {
         return m_source.asFile().numBytes;
-    }
-
-    @Override
-    public InputStream getInputStream()
-    {
-        return m_sourceStream;
     }
 
     @Override

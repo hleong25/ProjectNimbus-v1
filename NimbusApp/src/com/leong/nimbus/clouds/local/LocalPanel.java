@@ -7,6 +7,7 @@ package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.interfaces.CloudPanelAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.clouds.interfaces.transferadapters.CloudFileUtils;
 import com.leong.nimbus.clouds.interfaces.transferadapters.DropboxToLocalTransferAdapter;
 import com.leong.nimbus.clouds.interfaces.transferadapters.GDriveToLocalTransferAdapter;
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToLocalTransferAdapter;
@@ -143,7 +144,6 @@ public class LocalPanel
         return pnlFiles;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public XferHolder<?, File> createXferHolder(String globalCacheKey, Object input)
     {
@@ -153,13 +153,13 @@ public class LocalPanel
             case LOCAL_FILE_SYSTEM:
             {
                 final File inputFile = (File)input;
-                final File outputFile = new File(m_currentPath, inputFile.getName());
+                final File outputFile = CloudFileUtils.convertToLocal(m_currentPath, inputFile);
                 final FileItemPanel pnl = createFileItemPanel(outputFile);
 
                 pnl.showProgress(true);
 
                 XferHolder<File, File> holder = new XferHolder<>();
-                holder.xfer = new LocalToLocalTransferAdapter(inputFile, outputFile);
+                holder.xfer = new LocalToLocalTransferAdapter(globalCacheKey, inputFile, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -168,21 +168,13 @@ public class LocalPanel
             case GOOGLE_DRIVE:
             {
                 final com.google.api.services.drive.model.File inputFile = (com.google.api.services.drive.model.File)input;
-                final InputStream stream = genericInputController.getDownloadStream(inputFile); //TODO: unchecked
-
-                if (stream == null)
-                {
-                    Log.severe("Failed to get download stream");
-                    return null;
-                }
-
-                final File outputFile = new File(m_currentPath, inputFile.getTitle());
+                final File outputFile = CloudFileUtils.convertToLocal(m_currentPath, inputFile);
                 final FileItemPanel pnl = createFileItemPanel(outputFile);
 
                 pnl.showProgress(true);
 
                 XferHolder<com.google.api.services.drive.model.File, java.io.File> holder = new XferHolder<>();
-                holder.xfer = new GDriveToLocalTransferAdapter(stream, inputFile, outputFile);
+                holder.xfer = new GDriveToLocalTransferAdapter(globalCacheKey, inputFile, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -191,21 +183,13 @@ public class LocalPanel
             case DROPBOX:
             {
                 final com.dropbox.core.DbxEntry inputFile = (com.dropbox.core.DbxEntry)input;
-                final InputStream stream = genericInputController.getDownloadStream(inputFile); //TODO: unchecked
-
-                if (stream == null)
-                {
-                    Log.severe("Failed to get download stream");
-                    return null;
-                }
-
-                final File outputFile = new File(m_currentPath, inputFile.name);
+                final File outputFile = CloudFileUtils.convertToLocal(m_currentPath, inputFile);
                 final FileItemPanel pnl = createFileItemPanel(outputFile);
 
                 pnl.showProgress(true);
 
                 XferHolder<com.dropbox.core.DbxEntry, java.io.File> holder = new XferHolder<>();
-                holder.xfer = new DropboxToLocalTransferAdapter(stream, inputFile, outputFile);
+                holder.xfer = new DropboxToLocalTransferAdapter(globalCacheKey, inputFile, outputFile);
                 holder.pnl = pnl;
 
                 return holder;

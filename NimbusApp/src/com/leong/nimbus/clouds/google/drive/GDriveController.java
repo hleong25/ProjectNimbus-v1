@@ -129,13 +129,13 @@ public class GDriveController implements ICloudController<com.google.api.service
         return successLogin;
     }
 
-    public File generateMetadata(File parent, java.io.File content)
+    private File generateMetadata(File parent, java.io.File content)
     {
         Log.entering("generateMetadata", new Object[]{parent, content});
 
-        String mimeType = URLConnection.guessContentTypeFromName(content.getName());
+        //String mimeType = URLConnection.guessContentTypeFromName(content.getName());
 
-        Log.fine("Mime: "+mimeType);
+        //Log.fine("Mime: "+mimeType);
 
         ParentReference parentRef = new ParentReference();
         parentRef.setId(parent.getId());
@@ -143,7 +143,7 @@ public class GDriveController implements ICloudController<com.google.api.service
         File metadata = new File();
         metadata.setTitle(content.getName());
         metadata.setFileSize(content.length());
-        metadata.setMimeType(mimeType);
+        //metadata.setMimeType(mimeType);
         metadata.setParents(Arrays.asList(parentRef));
 
         return metadata;

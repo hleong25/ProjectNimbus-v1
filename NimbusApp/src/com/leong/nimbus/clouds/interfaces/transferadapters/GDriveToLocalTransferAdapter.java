@@ -6,6 +6,8 @@
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.google.api.services.drive.model.File;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
@@ -22,26 +24,15 @@ public class GDriveToLocalTransferAdapter
 {
     private static final Logit Log = Logit.create(GDriveToLocalTransferAdapter.class.getName());
 
-    protected final InputStream m_sourceStream;
-
-    public GDriveToLocalTransferAdapter(InputStream sourceStream, File source, java.io.File target)
+    public GDriveToLocalTransferAdapter(String sourceCacheKey, File source, java.io.File target)
     {
-        super(source, target);
-
-        m_sourceStream = sourceStream;
+        super(sourceCacheKey, source, target);
     }
 
     @Override
     public long getFilesize()
     {
         return m_source.getFileSize();
-    }
-
-    @Override
-    public InputStream getInputStream()
-    {
-        // caller must close inputstream;
-        return m_sourceStream;
     }
 
     @Override

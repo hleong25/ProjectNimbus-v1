@@ -233,7 +233,7 @@ public class DropboxController implements ICloudController<DbxEntry>
         }
     }
 
-    public DbxEntry.File generateFile(String parent, java.io.File content)
+    private DbxEntry.File generateFile(String parent, java.io.File content)
     {
         String path = parent + "/" + content.getName();
         String iconName = null;

@@ -23,46 +23,15 @@ public class LocalToGDriveTransferAdapter
 {
     private static final Logit Log = Logit.create(LocalToGDriveTransferAdapter.class.getName());
 
-    public LocalToGDriveTransferAdapter(java.io.File source, com.google.api.services.drive.model.File target)
+    public LocalToGDriveTransferAdapter(String sourceCacheKey, java.io.File source, com.google.api.services.drive.model.File target)
     {
-        super(source, target);
+        super(sourceCacheKey, source, target);
     }
 
     @Override
     public long getFilesize()
     {
         return m_source.length();
-    }
-
-    @Override
-    public InputStream getInputStream()
-    {
-        // caller must close inputstream;
-
-        FileInputStream fis = null;
-        try
-        {
-            fis = new FileInputStream(getSourceObject());
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            return bis;
-        }
-        catch (FileNotFoundException ex)
-        {
-            //Logger.getLogger(LocalPanel.class.getName()).log(Level.SEVERE, null, ex);
-            Log.throwing("getInputStream", ex);
-
-            try
-            {
-                if (fis != null)
-                    fis.close();
-            }
-            catch (IOException ex1)
-            {
-                Log.throwing("getInputStream", ex1);
-            }
-
-            return null;
-        }
     }
 
     @Override
