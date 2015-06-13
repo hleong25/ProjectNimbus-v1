@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.CloudControllerAdapter;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
@@ -26,45 +27,18 @@ import java.util.Map;
  *
  * @author henry
  */
-public class LocalController implements ICloudController<java.io.File>
+public class LocalController
+    extends CloudControllerAdapter<java.io.File>
 {
     private static final Logit Log = Logit.create(LocalController.class.getName());
 
-    private final GlobalCache.IProperties m_gcprops;
-
-    private final LocalModel m_model = new LocalModel();
-
-    private final transient Comparator<File> m_comparatorFiles;
-    private final transient Map<File, List<File>> m_cachedChildren = new HashMap<>();
-
     public LocalController()
     {
-        m_gcprops = new GlobalCache.IProperties()
-        {
-            @Override
-            public String getPackageName()
-            {
-                return "controllers/"+LocalController.class.getName();
-            }
-        };
+        super(new LocalModel());
 
-        m_comparatorFiles = new Comparator<File>()
-        {
-            @Override
-            public int compare(File f1, File f2)
-            {
-                boolean f1_isdir = f1.isDirectory();
-                boolean f2_isdir = f2.isDirectory();
+        Log.entering("<init>");
 
-                if (f1_isdir ^ f2_isdir)
-                {
-                    return f1_isdir ? -1 : 1;
-                }
-
-                return f1.getName().compareTo(f2.getName());
-            }
-        };
-
+        //m_rootFolder = m_model.getIdFromItem(getRoot());
     }
 
     @Override
@@ -74,79 +48,8 @@ public class LocalController implements ICloudController<java.io.File>
     }
 
     @Override
-    public boolean login(Component parentComponent, String userid)
-    {
-        GlobalCache.getInstance().put(m_gcprops, userid, this);
-        return true;
-    }
-
-    @Override
-    public File getRoot()
-    {
-        File root = m_model.getRoot();
-        return root;
-    }
-
-    @Override
-    public File getItemById(String id, boolean useCache)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public File getParent(File item)
     {
         return item.getParentFile();
-    }
-
-    @Override
-    public List<File> getChildrenItems(File parent, boolean useCache)
-    {
-        if (parent == null)
-        {
-            parent = getRoot();
-        }
-
-        if (useCache && m_cachedChildren.containsKey(parent))
-        {
-            Log.fine(MessageFormat.format("Cache hit {0}'", parent.getAbsolutePath()));
-            return m_cachedChildren.get(parent);
-        }
-
-        List<File> files =  m_model.getChildrenItems(parent);
-
-        Collections.sort(files, m_comparatorFiles);
-
-        Log.fine("Add cache: "+parent.getAbsolutePath());
-        m_cachedChildren.put(parent, files);
-
-        return files;
-    }
-
-    @Override
-    public void transfer(ICloudTransfer<?,? super java.io.File> transfer)
-    {
-        Log.entering("transfering");
-        try
-        {
-            m_model.transfer(transfer);
-        }
-        finally
-        {
-            Tools.notifyAll(transfer);
-        }
-        Log.exiting("transfering");
-    }
-
-    @Override
-    public InputStream getDownloadStream(File downloadFile)
-    {
-        return m_model.getDownloadStream(downloadFile);
-    }
-
-    @Override
-    public OutputStream getUploadStream(File uploadFile)
-    {
-        return m_model.getUploadStream(uploadFile);
     }
 }

@@ -200,6 +200,12 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     }
 
     @Override
+    public String getIdByItem(DbxEntry item)
+    {
+        return item.path;
+    }
+
+    @Override
     public List<DbxEntry> getChildrenItems(DbxEntry parent)
     {
         Log.entering("getChildrenItems", parent);
@@ -236,6 +242,78 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
     @Override
     public void transfer(final ICloudTransfer<?, ? super DbxEntry> transfer)
+    {
+        Log.entering("transfering", new Object[]{transfer});
+
+        InputStream is = transfer.getInputStream();
+        OutputStream os = transfer.getOutputStream();
+
+        try
+        {
+            final int BUFFER_SIZE = 256*1024;
+            byte[] buffer = new byte[BUFFER_SIZE];
+
+            long totalSent = 0;
+            int readSize = 0;
+
+            ICloudProgress progress = transfer.getProgressHandler();
+
+            progress.initalize();
+            progress.start(transfer.getFilesize());
+
+            while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
+            {
+                totalSent += readSize;
+
+                os.write(buffer, 0, readSize);
+
+                progress.progress(totalSent);
+            }
+
+            if (transfer.getCanTransfer())
+            {
+                Log.fine("Transfer finished");
+
+                progress.finish();
+
+                DbxEntry outputFile = (DbxEntry) transfer.getTargetObject();
+                transfer.setTransferredObject(outputFile);
+            }
+            else
+            {
+                Log.warning("Transferred aborted");
+            }
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("transfer", ex);
+        }
+        finally
+        {
+            try
+            {
+                Log.fine("Closing input stream");
+                is.close();
+            }
+            catch (IOException ex)
+            {
+                Log.throwing("transfer", ex);
+            }
+
+            try
+            {
+                Log.fine("Closing output stream");
+                os.flush();
+                os.close();
+            }
+            catch (IOException ex)
+            {
+                Log.throwing("transfer", ex);
+            }
+        }
+    }
+
+    public void transfer1(final ICloudTransfer<?, ? super DbxEntry> transfer)
     {
         final InputStream is = transfer.getInputStream();
 
@@ -350,6 +428,24 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         DbxClient.Uploader uploader = m_client.startUploadFileChunked(256*1024, uploadFile.path, DbxWriteMode.add(), uploadFile.asFile().numBytes);
         return uploader.getBody();
+    }
+
+    @Override
+    public boolean isFolder(DbxEntry item)
+    {
+        return item.isFolder();
+    }
+
+    @Override
+    public String getName(DbxEntry item)
+    {
+        return item.name;
+    }
+
+    @Override
+    public String getAbsolutePath(DbxEntry item)
+    {
+        return item.path;
     }
 
 }

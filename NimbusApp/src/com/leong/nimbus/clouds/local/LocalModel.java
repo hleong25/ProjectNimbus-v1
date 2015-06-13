@@ -75,6 +75,12 @@ public class LocalModel implements ICloudModel<java.io.File>
     }
 
     @Override
+    public String getIdByItem(File item)
+    {
+        return item.getAbsolutePath();
+    }
+
+    @Override
     public List<File> getChildrenItems(File parent)
     {
         List<File> list = new ArrayList<>();
@@ -199,5 +205,23 @@ public class LocalModel implements ICloudModel<java.io.File>
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isFolder(File item)
+    {
+        return item.isDirectory();
+    }
+
+    @Override
+    public String getName(File item)
+    {
+        return item.getName();
+    }
+
+    @Override
+    public String getAbsolutePath(File item)
+    {
+        return item.getAbsolutePath();
     }
 }

@@ -240,6 +240,12 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     }
 
     @Override
+    public String getIdByItem(File item)
+    {
+        return item.getId();
+    }
+
+    @Override
     public List<File> getChildrenItems(File parent)
     {
         Log.entering("getChildrenItems", new Object[]{(parent != null ? parent.getId() : "(parent.null)")});
@@ -279,8 +285,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return list;
     }
 
-    @Override
-    public void transfer(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
+    public void transfer1(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
     {
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
@@ -337,6 +342,82 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         catch (IOException ex)
         {
             Log.throwing("transfer", ex);
+        }
+    }
+
+    @Override
+    public void transfer(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
+    {
+        // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
+        // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
+
+        Log.entering("transfering", new Object[]{transfer});
+
+        InputStream is = transfer.getInputStream();
+        OutputStream os = transfer.getOutputStream();
+
+        try
+        {
+            final int BUFFER_SIZE = 256*1024;
+            byte[] buffer = new byte[BUFFER_SIZE];
+
+            long totalSent = 0;
+            int readSize = 0;
+
+            ICloudProgress progress = transfer.getProgressHandler();
+
+            progress.initalize();
+            progress.start(transfer.getFilesize());
+
+            while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
+            {
+                totalSent += readSize;
+
+                os.write(buffer, 0, readSize);
+
+                progress.progress(totalSent);
+            }
+
+            if (transfer.getCanTransfer())
+            {
+                Log.fine("Transfer finished");
+
+                progress.finish();
+
+                File outputFile = (File) transfer.getTargetObject();
+                transfer.setTransferredObject(outputFile);
+            }
+            else
+            {
+                Log.warning("Transferred aborted");
+            }
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("transfer", ex);
+        }
+        finally
+        {
+            try
+            {
+                Log.fine("Closing input stream");
+                is.close();
+            }
+            catch (IOException ex)
+            {
+                Log.throwing("transfer", ex);
+            }
+
+            try
+            {
+                Log.fine("Closing output stream");
+                os.flush();
+                os.close();
+            }
+            catch (IOException ex)
+            {
+                Log.throwing("transfer", ex);
+            }
         }
     }
 
@@ -406,5 +487,23 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     public OutputStream getUploadStream(File uploadFile)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isFolder(File item)
+    {
+        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER);
+    }
+
+    @Override
+    public String getName(File item)
+    {
+        return item.getTitle();
+    }
+
+    @Override
+    public String getAbsolutePath(File item)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
