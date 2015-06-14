@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.dropbox.core.DbxEntry;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 
 /**
@@ -17,9 +18,9 @@ public class LocalToDropboxTransferAdapter
 {
     private static final Logit Log = Logit.create(LocalToDropboxTransferAdapter.class.getName());
 
-    public LocalToDropboxTransferAdapter(String sourceCacheKey,
+    public LocalToDropboxTransferAdapter(GlobalCacheKey sourceCacheKey,
                                          java.io.File source,
-                                         String targetCacheKey,
+                                         GlobalCacheKey targetCacheKey,
                                          DbxEntry target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);

@@ -20,6 +20,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.NimbusDatastore;
 import com.leong.nimbus.utils.Tools;
@@ -31,8 +32,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -59,7 +58,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     }
 
     @Override
-    public String getGlobalCacheKey()
+    public GlobalCacheKey getGlobalCacheKey()
     {
         return GlobalCache.getInstance().getKey(this);
     }

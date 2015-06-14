@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 
 /**
@@ -16,9 +17,9 @@ public class DropboxToGDriveTransferAdapter
 {
     private static final Logit Log = Logit.create(DropboxToGDriveTransferAdapter.class.getName());
 
-    public DropboxToGDriveTransferAdapter(String sourceCacheKey,
+    public DropboxToGDriveTransferAdapter(GlobalCacheKey sourceCacheKey,
                                           com.dropbox.core.DbxEntry source,
-                                          String targetCacheKey,
+                                          GlobalCacheKey targetCacheKey,
                                           com.google.api.services.drive.model.File target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);

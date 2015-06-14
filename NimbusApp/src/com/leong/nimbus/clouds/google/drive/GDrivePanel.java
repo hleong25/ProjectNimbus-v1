@@ -19,6 +19,7 @@ import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.GlobalCache;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
@@ -210,9 +211,9 @@ public class GDrivePanel
     }
 
     @Override
-    public XferHolder<?, com.google.api.services.drive.model.File> createXferHolder(String globalCacheKey, Object input)
+    public XferHolder<?, com.google.api.services.drive.model.File> createXferHolder(GlobalCacheKey globalCacheKey, Object input)
     {
-        final String targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
+        final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
         final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
         switch (genericInputController.getCloudType())
         {

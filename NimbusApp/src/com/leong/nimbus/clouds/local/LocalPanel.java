@@ -19,11 +19,11 @@ import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.GlobalCache;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
 import java.io.File;
-import java.io.InputStream;
 
 /**
  *
@@ -145,10 +145,12 @@ public class LocalPanel
     }
 
     @Override
-    public XferHolder<?, File> createXferHolder(String globalCacheKey, Object input)
+    public XferHolder<?, File> createXferHolder(GlobalCacheKey sourceCacheKey, Object input)
     {
-        final String targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
-        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
+        final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
+        //Log.finer("xferholder sourceCacheKey:"+sourceCacheKey+" targetCacheKey:"+targetCacheKey);
+        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(sourceCacheKey);
+        //Log.finer("genericInputController:"+genericInputController);
         switch (genericInputController.getCloudType())
         {
             case LOCAL_FILE_SYSTEM:
@@ -160,7 +162,7 @@ public class LocalPanel
                 pnl.showProgress(true);
 
                 XferHolder<File, File> holder = new XferHolder<>();
-                holder.xfer = new LocalToLocalTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new LocalToLocalTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -175,7 +177,7 @@ public class LocalPanel
                 pnl.showProgress(true);
 
                 XferHolder<com.google.api.services.drive.model.File, java.io.File> holder = new XferHolder<>();
-                holder.xfer = new GDriveToLocalTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new GDriveToLocalTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -190,7 +192,7 @@ public class LocalPanel
                 pnl.showProgress(true);
 
                 XferHolder<com.dropbox.core.DbxEntry, java.io.File> holder = new XferHolder<>();
-                holder.xfer = new DropboxToLocalTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new DropboxToLocalTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;

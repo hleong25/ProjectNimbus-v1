@@ -21,6 +21,7 @@ import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.utils.GlobalCache;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
@@ -189,12 +190,11 @@ public class DropboxPanel
     }
 
     @Override
-    public XferHolder<?, DbxEntry> createXferHolder(String globalCacheKey, Object input)
+    public XferHolder<?, DbxEntry> createXferHolder(GlobalCacheKey sourceCacheKey, Object input)
     {
-        Log.entering("createXferHolder", new Object[]{globalCacheKey, input});
-        final String targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
-        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
-        Log.fine("CloudType: "+genericInputController.getCloudType());
+        Log.entering("createXferHolder", new Object[]{sourceCacheKey, input});
+        final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
+        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(sourceCacheKey);
         switch (genericInputController.getCloudType())
         {
             case LOCAL_FILE_SYSTEM:
@@ -206,7 +206,7 @@ public class DropboxPanel
                 pnl.showProgress(true);
 
                 XferHolder<java.io.File, DbxEntry> holder = new XferHolder<>();
-                holder.xfer = new LocalToDropboxTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new LocalToDropboxTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -221,7 +221,7 @@ public class DropboxPanel
                 pnl.showProgress(true);
 
                 XferHolder<com.google.api.services.drive.model.File, DbxEntry> holder = new XferHolder<>();
-                holder.xfer = new GDriveToDropboxTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new GDriveToDropboxTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -236,7 +236,7 @@ public class DropboxPanel
                 pnl.showProgress(true);
 
                 XferHolder<DbxEntry, DbxEntry> holder = new XferHolder<>();
-                holder.xfer = new DropboxToDropboxTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new DropboxToDropboxTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;

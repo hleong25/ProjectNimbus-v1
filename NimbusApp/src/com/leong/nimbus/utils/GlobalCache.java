@@ -13,7 +13,7 @@ import java.util.Map;
  * @author henry
  */
 public final class GlobalCache
-    extends HashMap<String, Object>
+    extends HashMap<GlobalCacheKey, Object>
 {
     private static final Logit Log = Logit.create(GlobalCache.class.getName());
 
@@ -39,9 +39,14 @@ public final class GlobalCache
         return m_global;
     }
 
+    public boolean containsKey(String key)
+    {
+        GlobalCacheKey gck = new GlobalCacheKey(key);
+        return super.containsKey(gck);
+    }
 
     @Override
-    public Object put(String key, Object value)
+    public Object put(GlobalCacheKey key, Object value)
     {
         throw new NoSuchMethodError("Use put(IProperties, String, Object)");
     }
@@ -49,29 +54,34 @@ public final class GlobalCache
     public Object put(final IProperties props, String key, Object value)
     {
         String pkgkey = ((props != null) ? props.getPackageName()+"/" : "")+key;
+        GlobalCacheKey gck = new GlobalCacheKey(pkgkey);
 
-        if (!Tools.isNullOrEmpty(pkgkey) && (value != null))
+        if (value != null)
         {
-            if (containsKey(pkgkey) && (get(pkgkey) != value))
+            if (containsKey(gck) && (get(gck) != value))
             {
-                Log.info("Overriding cache: "+pkgkey);
+                Log.info("Overriding cache:"+gck);
+            }
+            else
+            {
+                Log.info("Adding cache:"+gck);
             }
 
-            return super.put(pkgkey, value);
+            return super.put(gck, value);
         }
         Log.warning("Adding cache failed.");
         return null;
     }
 
-    public String getKey(final Object needle)
+    public GlobalCacheKey getKey(final Object needle)
     {
-        for (Map.Entry<String, Object> entry : entrySet())
+        for (Map.Entry<GlobalCacheKey, Object> entry : entrySet())
         {
             if (entry.getValue() == needle)
             {
                 return entry.getKey();
             }
         }
-        return null;
+        return GlobalCacheKey.Empty;
     }
 }

@@ -5,10 +5,9 @@
  */
 package com.leong.nimbus.gui.helpers;
 
-import com.leong.nimbus.clouds.CloudType;
-import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.datatransfer.TransferableAdapter;
 import com.leong.nimbus.gui.datatransfer.TransferableContainer;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -62,7 +61,7 @@ public abstract class DefaultDropTargetAdapter extends DropTargetAdapter
                     // Get all of the dropped files
                     // HL: this might not work
                     // TODO: check for unchecked or unsafe operations
-                    tc = new TransferableContainer(null, (List) transferable.getTransferData(flavor));
+                    tc = new TransferableContainer(GlobalCacheKey.Empty, (List) transferable.getTransferData(flavor));
                 }
                 else if (TransferableAdapter.isNimbusDataFlavorSupported(flavor))
                 {

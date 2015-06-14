@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 
 
@@ -17,9 +18,9 @@ public class GDriveToGDriveTransferAdapter
 {
     private static final Logit Log = Logit.create(GDriveToGDriveTransferAdapter.class.getName());
 
-    public GDriveToGDriveTransferAdapter(String sourceCacheKey,
+    public GDriveToGDriveTransferAdapter(GlobalCacheKey sourceCacheKey,
                                          com.google.api.services.drive.model.File source,
-                                         String targetCacheKey,
+                                         GlobalCacheKey targetCacheKey,
                                          com.google.api.services.drive.model.File target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);

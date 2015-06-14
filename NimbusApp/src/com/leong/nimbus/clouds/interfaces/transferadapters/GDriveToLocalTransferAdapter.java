@@ -6,6 +6,7 @@
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.google.api.services.drive.model.File;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 
 /**
@@ -17,9 +18,9 @@ public class GDriveToLocalTransferAdapter
 {
     private static final Logit Log = Logit.create(GDriveToLocalTransferAdapter.class.getName());
 
-    public GDriveToLocalTransferAdapter(String sourceCacheKey,
+    public GDriveToLocalTransferAdapter(GlobalCacheKey sourceCacheKey,
                                         File source,
-                                        String targetCacheKey,
+                                        GlobalCacheKey targetCacheKey,
                                         java.io.File target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);

@@ -28,6 +28,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.NimbusDatastore;
 import com.leong.nimbus.utils.Tools;
@@ -78,7 +79,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     }
 
     @Override
-    public String getGlobalCacheKey()
+    public GlobalCacheKey getGlobalCacheKey()
     {
         return GlobalCache.getInstance().getKey(this);
     }

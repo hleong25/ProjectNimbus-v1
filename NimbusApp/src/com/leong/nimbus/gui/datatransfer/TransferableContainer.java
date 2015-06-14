@@ -5,7 +5,7 @@
  */
 package com.leong.nimbus.gui.datatransfer;
 
-import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,18 +16,18 @@ import java.util.List;
 public class TransferableContainer<T>
     implements Serializable
 {
-    protected String m_globalCacheKey;
+    protected GlobalCacheKey m_sourceCacheKey;
     protected List<T> m_list;
 
-    public TransferableContainer(String globalCacheKey, List<T> list)
+    public TransferableContainer(GlobalCacheKey sourceCacheKey, List<T> list)
     {
-        m_globalCacheKey = globalCacheKey;
+        m_sourceCacheKey = sourceCacheKey;
         m_list = list;
     }
 
-    public String getGlobalCacheKey()
+    public GlobalCacheKey getSourceCacheKey()
     {
-        return m_globalCacheKey;
+        return m_sourceCacheKey;
     }
 
     public List<T> getList()
@@ -37,7 +37,7 @@ public class TransferableContainer<T>
 
     public String toString()
     {
-        return "[TransferableContainer] "+m_globalCacheKey+" count:"+m_list.size();
+        return "[TransferableContainer] "+m_sourceCacheKey+" count:"+m_list.size();
     }
 
 }

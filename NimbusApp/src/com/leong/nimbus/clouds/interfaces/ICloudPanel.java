@@ -5,12 +5,12 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.datatransfer.TransferableContainer;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import java.awt.Component;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public interface ICloudPanel<T>
     void showFiles(final T parent, final boolean useCache);
     void responsiveShowFiles(final T path, final boolean useCache);
 
-    XferHolder<?, T> createXferHolder(String globalCacheKey, Object input);
+    XferHolder<?, T> createXferHolder(GlobalCacheKey sourceCacheKey, Object input);
     List<XferHolder<?, T>> generateTransferList(TransferableContainer tc);
     boolean doTransferLoop(List<XferHolder<?, T>> list);
 

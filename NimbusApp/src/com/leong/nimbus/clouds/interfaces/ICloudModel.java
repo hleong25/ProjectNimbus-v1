@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import com.leong.nimbus.utils.GlobalCacheKey;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public interface ICloudModel<T>
 {
-    String getGlobalCacheKey();
+    GlobalCacheKey getGlobalCacheKey();
 
     boolean login(String userid);
     boolean login(String userid, String authCode);

@@ -13,6 +13,7 @@ import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.awt.Component;
@@ -212,13 +213,13 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         final JPanel pnlFiles = getFilesPanel();
 
-        final String globalCacheKey = tc.getGlobalCacheKey();
+        final GlobalCacheKey sourceCacheKey = tc.getSourceCacheKey();
 
         for (Object obj : tc.getList())
         {
             Log.fine(obj.toString());
 
-            XferHolder<?, T> holder = createXferHolder(globalCacheKey, obj);
+            XferHolder<?, T> holder = createXferHolder(sourceCacheKey, obj);
             holder.xfer.setCanTransfer(m_canTransfer);
 
             uploadFiles.add(holder);

@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
+import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import java.io.File;
 
@@ -17,9 +18,9 @@ public class LocalToLocalTransferAdapter
 {
     private static final Logit Log = Logit.create(LocalToLocalTransferAdapter.class.getName());
 
-    public LocalToLocalTransferAdapter(String sourceCacheKey,
+    public LocalToLocalTransferAdapter(GlobalCacheKey sourceCacheKey,
                                        File source,
-                                       String targetCacheKey,
+                                       GlobalCacheKey targetCacheKey,
                                        File target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);
