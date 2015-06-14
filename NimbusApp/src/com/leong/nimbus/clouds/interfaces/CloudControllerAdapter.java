@@ -41,7 +41,7 @@ public abstract class CloudControllerAdapter<T>
 
     protected String m_rootFolder;
 
-    protected CloudControllerAdapter(ICloudModel<T> model)
+    protected CloudControllerAdapter(final String className, ICloudModel<T> model)
     {
         Log.entering("<init>");
 
@@ -52,7 +52,7 @@ public abstract class CloudControllerAdapter<T>
             @Override
             public String getPackageName()
             {
-                return "controllers/"+this.getClass().getName();
+                return "controllers/"+className;
             }
         };
 

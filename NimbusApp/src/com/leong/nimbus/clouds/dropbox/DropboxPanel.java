@@ -191,8 +191,10 @@ public class DropboxPanel
     @Override
     public XferHolder<?, DbxEntry> createXferHolder(String globalCacheKey, Object input)
     {
+        Log.entering("createXferHolder", new Object[]{globalCacheKey, input});
         final String targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
         final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
+        Log.fine("CloudType: "+genericInputController.getCloudType());
         switch (genericInputController.getCloudType())
         {
             case LOCAL_FILE_SYSTEM:

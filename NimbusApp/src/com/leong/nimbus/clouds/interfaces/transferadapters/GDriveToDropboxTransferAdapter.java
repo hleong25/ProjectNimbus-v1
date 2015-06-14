@@ -24,6 +24,7 @@ public class GDriveToDropboxTransferAdapter
                                         DbxEntry target)
     {
         super(sourceCacheKey, source, targetCacheKey, target);
+        Log.entering("<init>", new Object[]{sourceCacheKey, source, targetCacheKey, target});
     }
 
     @Override

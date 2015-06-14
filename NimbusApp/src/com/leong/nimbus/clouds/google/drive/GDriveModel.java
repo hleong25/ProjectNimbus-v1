@@ -285,7 +285,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         return list;
     }
 
-    public void transfer1(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
+    @Override
+    public void transfer(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
     {
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
@@ -294,6 +295,12 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         try
         {
+            if (transfer.getOutputStream() != null)
+            {
+                Log.fine("OutputStream: "+transfer.toString());
+                throw new IOException("GDrive output stream not supported. Transfer will handling the output stream.");
+            }
+
             final InputStream stream  = transfer.getInputStream();
             final File metadata = (File)transfer.getTargetObject();
             final ICloudProgress progressHandler = transfer.getProgressHandler();
@@ -336,88 +343,11 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             File xferredFile = request.execute();
 
             Log.fine("Uploaded file done");
-
             transfer.setTransferredObject(xferredFile);
         }
         catch (IOException ex)
         {
             Log.throwing("transfer", ex);
-        }
-    }
-
-    @Override
-    public void transfer(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
-    {
-        // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
-        // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
-
-        Log.entering("transfering", new Object[]{transfer});
-
-        InputStream is = transfer.getInputStream();
-        OutputStream os = transfer.getOutputStream();
-
-        try
-        {
-            final int BUFFER_SIZE = 256*1024;
-            byte[] buffer = new byte[BUFFER_SIZE];
-
-            long totalSent = 0;
-            int readSize = 0;
-
-            ICloudProgress progress = transfer.getProgressHandler();
-
-            progress.initalize();
-            progress.start(transfer.getFilesize());
-
-            while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
-            {
-                totalSent += readSize;
-
-                os.write(buffer, 0, readSize);
-
-                progress.progress(totalSent);
-            }
-
-            if (transfer.getCanTransfer())
-            {
-                Log.fine("Transfer finished");
-
-                progress.finish();
-
-                File outputFile = (File) transfer.getTargetObject();
-                transfer.setTransferredObject(outputFile);
-            }
-            else
-            {
-                Log.warning("Transferred aborted");
-            }
-        }
-        catch (IOException ex)
-        {
-            Log.throwing("transfer", ex);
-        }
-        finally
-        {
-            try
-            {
-                Log.fine("Closing input stream");
-                is.close();
-            }
-            catch (IOException ex)
-            {
-                Log.throwing("transfer", ex);
-            }
-
-            try
-            {
-                Log.fine("Closing output stream");
-                os.flush();
-                os.close();
-            }
-            catch (IOException ex)
-            {
-                Log.throwing("transfer", ex);
-            }
         }
     }
 
@@ -468,8 +398,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
             InputStream is = request.executeMediaAsInputStream();
 
-            Log.fine("ChunkSize: " + CHUNK_SIZE);
-            Log.fine("Media ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
+            //Log.fine("ChunkSize: " + CHUNK_SIZE);
+            //Log.fine("Media ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
 
             BufferedInputStream bis = new BufferedInputStream(is, request.getMediaHttpDownloader().getChunkSize());
 
@@ -486,7 +416,10 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     @Override
     public OutputStream getUploadStream(File uploadFile)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Log.entering("getUploadStream", new Object[]{uploadFile});
+
+        // must be null cause transfer() handles the upload
+        return null;
     }
 
     @Override

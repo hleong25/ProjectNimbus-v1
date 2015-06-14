@@ -23,7 +23,7 @@ public class GDriveController
 
     public GDriveController()
     {
-        super(new GDriveModel());
+        super(GDriveController.class.getName(), new GDriveModel());
 
         Log.entering("<init>");
 

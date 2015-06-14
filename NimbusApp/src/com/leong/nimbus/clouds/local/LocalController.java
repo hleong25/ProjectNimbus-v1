@@ -34,8 +34,9 @@ public class LocalController
 
     public LocalController()
     {
-        super(new LocalModel());
+        super(LocalController.class.getName(), new LocalModel());
 
+        this.
         Log.entering("<init>");
 
         //m_rootFolder = m_model.getIdFromItem(getRoot());

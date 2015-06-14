@@ -79,8 +79,10 @@ public abstract class CloudTransferAdapter<S, T>
     @Override
     public InputStream getInputStream()
     {
+        Log.entering("getInputStream");
         // caller must close inputstream;
         ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_sourceCacheKey);
+        Log.fine("SourceCacheKey:"+m_sourceCacheKey+" Controller:"+controller);
         return controller.getDownloadStream(getSourceObject());
     }
 
@@ -90,7 +92,7 @@ public abstract class CloudTransferAdapter<S, T>
         Log.entering("getOutputStream");
         // caller must close outputstream;
         ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_targetCacheKey);
-        Log.fine(controller.toString());
+        Log.fine("TargetCacheKey:"+m_targetCacheKey+" Controller:"+controller);
         return controller.getUploadStream(getTargetObject());
     }
 

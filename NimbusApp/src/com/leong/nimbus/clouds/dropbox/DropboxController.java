@@ -22,7 +22,7 @@ public class DropboxController
 
     public DropboxController()
     {
-        super(new DropboxModel());
+        super(DropboxController.class.getName(), new DropboxModel());
 
         Log.entering("<init>");
 
