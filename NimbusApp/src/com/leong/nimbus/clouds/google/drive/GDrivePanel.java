@@ -61,28 +61,12 @@ public class GDrivePanel
         java.awt.GridBagConstraints gridBagConstraints;
 
         pnlTop = new javax.swing.JPanel();
-        btnConnect = new javax.swing.JButton();
         txtPath = new javax.swing.JTextField();
         pnlFiles = new com.leong.nimbus.gui.layout.AllCardsPanel();
 
         setLayout(new java.awt.BorderLayout());
 
         pnlTop.setLayout(new java.awt.GridBagLayout());
-
-        btnConnect.setText("Connect to Google Drive!");
-        btnConnect.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btnConnectActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
-        pnlTop.add(btnConnect, gridBagConstraints);
 
         txtPath.setText("Path");
         txtPath.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -98,13 +82,8 @@ public class GDrivePanel
         add(pnlFiles, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
-    {//GEN-HEADEREND:event_btnConnectActionPerformed
-    }//GEN-LAST:event_btnConnectActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnConnect;
     private com.leong.nimbus.gui.layout.AllCardsPanel pnlFiles;
     private javax.swing.JPanel pnlTop;
     private javax.swing.JTextField txtPath;
