@@ -7,7 +7,6 @@ package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.dropbox.core.DbxEntry;
 import com.google.api.services.drive.model.ParentReference;
-import com.leong.nimbus.clouds.google.drive.GDriveController;
 import java.util.Arrays;
 
 /**

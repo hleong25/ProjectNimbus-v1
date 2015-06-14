@@ -6,11 +6,6 @@
 package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.leong.nimbus.utils.Logit;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  *

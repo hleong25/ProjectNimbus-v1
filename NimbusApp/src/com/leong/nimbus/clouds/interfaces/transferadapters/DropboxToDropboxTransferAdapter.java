@@ -7,7 +7,6 @@ package com.leong.nimbus.clouds.interfaces.transferadapters;
 
 import com.dropbox.core.DbxEntry;
 import com.leong.nimbus.utils.Logit;
-import java.io.OutputStream;
 
 /**
  *

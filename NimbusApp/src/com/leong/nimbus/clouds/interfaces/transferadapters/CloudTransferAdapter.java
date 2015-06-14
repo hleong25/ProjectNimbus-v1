@@ -9,6 +9,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
+import com.leong.nimbus.utils.Logit;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,6 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class CloudTransferAdapter<S, T>
     implements ICloudTransfer<S, T>
 {
+    private static final Logit Log = Logit.create(CloudTransferAdapter.class.getName());
+
     protected final String m_sourceCacheKey;
     protected final S m_source;
 
@@ -40,6 +43,8 @@ public abstract class CloudTransferAdapter<S, T>
                                 String targetCacheKey,
                                 T target)
     {
+        Log.entering("<init>", new Object[]{sourceCacheKey, source, targetCacheKey, target});
+
         m_sourceCacheKey = sourceCacheKey;
         m_source = source;
 
@@ -82,8 +87,10 @@ public abstract class CloudTransferAdapter<S, T>
     @Override
     public OutputStream getOutputStream()
     {
+        Log.entering("getOutputStream");
         // caller must close outputstream;
         ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_targetCacheKey);
+        Log.fine(controller.toString());
         return controller.getUploadStream(getTargetObject());
     }
 
