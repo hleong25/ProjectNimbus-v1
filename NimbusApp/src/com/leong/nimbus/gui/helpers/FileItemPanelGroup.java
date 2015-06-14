@@ -54,8 +54,12 @@ public class FileItemPanelGroup
                 }
 
                 FileItemPanel thispnl = (FileItemPanel) e.getSource();
-                m_selectedPanels.add(thispnl);
-                thispnl.setHighlight(true);
+
+                if (!m_selectedPanels.contains(thispnl))
+                {
+                    m_selectedPanels.add(thispnl);
+                    thispnl.setHighlight(true);
+                }
             }
         });
     }
