@@ -77,23 +77,21 @@ public abstract class CloudTransferAdapter<S, T>
         return m_xferred;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public InputStream getInputStream()
     {
-        Log.entering("getInputStream");
         // caller must close inputstream;
-        ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_sourceCacheKey);
-        Log.fine("SourceCacheKey:"+m_sourceCacheKey+" Controller:"+controller);
+        ICloudController<S> controller = (ICloudController<S>)GlobalCache.getInstance().get(m_sourceCacheKey);
         return controller.getDownloadStream(getSourceObject());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public OutputStream getOutputStream()
     {
-        Log.entering("getOutputStream");
         // caller must close outputstream;
-        ICloudController controller = (ICloudController)GlobalCache.getInstance().get(m_targetCacheKey);
-        Log.fine("TargetCacheKey:"+m_targetCacheKey+" Controller:"+controller);
+        ICloudController<T> controller = (ICloudController<T>)GlobalCache.getInstance().get(m_targetCacheKey);
         return controller.getUploadStream(getTargetObject());
     }
 
