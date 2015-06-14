@@ -267,6 +267,12 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     {
         Log.entering("onAction_drop", new Object[]{tc});
 
+        if (m_xferObject != null)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot start new transfer when transferring in progress...", "Nimbus", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
         List<XferHolder<?, T>> uploadFiles = generateTransferList(tc);
 
         if (doTransferLoop(uploadFiles))
