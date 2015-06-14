@@ -196,7 +196,7 @@ public abstract class CloudControllerAdapter<T>
     }
 
     @Override
-    public void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer)
+    public void transfer(ICloudTransfer</*source*/?, /*target*/T> transfer)
     {
         try
         {
@@ -213,12 +213,5 @@ public abstract class CloudControllerAdapter<T>
     {
         return m_model.getDownloadStream(downloadFile);
     }
-
-    @Override
-    public OutputStream getUploadStream(T uploadFile)
-    {
-        return m_model.getUploadStream(uploadFile);
-    }
-
 
 }

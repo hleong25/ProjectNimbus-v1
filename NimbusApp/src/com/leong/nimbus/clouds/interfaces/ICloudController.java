@@ -27,7 +27,6 @@ public interface ICloudController<T>
     List<T> getChildrenItems(T parent, boolean useCache);
 
     // target must be of type T
-    void transfer(ICloudTransfer</*source*/?, /*target*/? super T> transfer);
+    void transfer(ICloudTransfer</*source*/?, /*target*/T> transfer);
     InputStream getDownloadStream(T downloadFile);
-    OutputStream getUploadStream(T uploadFile);
 }

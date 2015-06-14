@@ -98,22 +98,42 @@ public class LocalModel implements ICloudModel<java.io.File>
     }
 
     @Override
-    public void transfer(final ICloudTransfer<?,? super java.io.File> transfer)
+    public boolean isFolder(File item)
+    {
+        return item.isDirectory();
+    }
+
+    @Override
+    public String getName(File item)
+    {
+        return item.getName();
+    }
+
+    @Override
+    public String getAbsolutePath(File item)
+    {
+        return item.getAbsolutePath();
+    }
+
+    @Override
+    public void transfer(final ICloudTransfer<?, java.io.File> transfer)
     {
         Log.entering("transfering", new Object[]{transfer});
 
-        InputStream is = transfer.getInputStream();
-        OutputStream os = transfer.getOutputStream();
+        final int BUFFER_SIZE = 256*1024;
+        final InputStream is = transfer.getInputStream();
+        OutputStream os = null;
 
         try
         {
-            final int BUFFER_SIZE = 256*1024;
-            byte[] buffer = new byte[BUFFER_SIZE];
+            final byte[] buffer = new byte[BUFFER_SIZE];
+
+            final ICloudProgress progress = transfer.getProgressHandler();
 
             long totalSent = 0;
             int readSize = 0;
 
-            ICloudProgress progress = transfer.getProgressHandler();
+            os = new BufferedOutputStream(new FileOutputStream(transfer.getTargetObject()), BUFFER_SIZE);
 
             progress.initalize();
             progress.start(transfer.getFilesize());
@@ -150,7 +170,7 @@ public class LocalModel implements ICloudModel<java.io.File>
             try
             {
                 Log.fine("Closing input stream");
-                is.close();
+                if (is != null) is.close();
             }
             catch (IOException ex)
             {
@@ -160,8 +180,11 @@ public class LocalModel implements ICloudModel<java.io.File>
             try
             {
                 Log.fine("Closing output stream");
-                os.flush();
-                os.close();
+                if (os != null)
+                {
+                    os.flush();
+                    os.close();
+                }
             }
             catch (IOException ex)
             {
@@ -187,42 +210,5 @@ public class LocalModel implements ICloudModel<java.io.File>
         }
 
         return null;
-    }
-
-    @Override
-    public OutputStream getUploadStream(File uploadFile)
-    {
-        // TODO: error checking
-        // caller must close stream
-        try
-        {
-            final int BUFFER_SIZE = 256*1024;
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(uploadFile), BUFFER_SIZE);
-            return os;
-        }
-        catch (FileNotFoundException ex)
-        {
-            Log.throwing("getUploadStream", ex);
-        }
-
-        return null;
-    }
-
-    @Override
-    public boolean isFolder(File item)
-    {
-        return item.isDirectory();
-    }
-
-    @Override
-    public String getName(File item)
-    {
-        return item.getName();
-    }
-
-    @Override
-    public String getAbsolutePath(File item)
-    {
-        return item.getAbsolutePath();
     }
 }

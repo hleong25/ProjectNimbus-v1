@@ -287,7 +287,25 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     }
 
     @Override
-    public void transfer(final ICloudTransfer<?,? super com.google.api.services.drive.model.File> transfer)
+    public boolean isFolder(File item)
+    {
+        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER);
+    }
+
+    @Override
+    public String getName(File item)
+    {
+        return item.getTitle();
+    }
+
+    @Override
+    public String getAbsolutePath(File item)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void transfer(final ICloudTransfer<?, com.google.api.services.drive.model.File> transfer)
     {
         // https://code.google.com/p/google-api-java-client/wiki/MediaUpload
         // http://stackoverflow.com/questions/25288849/resumable-uploads-google-drive-sdk-for-android-or-java
@@ -296,12 +314,6 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         try
         {
-            if (transfer.getOutputStream() != null)
-            {
-                Log.fine("OutputStream: "+transfer.toString());
-                throw new IOException("GDrive output stream not supported. Transfer will handling the output stream.");
-            }
-
             final InputStream stream  = transfer.getInputStream();
             final File metadata = (File)transfer.getTargetObject();
             final ICloudProgress progressHandler = transfer.getProgressHandler();
@@ -412,32 +424,5 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
 
         return null;
-    }
-
-    @Override
-    public OutputStream getUploadStream(File uploadFile)
-    {
-        Log.entering("getUploadStream", new Object[]{uploadFile});
-
-        // must be null cause transfer() handles the upload
-        return null;
-    }
-
-    @Override
-    public boolean isFolder(File item)
-    {
-        return item.getMimeType().equals(GDriveConstants.MIME_TYPE_FOLDER);
-    }
-
-    @Override
-    public String getName(File item)
-    {
-        return item.getTitle();
-    }
-
-    @Override
-    public String getAbsolutePath(File item)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

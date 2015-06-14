@@ -86,15 +86,6 @@ public abstract class CloudTransferAdapter<S, T>
         return controller.getDownloadStream(getSourceObject());
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public OutputStream getOutputStream()
-    {
-        // caller must close outputstream;
-        ICloudController<T> controller = (ICloudController<T>)GlobalCache.getInstance().get(m_targetCacheKey);
-        return controller.getUploadStream(getTargetObject());
-    }
-
     @Override
     public void setProgressHandler(ICloudProgress progress)
     {

@@ -26,7 +26,6 @@ public interface ICloudTransfer<S, T>
     T getTransferredObject();
 
     InputStream getInputStream();
-    OutputStream getOutputStream();
 
     void setProgressHandler(ICloudProgress progress);
     ICloudProgress getProgressHandler();

@@ -32,7 +32,6 @@ public interface ICloudModel<T>
     String getAbsolutePath(T item);
 
     // target must be of type T
-    void transfer(final ICloudTransfer</*source*/?, /*target*/? super T> transfer);
+    void transfer(final ICloudTransfer</*source*/?, /*target*/T> transfer);
     InputStream getDownloadStream(T downloadFile);
-    OutputStream getUploadStream(T uploadFile);
 }
