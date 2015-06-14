@@ -163,13 +163,17 @@ public class GDrivePanel
             // the list of trails has the path,
             // remove everything after it
 
+            final List<com.google.api.services.drive.model.File> removeList = new ArrayList<>();
             int idx = m_trailPaths.indexOf(path);
 
             ListIterator<com.google.api.services.drive.model.File> itr = m_trailPaths.listIterator(idx + 1);
             while (itr.hasNext())
             {
-                m_trailPaths.remove(itr.next());
+                removeList.add(itr.next());
             }
+
+            // remove all from list
+            m_trailPaths.removeAll(removeList);
         }
         else
         {
