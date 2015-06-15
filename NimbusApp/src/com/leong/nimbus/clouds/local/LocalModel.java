@@ -147,7 +147,6 @@ public class LocalModel implements ICloudModel<java.io.File>
             {
                 hist.insert(readSize);
 
-                //Log.info("read:"+readSize);
                 totalSent += readSize;
 
                 os.write(buffer, 0, readSize);

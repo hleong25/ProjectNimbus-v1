@@ -95,7 +95,7 @@ public class Tools
         final DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 
         final long elapsedSecs = TimeUnit.SECONDS.convert(elapsedNano, TimeUnit.NANOSECONDS);
-        final double avgRate = ((double)totalBytes)/elapsedSecs;
+        final double avgRate = (double)totalBytes / ((elapsedSecs > 0) ? elapsedSecs : 1);
 
         final String avgRateStr;// = String.format("%.0fkbps", avgRate/1000.0);
         if (avgRate > 10000000.0) // 10mbps
