@@ -32,12 +32,10 @@ import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.NimbusDatastore;
 import com.leong.nimbus.utils.Tools;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +65,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
+
 
         Log.fine("Creating new authorization flow");
         GoogleAuthorizationCodeFlow.Builder flowBuilder = new GoogleAuthorizationCodeFlow
@@ -257,6 +256,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         {
             Drive.Children.List request = m_service.children().list(parent.getId());
 
+            request.setQ("trashed=false");
+
             do {
                 try {
                     ChildList children = request.execute();
@@ -265,7 +266,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
                         File file = m_service.files().get(child.getId()).execute();
 
-                        if (file.getLabels().getTrashed()) continue;
+                        ///if (file.getLabels().getTrashed()) continue;
 
                         list.add(file);
 
@@ -353,9 +354,15 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
                 .setProgressListener(progressListener);
 
             Log.fine("Start uploading file");
+
+            final long startTime = System.nanoTime();
             File xferredFile = request.execute();
 
+            final long elapsedNano = System.nanoTime() - startTime;
+            Log.fine(Tools.formatTransferMsg(elapsedNano, xferredFile.getFileSize()));
+
             Log.fine("Uploaded file done");
+
             transfer.setTransferredObject(xferredFile);
         }
         catch (IOException ex)
@@ -402,21 +409,18 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             Log.fine("Download size: "+downloadFile.getFileSize());
             Log.fine(downloadFile.toString());
 
-            final int CHUNK_SIZE = 2*MediaHttpUploader.MINIMUM_CHUNK_SIZE;
+            //final int CHUNK_SIZE = 4*MediaHttpUploader.MINIMUM_CHUNK_SIZE;
 
             Drive.Files.Get request = m_service.files().get(downloadFile.getId());
             request.getMediaHttpDownloader()
-                .setChunkSize(CHUNK_SIZE) // yes, it is using the uploader min size
+                //.setChunkSize(2*CHUNK_SIZE)
                 .setProgressListener(progressListener);
+
+            //Log.fine("ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
 
             InputStream is = request.executeMediaAsInputStream();
 
-            //Log.fine("ChunkSize: " + CHUNK_SIZE);
-            //Log.fine("Media ChunkSize: " + request.getMediaHttpDownloader().getChunkSize());
-
-            BufferedInputStream bis = new BufferedInputStream(is, request.getMediaHttpDownloader().getChunkSize());
-
-            return bis;
+            return is;
         }
         catch (IOException ex)
         {

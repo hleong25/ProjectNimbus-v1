@@ -289,6 +289,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             progress.initalize();
             progress.start(transfer.getFilesize());
 
+            final long startTime = System.nanoTime();
             while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
             {
                 totalSent += readSize;
@@ -300,9 +301,11 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
             if (transfer.getCanTransfer())
             {
-                Log.fine("Transfer finished");
+                final long elapsedNano = System.nanoTime() - startTime;
 
                 DbxEntry outputFile = uploader.finish();
+
+                Log.fine(Tools.formatTransferMsg(elapsedNano, outputFile.asFile().numBytes));
 
                 transfer.setTransferredObject(outputFile);
 

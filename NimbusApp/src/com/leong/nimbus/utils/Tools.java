@@ -5,6 +5,9 @@
  */
 package com.leong.nimbus.utils;
 
+import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  *
@@ -85,5 +88,33 @@ public class Tools
         {
             Log.throwing("notifyAll", ex);
         }
+    }
+
+    public static String formatTransferMsg(long elapsedNano, long totalBytes)
+    {
+        final DecimalFormat formatter = new DecimalFormat("#,###,###,###");
+
+        final long elapsedSecs = TimeUnit.SECONDS.convert(elapsedNano, TimeUnit.NANOSECONDS);
+        final double avgRate = ((double)totalBytes)/elapsedSecs;
+
+        final String avgRateStr;// = String.format("%.0fkbps", avgRate/1000.0);
+        if (avgRate > 10000000.0) // 10mbps
+        {
+            avgRateStr = String.format("%.03fmbps", avgRate/1000000.0);
+        }
+        else if (avgRate > 1000.0) // 1kbps
+        {
+            avgRateStr = String.format("%.0fkbps", avgRate/1000.0);
+        }
+        else // bps
+        {
+            avgRateStr = String.format("%.0fbps", avgRate);
+        }
+
+        final String msg = String.format("Transferred %s bytes in %s seconds (%s)",
+                                         formatter.format(totalBytes),
+                                         formatter.format(elapsedSecs),
+                                         avgRateStr);
+        return msg;
     }
 }

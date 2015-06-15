@@ -11,6 +11,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.Tools;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -138,8 +139,10 @@ public class LocalModel implements ICloudModel<java.io.File>
             progress.initalize();
             progress.start(transfer.getFilesize());
 
+            final long startTime = System.nanoTime();
             while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
             {
+                //Log.info("read:"+readSize);
                 totalSent += readSize;
 
                 os.write(buffer, 0, readSize);
@@ -149,7 +152,9 @@ public class LocalModel implements ICloudModel<java.io.File>
 
             if (transfer.getCanTransfer())
             {
-                Log.fine("Transfer finished");
+                final long elapsedNano = System.nanoTime() - startTime;
+
+                Log.fine(Tools.formatTransferMsg(elapsedNano, totalSent));
 
                 progress.finish();
 
