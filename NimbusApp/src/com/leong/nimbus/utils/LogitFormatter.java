@@ -20,7 +20,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class LogitFormatter extends SimpleFormatter
 {
-    private static final DateFormat TIMESTAMP = new SimpleDateFormat("HH:mm:ss:SSS ");
+    private static final DateFormat TIMESTAMP = new SimpleDateFormat("HH:mm:ss.SSS ");
 
     public LogitFormatter()
     {
