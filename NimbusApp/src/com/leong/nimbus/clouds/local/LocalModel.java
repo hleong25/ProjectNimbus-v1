@@ -10,6 +10,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.GlobalCacheKey;
+import com.leong.nimbus.utils.Histogram;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.io.BufferedInputStream;
@@ -127,6 +128,8 @@ public class LocalModel implements ICloudModel<java.io.File>
 
         try
         {
+            final Histogram hist = new Histogram();
+
             final byte[] buffer = new byte[BUFFER_SIZE];
 
             final ICloudProgress progress = transfer.getProgressHandler();
@@ -142,6 +145,8 @@ public class LocalModel implements ICloudModel<java.io.File>
             final long startTime = System.nanoTime();
             while (transfer.getCanTransfer() && ((readSize = is.read(buffer)) > 0))
             {
+                hist.insert(readSize);
+
                 //Log.info("read:"+readSize);
                 totalSent += readSize;
 
@@ -155,6 +160,7 @@ public class LocalModel implements ICloudModel<java.io.File>
                 final long elapsedNano = System.nanoTime() - startTime;
 
                 Log.fine(Tools.formatTransferMsg(elapsedNano, totalSent));
+                Log.finer(hist.toString());
 
                 progress.finish();
 
