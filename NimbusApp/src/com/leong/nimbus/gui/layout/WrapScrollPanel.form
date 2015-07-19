@@ -33,18 +33,18 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="pnlFiles">
+        <Container class="javax.swing.JPanel" name="pnlComps">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pnlFilesMouseClicked"/>
-            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="pnlFilesKeyReleased"/>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pnlCompsMouseClicked"/>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="pnlCompsKeyReleased"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="WrapLayout wraplayout = new WrapLayout(java.awt.FlowLayout.LEADING);&#xa;wraplayout.setAlignOnBaseline(true);&#xa;pnlFiles.setLayout(wraplayout);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="WrapLayout wraplayout = new WrapLayout(java.awt.FlowLayout.LEADING);&#xa;wraplayout.setAlignOnBaseline(true);&#xa;pnlComps.setLayout(wraplayout);"/>
           </AuxValues>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
