@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.mainapp;
 
+import com.leong.nimbus.gui.NimbusAccountManagerFrame;
 import com.leong.nimbus.gui.PickCloudFrame;
 import com.leong.nimbus.utils.Logit;
 
@@ -23,7 +24,8 @@ public class MainGuiApp
 
         //setupLookAndFeel();
 
-        PickCloudFrame.showMe();
+        //PickCloudFrame.showMe();
+        NimbusAccountManagerFrame.showMe();
     }
 
     private static void setupLookAndFeel()

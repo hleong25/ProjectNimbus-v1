@@ -77,15 +77,18 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         String accessToken = null;
 
-        try
+        if (!Tools.isNullOrEmpty(userid))
         {
-            BufferedReader reader = NimbusDatastore.getReader("creds", "dropbox_"+userid);
+            try
+            {
+                BufferedReader reader = NimbusDatastore.getReader("creds", "dropbox_"+userid);
 
-            accessToken = reader.readLine();
-        }
-        catch (IOException ex)
-        {
-            Log.throwing("login", ex);
+                accessToken = reader.readLine();
+            }
+            catch (IOException ex)
+            {
+                Log.throwing("login", ex);
+            }
         }
 
         if (Tools.isNullOrEmpty(accessToken))
