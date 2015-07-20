@@ -97,22 +97,24 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     {
         Log.entering("login", new Object[]{userid});
 
+        if (Tools.isNullOrEmpty(userid))
+        {
+            return false;
+        }
+
         String accessToken = null;
         String refreshToken = null;
 
-        if (!Tools.isNullOrEmpty(userid))
+        try
         {
-            try
-            {
-                BufferedReader reader = NimbusDatastore.getReader("creds", "googledrive_"+userid);
+            BufferedReader reader = NimbusDatastore.getReader("creds", "googledrive_"+userid);
 
-                accessToken = reader.readLine();
-                refreshToken = reader.readLine();
-            }
-            catch (IOException ex)
-            {
-                Log.throwing("login", ex);
-            }
+            accessToken = reader.readLine();
+            refreshToken = reader.readLine();
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("login", ex);
         }
 
         if (Tools.isNullOrEmpty(accessToken))
