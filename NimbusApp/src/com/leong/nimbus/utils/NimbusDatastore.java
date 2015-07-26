@@ -27,6 +27,11 @@ public final class NimbusDatastore
         // empty
     }
 
+    public static File getFile(String pkg, String key)
+    {
+        return new File(ROOT_PATH+"/"+pkg, key);
+    }
+
     public static BufferedWriter getWriterNoThrow(String pkg, String key)
     {
         try
@@ -42,7 +47,7 @@ public final class NimbusDatastore
 
     public static BufferedWriter getWriter(String pkg, String key) throws IOException
     {
-        File file = new File(ROOT_PATH+"/"+pkg, key);
+        File file = getFile(pkg, key);
 
         if (file.exists())
         {
@@ -97,7 +102,7 @@ public final class NimbusDatastore
 
     public static BufferedReader getReader(String pkg, String key) throws IOException
     {
-        File file = new File(ROOT_PATH+"/"+pkg, key);
+        File file = getFile(pkg, key);
 
         if (!file.exists())
         {

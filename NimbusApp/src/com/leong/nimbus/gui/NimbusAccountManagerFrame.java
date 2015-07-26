@@ -5,6 +5,8 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.accountmanager.AccountInfo;
+import com.leong.nimbus.accountmanager.AccountManagerModel;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.DropboxController;
 import com.leong.nimbus.clouds.google.drive.GDriveController;
@@ -115,6 +117,28 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 frame.setVisible(true);
             }
         });
+
+
+
+        {
+            AccountManagerModel acctmgr = AccountManagerModel.getInstance();
+            if (acctmgr != null)
+            {
+                AccountInfo info;
+
+                info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE);
+                info.setName("hleong25@gmail.com");
+                info.setSecret(new String[]{"token", "refresh"});
+                acctmgr.addAccountInfo(info);
+
+                info = AccountInfo.createInstance(CloudType.DROPBOX);
+                info.setName("hleong25+dropbox@gmail.com");
+                info.setSecret(new String[]{"token"});
+                acctmgr.addAccountInfo(info);
+
+                Log.info(acctmgr.toString());
+            }
+        }
     }
 
     /**
@@ -184,8 +208,13 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 return;
         }
 
-        controller.login(this, null);
+        boolean isLogin = controller.login(this, null);
 
+        if (isLogin)
+        {
+            // kill me since we're good now
+            dispose();
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

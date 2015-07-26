@@ -39,6 +39,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -61,11 +63,9 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     public GDriveModel()
     {
         Log.entering("<init>");
-        //Tools.logit("GDriveModel.ctor()");
 
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
-
 
         Log.fine("Creating new authorization flow");
         GoogleAuthorizationCodeFlow.Builder flowBuilder = new GoogleAuthorizationCodeFlow
@@ -96,11 +96,6 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     public boolean login(String userid)
     {
         Log.entering("login", new Object[]{userid});
-
-        if (Tools.isNullOrEmpty(userid))
-        {
-            return false;
-        }
 
         String accessToken = null;
         String refreshToken = null;
@@ -148,6 +143,19 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
             .setApplicationName("Nimbus")
             .build();
+
+
+        Log.fine("Getting name");
+        String name = "(null)";
+        try
+        {
+            name = m_service.about().get().execute().getName();
+        }
+        catch (IOException ex)
+        {
+            // do nothing
+        }
+        Log.fine("Name = "+name);
 
         return true;
     }

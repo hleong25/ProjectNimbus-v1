@@ -6,7 +6,6 @@
 package com.leong.nimbus.mainapp;
 
 import com.leong.nimbus.gui.NimbusAccountManagerFrame;
-import com.leong.nimbus.gui.PickCloudFrame;
 import com.leong.nimbus.utils.Logit;
 
 /**
