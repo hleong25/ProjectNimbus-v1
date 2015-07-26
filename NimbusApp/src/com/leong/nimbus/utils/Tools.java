@@ -5,8 +5,16 @@
  */
 package com.leong.nimbus.utils;
 
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
 
 
 /**
@@ -117,4 +125,29 @@ public class Tools
                                          avgRateStr);
         return msg;
     }
+
+    public static String xmlToString(Document doc)
+    {
+        try
+        {
+            StringWriter sw = new StringWriter();
+
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
+
+            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+
+            return sw.toString();
+        }
+        catch (TransformerException ex)
+        {
+        }
+        return "";
+    }
+
 }

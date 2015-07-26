@@ -6,11 +6,14 @@
 package com.leong.nimbus.accountmanager;
 
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.utils.Logit;
+import com.leong.nimbus.utils.Tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -19,6 +22,9 @@ import org.w3c.dom.NodeList;
  */
 public class AccountInfo
 {
+    private static final Logit Log = Logit.create(AccountInfo.class.getName());
+
+    public static final String ELEM_ROOT = "account";
     private static final String ELEM_TYPE = "type";
     private static final String ELEM_NAME = "name";
     private static final String ELEM_SECRET = "secret";
@@ -46,64 +52,103 @@ public class AccountInfo
 
     public static AccountInfo createInstance(Element fragment)
     {
+        String data;
+
+        if (!fragment.getNodeName().equals(ELEM_ROOT))
+        {
+            Log.warning("Parsing element, not '"+ELEM_ROOT+"'");
+            return null;
+        }
+
+        // get version
+        int version = 0;
+        {
+            data = fragment.getAttribute(ATTR_VERSION);
+
+            try
+            {
+                version = Integer.parseInt(data);
+            }
+            catch (NumberFormatException ex)
+            {
+                Log.warning("Failed to parse version");
+                return null;
+            }
+        }
+
         AccountInfo info = null;
-        NodeList nodes;
-        Element elem;
-        String tmpString;
 
-        // TODO: version is in root attribute, not in type elem
+        // parse each child element
+        NodeList nodes = fragment.getChildNodes();
 
-        // get type and version
-        nodes = fragment.getElementsByTagName(ELEM_TYPE);
-
-        if (nodes.getLength() != 1)
+        for (int idx = 0, end = nodes.getLength(); idx < end; ++idx)
         {
-            return info;
+            Node node = nodes.item(idx);
+            if (node.getNodeType() != Node.ELEMENT_NODE)
+            {
+                continue;
+            }
+
+            Element elem = (Element) nodes.item(idx);
+            String nodeName = elem.getNodeName();
+
+            if (nodeName.equals(ELEM_TYPE))
+            {
+                data = elem.getTextContent();
+
+                if (Tools.isNullOrEmpty(data))
+                {
+                    continue;
+                }
+
+                CloudType cloudType;
+                if (data.equals(CloudType.GOOGLE_DRIVE.toString()))
+                {
+                    cloudType = CloudType.GOOGLE_DRIVE;
+                }
+                else if (data.equals(CloudType.DROPBOX.toString()))
+                {
+                    cloudType = CloudType.DROPBOX;
+                }
+                else
+                {
+                    Log.severe("Unknown cloud type: "+data);
+                    return null;
+                }
+
+                info = AccountInfo.createInstance(cloudType);
+            }
+            else if (nodeName.equals(ELEM_NAME))
+            {
+                data = elem.getTextContent();
+                info.setName(data);
+            }
+            else if (nodeName.equals(ELEM_SECRET))
+            {
+                NodeList secrets = elem.getElementsByTagName(ELEM_ITEM);
+
+                for (int idx_secrets = 0, end_secrets = secrets.getLength();
+                     idx_secrets < end_secrets;
+                     ++idx_secrets)
+                {
+                    Node secret = secrets.item(idx_secrets);
+                    if (secret.getNodeType() != Node.ELEMENT_NODE)
+                    {
+                        continue;
+                    }
+
+                    Element elem_secret = (Element) secret;
+                    data = elem_secret.getTextContent();
+
+                    if (Tools.isNullOrEmpty(data))
+                    {
+                        continue;
+                    }
+
+                    info.addSecret(data);
+                }
+            }
         }
-
-        {
-            elem = (Element) nodes.item(0);
-            tmpString = elem.getNodeValue();
-
-            CloudType cloudType;
-            if (tmpString.equals(CloudType.GOOGLE_DRIVE.toString()))
-            {
-                cloudType = CloudType.GOOGLE_DRIVE;
-            }
-            else if (tmpString.equals(CloudType.DROPBOX.toString()))
-            {
-                cloudType = CloudType.DROPBOX;
-            }
-            else
-            {
-                // null
-                return info;
-            }
-
-            info = new AccountInfo(cloudType);
-
-            tmpString = elem.getAttribute(ATTR_VERSION);
-            int version = 0;
-            
-            version = Integer.parseInt(tmpString);
-
-            info.setVersion(version);
-        }
-
-        // parse name
-        {
-            nodes = fragment.getElementsByTagName(ELEM_NAME);
-
-            if (nodes.getLength() > 0)
-            {
-                elem = (Element) nodes.item(0);
-                tmpString = elem.getNodeValue();
-
-                info.setName(tmpString);
-            }
-        }
-
-        // parse secrets
 
         return info;
     }
@@ -138,17 +183,20 @@ public class AccountInfo
         m_secret = Arrays.asList(secret);
     }
 
+    public void addSecret(String secret)
+    {
+        m_secret.add(secret);
+    }
+
     public String[] getSecret()
     {
-        return (String[])m_secret.toArray();
+        return m_secret.toArray(new String[0]);
     }
 
     public Element serialize(Document doc)
     {
         Element child;
-        Element fragment = doc.createElement("account");
-
-        //doc.appendChild(fragment);
+        Element fragment = doc.createElement(ELEM_ROOT);
 
         fragment.setAttribute(ATTR_VERSION, String.valueOf(getVersion()));
 

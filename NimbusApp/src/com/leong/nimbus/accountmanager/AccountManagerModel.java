@@ -7,24 +7,20 @@ package com.leong.nimbus.accountmanager;
 
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.NimbusDatastore;
+import com.leong.nimbus.utils.Tools;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -38,6 +34,8 @@ public class AccountManagerModel
     private static boolean m_createdSingleton = false;
 
     private final String FILE_ACCOUNTS = "accounts";
+
+    private final String ELEM_ROOT = "nimbus";
 
     private final DocumentBuilder m_docbuilder;
 
@@ -81,6 +79,8 @@ public class AccountManagerModel
             return false;
         }
 
+        Log.fine("Reading credentials: " + accountsFile.getAbsolutePath());
+
         try
         {
             Document doc;
@@ -90,7 +90,38 @@ public class AccountManagerModel
             root = doc.getDocumentElement();
             root.normalize();
 
-            // TODO: do parse
+            if (!root.getNodeName().equals(ELEM_ROOT))
+            {
+                Log.severe("Failed to parse accounts file because root element not '"+ELEM_ROOT+"'.");
+                return false;
+            }
+
+            NodeList nodes = root.getElementsByTagName(AccountInfo.ELEM_ROOT);
+
+            for (int idx = 0, end = nodes.getLength(); idx < end; ++idx)
+            {
+                Node node = nodes.item(idx);
+
+                switch (node.getNodeType())
+                {
+                    case Node.ELEMENT_NODE:
+                        {
+                            Element elem = (Element) node;
+                            AccountInfo info = AccountInfo.createInstance(elem);
+
+                            if (info != null)
+                            {
+                                m_accounts.add(info);
+                            }
+                            else
+                            {
+                                Log.warning("Failed to parse #"+idx+" account info");
+                            }
+
+                        }
+                        break;
+                }
+            }
 
             return true;
         }
@@ -115,40 +146,37 @@ public class AccountManagerModel
 
     public String serialize()
     {
-        //try
-        //{
-            Document doc;
-            Element root;
+        Document doc;
+        Element root;
 
-            doc = m_docbuilder.newDocument();
-            root = doc.createElement("nimbus");
-            doc.appendChild(root);
+        doc = m_docbuilder.newDocument();
+        root = doc.createElement(ELEM_ROOT);
+        doc.appendChild(root);
 
-            for (AccountInfo info : m_accounts)
-            {
-                Element frag = info.serialize(doc);
-                root.appendChild(frag);
-            }
-
-        //}
-
-            StringWriter sw = new StringWriter();
-
-        try
+        for (AccountInfo info : m_accounts)
         {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new DOMSource(doc), new StreamResult(sw));
+            Element frag = info.serialize(doc);
+            root.appendChild(frag);
         }
-        catch (TransformerException ex)
-        {
-            Log.throwing("serialize", ex);
-        }
-            return sw.toString();
+
+        return Tools.xmlToString(doc);
     }
 
+    public boolean exportAsFile()
+    {
+        BufferedWriter bw = NimbusDatastore.getWriterNoThrow("creds", FILE_ACCOUNTS);
+
+        if (bw == null)
+        {
+            return false;
+        }
+
+        PrintWriter writer = new PrintWriter(bw);
+
+        writer.print(toString());
+        writer.flush();
+        writer.close();
+
+        return true;
+    }
 }

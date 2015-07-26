@@ -119,10 +119,9 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         });
 
 
-
         {
             AccountManagerModel acctmgr = AccountManagerModel.getInstance();
-            if (acctmgr != null)
+            if (false && acctmgr != null)
             {
                 AccountInfo info;
 
@@ -136,7 +135,14 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 info.setSecret(new String[]{"token"});
                 acctmgr.addAccountInfo(info);
 
-                Log.info(acctmgr.toString());
+                //Log.info(acctmgr.toString());
+
+                acctmgr.exportAsFile();
+
+            }
+            else
+            {
+                Log.info("Parsed: " + acctmgr.toString());
             }
         }
     }
