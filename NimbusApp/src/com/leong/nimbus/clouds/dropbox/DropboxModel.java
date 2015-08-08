@@ -17,6 +17,7 @@ import com.dropbox.core.util.Collector;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
@@ -43,7 +44,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     private static final String APP_SECRET = "htc1ejxcr081hjg";
 
     private final DbxAppInfo m_appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
-    private final DbxRequestConfig m_config = new DbxRequestConfig("Nimbus", Locale.getDefault().toString());
+    private final DbxRequestConfig m_config = new DbxRequestConfig(AppInfo.Name, Locale.getDefault().toString());
     private final DbxWebAuthNoRedirect m_webAuth = new DbxWebAuthNoRedirect(m_config, m_appInfo);
 
     private DbxClient m_client;

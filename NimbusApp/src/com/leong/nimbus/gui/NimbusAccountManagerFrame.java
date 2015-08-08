@@ -11,6 +11,7 @@ import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.DropboxController;
 import com.leong.nimbus.clouds.google.drive.GDriveController;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
 import javax.swing.JOptionPane;
 
@@ -51,7 +52,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         mnuAddDropbox = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Nimbus");
+        setTitle(AppInfo.Name);
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
         getContentPane().setLayout(new java.awt.GridBagLayout());

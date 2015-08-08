@@ -10,6 +10,7 @@ import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
 import java.awt.CardLayout;
 import java.awt.Component;
@@ -214,7 +215,7 @@ public class NimbusFrame extends javax.swing.JFrame
     @Override
     public void setTitle(String title)
     {
-        final String APP_NAME = " - Nimbus";
+        final String APP_NAME = " - " + AppInfo.Name;
 
         if (title.endsWith(APP_NAME))
             super.setTitle(title);

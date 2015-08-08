@@ -13,6 +13,7 @@ import com.leong.nimbus.gui.helpers.ResponsiveTaskUI;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
@@ -142,7 +143,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         if (m_xferObject != null)
         {
-            JOptionPane.showMessageDialog(this, "Transferring in progress...", "Nimbus", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Transferring in progress...", AppInfo.Name, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -269,7 +270,7 @@ public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
 
         if (m_xferObject != null)
         {
-            JOptionPane.showMessageDialog(this, "Cannot start new transfer when transferring in progress...", "Nimbus", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cannot start new transfer when transferring in progress...", AppInfo.Name, JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 

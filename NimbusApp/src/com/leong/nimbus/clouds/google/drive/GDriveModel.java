@@ -27,6 +27,7 @@ import com.google.api.services.drive.model.File;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
@@ -141,7 +142,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         //Create a new authorized API client
         Log.fine("Creating the new Google Drive client");
         m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
-            .setApplicationName("Nimbus")
+            .setApplicationName(AppInfo.Name)
             .build();
 
 
