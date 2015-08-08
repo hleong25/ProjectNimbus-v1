@@ -6,7 +6,6 @@
 package com.leong.nimbus.clouds.dropbox.gui;
 
 import com.dropbox.core.DbxEntry;
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.IFileItem;
 import javax.swing.ImageIcon;

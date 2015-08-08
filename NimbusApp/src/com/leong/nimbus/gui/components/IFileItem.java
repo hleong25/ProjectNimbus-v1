@@ -5,7 +5,6 @@
  */
 package com.leong.nimbus.gui.components;
 
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import javax.swing.ImageIcon;
 

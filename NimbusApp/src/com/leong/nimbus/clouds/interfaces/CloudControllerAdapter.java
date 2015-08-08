@@ -13,7 +13,6 @@ import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import java.awt.Component;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -97,7 +96,9 @@ public abstract class CloudControllerAdapter<T>
         {
             final String authUrl = m_model.getAuthUrl();
 
-            // TODO: does not work with OSX -- i think...
+            // For OSX, must set mrj.version to 3.1 or above in commandline
+            // example: java -Dmrj.version="10.10" app.jar
+
             BrowserLauncher launcher = new BrowserLauncher();
             launcher.setNewWindowPolicy(true);
 

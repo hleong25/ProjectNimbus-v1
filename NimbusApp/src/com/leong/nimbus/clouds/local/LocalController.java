@@ -7,21 +7,8 @@ package com.leong.nimbus.clouds.local;
 
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.CloudControllerAdapter;
-import com.leong.nimbus.clouds.interfaces.ICloudController;
-import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
-import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
-import com.leong.nimbus.utils.Tools;
-import java.awt.Component;
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *

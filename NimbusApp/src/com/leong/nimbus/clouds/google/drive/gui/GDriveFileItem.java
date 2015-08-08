@@ -6,7 +6,6 @@
 package com.leong.nimbus.clouds.google.drive.gui;
 
 import com.google.api.services.drive.model.File;
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.google.drive.GDriveConstants;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.IFileItem;

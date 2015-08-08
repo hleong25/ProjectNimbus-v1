@@ -13,7 +13,6 @@ import com.leong.nimbus.clouds.google.drive.GDriveController;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
-import javax.swing.JOptionPane;
 
 /**
  *

@@ -1,7 +1,6 @@
 package com.leong.nimbus.clouds.local.gui;
 
 
-import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.gui.components.IFileItem;
 import java.io.File;

@@ -16,7 +16,6 @@ import com.leong.nimbus.clouds.interfaces.transferadapters.GDriveToDropboxTransf
 import com.leong.nimbus.clouds.interfaces.transferadapters.LocalToDropboxTransferAdapter;
 import com.leong.nimbus.gui.components.FileItemPanel;
 import com.leong.nimbus.gui.datatransfer.TransferableContainer;
-import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.helpers.DefaultDropTargetAdapter;
 import com.leong.nimbus.gui.helpers.XferHolder;
 import com.leong.nimbus.gui.layout.AllCardsPanel;
