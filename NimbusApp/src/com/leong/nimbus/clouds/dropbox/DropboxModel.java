@@ -116,6 +116,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         try
         {
+            Log.fine("Getting user info");
             m_userInfo = m_client.getAccountInfo();
         }
         catch (DbxException ex)
@@ -139,6 +140,8 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
             manager.exportAsFile();
         }
+
+        getRoot();
 
         return true;
     }
@@ -168,13 +171,11 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         return Long.toString(m_userInfo.userId);
     }
 
-
     @Override
     public String getDisplayName()
     {
         return m_userInfo.displayName;
     }
-
 
     @Override
     public String getEmail()

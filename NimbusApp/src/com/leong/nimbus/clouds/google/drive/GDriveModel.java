@@ -171,6 +171,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         try
         {
+            Log.fine("Getting user info");
             m_userInfo = m_service.about().get().execute();
         }
         catch (IOException ex)
@@ -194,6 +195,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
             manager.exportAsFile();
         }
+
+        getRoot();
 
         return true;
     }

@@ -25,7 +25,7 @@ public interface ICloudPanel<T>
 
     void setPanelView(ViewType type);
 
-    boolean login(String userid);
+    boolean login(String uniqueid);
 
     String getAbsolutePath(T item);
     void setCurrentPath(T path);

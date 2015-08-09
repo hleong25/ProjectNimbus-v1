@@ -97,11 +97,11 @@ public class DropboxPanel
     }
 
     @Override
-    public boolean login(String userid)
+    public boolean login(String uniqueid)
     {
-        Log.entering("login", new Object[]{userid});
+        Log.entering("login", new Object[]{uniqueid});
 
-        if (false) //m_controller.login(DropboxPanel.this, userid))
+        if (m_controller.login(DropboxPanel.this, uniqueid))
         {
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {

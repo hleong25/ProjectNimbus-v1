@@ -77,7 +77,6 @@ public class LocalPanel
     {
         Log.entering("initPanel");
         m_controller = new LocalController();
-        //m_controller.login(this, "local");
 
         pnlFiles.setProxy(this);
         pnlFiles.setView(AllCardsPanel.ViewType.LARGE_ICONS);
@@ -97,7 +96,7 @@ public class LocalPanel
     }
 
     @Override
-    public boolean login(String userid)
+    public boolean login(String uniqueid)
     {
         Log.entering("login");
         return true;
