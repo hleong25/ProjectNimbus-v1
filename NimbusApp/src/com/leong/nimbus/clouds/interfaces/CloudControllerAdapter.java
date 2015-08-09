@@ -81,7 +81,7 @@ public abstract class CloudControllerAdapter<T>
         };
     }
 
-    public boolean login2(Component parentComponent, String uniqueid)
+    public boolean login(Component parentComponent, String uniqueid)
     {
         Log.entering("login", new Object[]{"parentComponent", uniqueid});
 

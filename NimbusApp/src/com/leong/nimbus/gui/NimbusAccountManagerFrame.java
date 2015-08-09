@@ -184,7 +184,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 return;
         }
 
-        boolean isLogin = controller.login2(this, AppInfo.NewAccount);
+        boolean isLogin = controller.login(this, AppInfo.NewAccount);
 
         if (isLogin)
         {
