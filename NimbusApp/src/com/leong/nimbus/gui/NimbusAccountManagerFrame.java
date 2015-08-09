@@ -5,8 +5,6 @@
  */
 package com.leong.nimbus.gui;
 
-import com.leong.nimbus.accountmanager.AccountInfo;
-import com.leong.nimbus.accountmanager.AccountManagerModel;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.DropboxController;
 import com.leong.nimbus.clouds.google.drive.GDriveController;
