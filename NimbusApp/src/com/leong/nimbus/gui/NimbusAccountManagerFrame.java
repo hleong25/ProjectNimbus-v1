@@ -184,10 +184,15 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 return;
         }
 
-        boolean isLogin = controller.login(this, AppInfo.NewAccount);
+        String uniqueid = AppInfo.NewAccount;
+        boolean isLogin = controller.login(this, uniqueid);
+
+        uniqueid = controller.getUniqueId();
+        Log.fine("Account name = "+uniqueid);
 
         if (isLogin)
         {
+
             // kill me since we're good now
             dispose();
         }

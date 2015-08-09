@@ -81,6 +81,7 @@ public abstract class CloudControllerAdapter<T>
         };
     }
 
+    @Override
     public boolean login(Component parentComponent, String uniqueid)
     {
         Log.entering("login", new Object[]{"parentComponent", uniqueid});
@@ -89,12 +90,18 @@ public abstract class CloudControllerAdapter<T>
         {
             String authCode = getAuthCode(parentComponent);
             return m_model.loginViaAuthCode(authCode);
-
         }
         else
         {
             return m_model.loginViaStoredId(uniqueid);
         }
+    }
+
+    @Override
+    public String getUniqueId()
+    {
+        Log.entering("getUniqueId");
+        return m_model.getUniqueId();
     }
 
     protected String getAuthCode(Component parentComponent)
