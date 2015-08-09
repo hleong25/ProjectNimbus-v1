@@ -125,12 +125,12 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
             {
                 AccountInfo info;
 
-                info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE);
+                info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE, "testgoogle");
                 info.setName("hleong25@gmail.com");
                 info.setSecret(new String[]{"token", "refresh"});
                 acctmgr.addAccountInfo(info);
 
-                info = AccountInfo.createInstance(CloudType.DROPBOX);
+                info = AccountInfo.createInstance(CloudType.DROPBOX, "testdropbox");
                 info.setName("hleong25+dropbox@gmail.com");
                 info.setSecret(new String[]{"token"});
                 acctmgr.addAccountInfo(info);
@@ -214,7 +214,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 return;
         }
 
-        boolean isLogin = controller.login(this, null);
+        boolean isLogin = controller.login2(this, AppInfo.NewAccount);
 
         if (isLogin)
         {

@@ -19,6 +19,7 @@ public interface ICloudController<T>
     CloudType getCloudType();
 
     boolean login(Component parentComponent, String userid);
+    boolean login2(Component parentComponent, String uniqueid);
 
     T getRoot();
     T getItemById(String id, boolean useCache);

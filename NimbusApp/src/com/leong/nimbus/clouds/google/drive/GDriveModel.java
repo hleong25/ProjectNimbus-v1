@@ -24,6 +24,9 @@ import com.google.api.services.drive.model.About;
 import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
+import com.leong.nimbus.accountmanager.AccountInfo;
+import com.leong.nimbus.accountmanager.AccountManagerModel;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
@@ -40,6 +43,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -56,6 +61,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
     private final GoogleAuthorizationCodeFlow m_flow;
     private Drive m_service;
+
+    private About m_userInfo;
 
     private File m_root;
 
@@ -143,7 +150,6 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             .setApplicationName(AppInfo.Name)
             .build();
 
-
         Log.fine("Getting name");
         String name = "(null)";
         try
@@ -205,6 +211,146 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
         }
         
         return login(userid);
+    }
+
+    @Override
+    public boolean loginViaAuthCode(String authCode)
+    {
+        Log.entering("loginViaAuthCode", new Object[]{authCode});
+
+        m_service = null; // make sure the previous object is released
+
+        if (Tools.isNullOrEmpty(authCode))
+        {
+            Log.severe("Auth code is empty");
+            return false;
+        }
+
+        try
+        {
+            Log.fine("Requesting access token");
+            GoogleTokenResponse response = m_flow.newTokenRequest(authCode).setRedirectUri(REDIRECT_URI).execute();
+
+            if ((response == null) || response.isEmpty())
+            {
+                Log.severe("Response is null or empty");
+                return false;
+            }
+
+            Log.fine("Response is " + response.toString());
+
+            Credential creds = m_flow.createAndStoreCredential(response, null);
+
+            return loginViaAccessToken(creds.getAccessToken(), creds.getRefreshToken());
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("login", ex);
+            return false;
+        }
+    }
+
+    protected boolean loginViaAccessToken(String accesstoken, String refreshtoken)
+    {
+        Log.entering("loginViaAccessToken", new Object[]{accesstoken, refreshtoken});
+
+        if (Tools.isNullOrEmpty(accesstoken))
+        {
+            Log.warning("Access token is emtpy");
+            return false;
+        }
+
+        if (Tools.isNullOrEmpty(refreshtoken))
+        {
+            Log.warning("Refresh token is emtpy");
+            return false;
+        }
+
+        Log.fine("Using stored credentials");
+
+        HttpTransport httpTransport = m_flow.getTransport();
+        JsonFactory jsonFactory = m_flow.getJsonFactory();
+
+        Log.fine("Creating new GoogleCredential using stored credentials");
+        GoogleCredential credential = new GoogleCredential.Builder()
+            .setJsonFactory(jsonFactory)
+            .setTransport(httpTransport)
+            .setClientSecrets(CLIENT_ID, CLIENT_SECRET)
+            .build()
+            .setAccessToken(accesstoken)
+            .setRefreshToken(refreshtoken);
+
+        //Create a new authorized API client
+        Log.fine("Creating the new Google Drive client");
+        m_service = new Drive.Builder(httpTransport, jsonFactory, credential)
+            .setApplicationName(AppInfo.Name)
+            .build();
+
+        try
+        {
+            m_userInfo = m_service.about().get().execute();
+        }
+        catch (IOException ex)
+        {
+            Log.throwing("loginViaAccessToken", ex);
+            m_userInfo = null;
+        }
+
+        if (m_userInfo != null)
+        {
+            AccountManagerModel manager = AccountManagerModel.getInstance();
+            if (manager != null)
+            {
+                AccountInfo info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE, getUniqueId());
+                info.setName(getDisplayName());
+                info.setSecret(new String[]{accesstoken, refreshtoken});
+
+                manager.addAccountInfo(info);
+            }
+
+            manager.exportAsFile();
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean loginViaStoredId(String uniqueid)
+    {
+        Log.entering("loginViaStoredId", new Object[]{uniqueid});
+
+        AccountManagerModel manager = AccountManagerModel.getInstance();
+        if (manager == null)
+        {
+            Log.fine("Failed to get account manager");
+            return false;
+        }
+
+        AccountInfo info = manager.getAccountInfo(uniqueid);
+
+        String[] secrets = info.getSecret();
+        String accesstoken = secrets[0];
+        String refreshtoken = secrets[1];
+
+        return loginViaAccessToken(accesstoken, refreshtoken);
+    }
+
+    @Override
+    public String getUniqueId()
+    {
+        return getEmail();
+    }
+
+    @Override
+    public String getDisplayName()
+    {
+        return (m_userInfo != null) ? m_userInfo.getUser().getDisplayName(): null;
+    }
+
+    @Override
+    public String getEmail()
+    {
+        return (m_userInfo != null) ? m_userInfo.getUser().getEmailAddress() : null;
     }
 
     @Override

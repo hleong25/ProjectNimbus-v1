@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.dropbox;
 
+import com.dropbox.core.DbxAccountInfo;
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxClient;
@@ -14,6 +15,9 @@ import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.DbxWriteMode;
 import com.dropbox.core.util.Collector;
+import com.leong.nimbus.accountmanager.AccountInfo;
+import com.leong.nimbus.accountmanager.AccountManagerModel;
+import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
 import com.leong.nimbus.clouds.interfaces.ICloudTransfer;
@@ -48,6 +52,8 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     private final DbxWebAuthNoRedirect m_webAuth = new DbxWebAuthNoRedirect(m_config, m_appInfo);
 
     private DbxClient m_client;
+
+    private DbxAccountInfo m_userInfo;
 
     private DbxEntry m_root;
 
@@ -167,6 +173,114 @@ public class DropboxModel implements ICloudModel<DbxEntry>
         }
 
         return login(userid);
+    }
+
+    @Override
+    public boolean loginViaAuthCode(String authCode)
+    {
+        Log.entering("loginViaAuthCode", new Object[]{authCode});
+
+        m_client = null; // make sure the previous object is released
+
+        if (Tools.isNullOrEmpty(authCode))
+        {
+            Log.severe("Auth code not valid");
+            return false;
+        }
+
+        String accessToken;
+        try
+        {
+            // This will fail if the user enters an invalid authorization code.
+            Log.fine("Getting access token");
+            DbxAuthFinish authFinish = m_webAuth.finish(authCode);
+            accessToken = authFinish.accessToken;
+
+            Log.info("Access token: "+ accessToken);
+        }
+        catch (DbxException ex)
+        {
+            Log.throwing("login", ex);
+            return false;
+        }
+
+        return loginViaAccessToken(accessToken);
+    }
+
+    protected boolean loginViaAccessToken(String accesstoken)
+    {
+        Log.entering("loginViaAccessToken", new Object[]{accesstoken});
+
+        // getting the client
+        m_client = new DbxClient(m_config, accesstoken);
+
+        try
+        {
+            m_userInfo = m_client.getAccountInfo();
+        }
+        catch (DbxException ex)
+        {
+            Log.throwing("loginViaAccessToken", ex);
+            m_client = null;
+            return false;
+        }
+
+        if (m_userInfo != null)
+        {
+            AccountManagerModel manager = AccountManagerModel.getInstance();
+            if (manager != null)
+            {
+                AccountInfo info = AccountInfo.createInstance(CloudType.DROPBOX, getUniqueId());
+                info.setName(getDisplayName());
+                info.setSecret(new String[]{accesstoken});
+
+                manager.addAccountInfo(info);
+            }
+
+            manager.exportAsFile();
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean loginViaStoredId(String uniqueid)
+    {
+        Log.entering("loginViaStoredId", new Object[]{uniqueid});
+
+        AccountManagerModel manager = AccountManagerModel.getInstance();
+        if (manager == null)
+        {
+            Log.fine("Failed to get account manager");
+            return false;
+        }
+
+        AccountInfo info = manager.getAccountInfo(uniqueid);
+
+        String[] secrets = info.getSecret();
+        String accesstoken = secrets[0];
+
+        return loginViaAccessToken(accesstoken);
+    }
+
+    @Override
+    public String getUniqueId()
+    {
+        return Long.toString(m_userInfo.userId);
+    }
+
+
+    @Override
+    public String getDisplayName()
+    {
+        return m_userInfo.displayName;
+    }
+
+
+    @Override
+    public String getEmail()
+    {
+        return "(notsupoorted)";
     }
 
     @Override

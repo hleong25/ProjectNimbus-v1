@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
@@ -127,6 +128,53 @@ public abstract class CloudControllerAdapter<T>
             GlobalCache.getInstance().put(m_gcprops, userid, this);
         }
         return successLogin;
+    }
+
+    public boolean login2(Component parentComponent, String uniqueid)
+    {
+        Log.entering("login", new Object[]{"parentComponent", uniqueid});
+
+        if (uniqueid.equals(AppInfo.NewAccount))
+        {
+            String authCode = getAuthCode(parentComponent);
+            return m_model.loginViaAuthCode(authCode);
+
+        }
+        else
+        {
+            return m_model.loginViaStoredId(uniqueid);
+        }
+    }
+
+    protected String getAuthCode(Component parentComponent)
+    {
+        Log.entering("getAuthCode", new Object[]{"parentComponent"});
+
+        try
+        {
+            final String authUrl = m_model.getAuthUrl();
+
+            // For OSX, must set mrj.version to 3.1 or above in commandline
+            // example: java -Dmrj.version="10.10" app.jar
+
+            BrowserLauncher launcher = new BrowserLauncher();
+            launcher.setNewWindowPolicy(true);
+
+            Log.fine("Opening new browser to "+authUrl);
+            launcher.openURLinBrowser(authUrl);
+        }
+        catch (BrowserLaunchingInitializingException | UnsupportedOperatingSystemException ex)
+        {
+            Log.throwing("getAuthCode", ex);
+        }
+
+        String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");
+
+        if (authCode != null)
+            authCode = authCode.trim();
+
+        Log.info("Auth code: "+authCode);
+        return authCode;
     }
 
     @Override

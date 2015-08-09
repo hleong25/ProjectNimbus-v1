@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,11 +43,11 @@ public class AccountManagerModel
 
     private final DocumentBuilder m_docbuilder;
 
-    private final List<AccountInfo> m_accounts;
+    private final Map<String, AccountInfo> m_accounts;
 
     protected AccountManagerModel() throws ParserConfigurationException
     {
-        m_accounts = new ArrayList<>();
+        m_accounts = new HashMap<>();
 
         DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
         m_docbuilder = dbfactory.newDocumentBuilder();
@@ -113,7 +115,7 @@ public class AccountManagerModel
 
                             if (info != null)
                             {
-                                m_accounts.add(info);
+                                addAccountInfo(info);
                             }
                             else
                             {
@@ -136,8 +138,16 @@ public class AccountManagerModel
 
     public boolean addAccountInfo(AccountInfo account)
     {
-        m_accounts.add(account);
+        m_accounts.put(account.getId(), account);
         return true;
+    }
+
+    public AccountInfo getAccountInfo(String id)
+    {
+        //Log.entering("getAccountInfo");
+        AccountInfo info = m_accounts.get(id);
+        return info;
+
     }
 
     @Override
@@ -155,7 +165,7 @@ public class AccountManagerModel
         root = doc.createElement(ELEM_ROOT);
         doc.appendChild(root);
 
-        for (AccountInfo info : m_accounts)
+        for (AccountInfo info : m_accounts.values())
         {
             Element frag = info.serialize(doc);
             root.appendChild(frag);

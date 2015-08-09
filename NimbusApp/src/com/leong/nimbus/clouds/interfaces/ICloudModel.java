@@ -21,6 +21,13 @@ public interface ICloudModel<T>
     boolean login(String userid, String authCode);
     String getAuthUrl();
 
+    boolean loginViaAuthCode(String authCode);
+    boolean loginViaStoredId(String uniqueid);
+
+    String getUniqueId();
+    String getDisplayName();
+    String getEmail();
+
     T getRoot();
     T getItemById(String id);
     String getIdByItem(T item);

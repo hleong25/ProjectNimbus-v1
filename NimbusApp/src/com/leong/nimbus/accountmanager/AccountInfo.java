@@ -31,22 +31,25 @@ public class AccountInfo
     private static final String ELEM_ITEM = "item";
 
     private static final String ATTR_VERSION = "version";
+    private static final String ATTR_ID = "id";
 
     private int m_version = 1; // update as needed
     private final CloudType m_type;
+    private String m_id;
     private String m_name;
     private List<String> m_secret;
 
-    public AccountInfo(CloudType type)
+    protected AccountInfo(CloudType type, String id)
     {
         m_type = type;
+        m_id = id;
         m_name = "";
         m_secret = new ArrayList<>();
     }
 
-    public static AccountInfo createInstance(CloudType type)
+    public static AccountInfo createInstance(CloudType type, String id)
     {
-        AccountInfo info = new AccountInfo(type);
+        AccountInfo info = new AccountInfo(type, id);
         return info;
     }
 
@@ -75,6 +78,9 @@ public class AccountInfo
                 return null;
             }
         }
+
+        // get account id
+        String id = fragment.getAttribute(ATTR_ID);
 
         AccountInfo info = null;
 
@@ -116,7 +122,7 @@ public class AccountInfo
                     return null;
                 }
 
-                info = AccountInfo.createInstance(cloudType);
+                info = AccountInfo.createInstance(cloudType, id);
             }
             else if (nodeName.equals(ELEM_NAME))
             {
@@ -168,6 +174,11 @@ public class AccountInfo
         return m_type;
     }
 
+    public String getId()
+    {
+        return m_id;
+    }
+
     public void setName(String name)
     {
         m_name = name;
@@ -199,6 +210,7 @@ public class AccountInfo
         Element fragment = doc.createElement(ELEM_ROOT);
 
         fragment.setAttribute(ATTR_VERSION, String.valueOf(getVersion()));
+        fragment.setAttribute(ATTR_ID, getId());
 
         {
             child = doc.createElement(ELEM_TYPE);
