@@ -25,7 +25,7 @@ import com.google.api.services.drive.model.ChildList;
 import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import com.leong.nimbus.accountmanager.AccountInfo;
-import com.leong.nimbus.accountmanager.AccountManagerModel;
+import com.leong.nimbus.accountmanager.AccountManager;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
@@ -181,7 +181,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         if (m_userInfo != null)
         {
-            AccountManagerModel manager = AccountManagerModel.getInstance();
+            AccountManager manager = AccountManager.getInstance();
             if (manager != null)
             {
                 AccountInfo info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE, getUniqueId());
@@ -203,7 +203,7 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     {
         Log.entering("loginViaStoredId", new Object[]{uniqueid});
 
-        AccountManagerModel manager = AccountManagerModel.getInstance();
+        AccountManager manager = AccountManager.getInstance();
         if (manager == null)
         {
             Log.fine("Failed to get account manager");

@@ -16,7 +16,7 @@ import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.DbxWriteMode;
 import com.dropbox.core.util.Collector;
 import com.leong.nimbus.accountmanager.AccountInfo;
-import com.leong.nimbus.accountmanager.AccountManagerModel;
+import com.leong.nimbus.accountmanager.AccountManager;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudModel;
 import com.leong.nimbus.clouds.interfaces.ICloudProgress;
@@ -127,7 +127,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         if (m_userInfo != null)
         {
-            AccountManagerModel manager = AccountManagerModel.getInstance();
+            AccountManager manager = AccountManager.getInstance();
             if (manager != null)
             {
                 AccountInfo info = AccountInfo.createInstance(CloudType.DROPBOX, getUniqueId());
@@ -148,7 +148,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     {
         Log.entering("loginViaStoredId", new Object[]{uniqueid});
 
-        AccountManagerModel manager = AccountManagerModel.getInstance();
+        AccountManager manager = AccountManager.getInstance();
         if (manager == null)
         {
             Log.fine("Failed to get account manager");

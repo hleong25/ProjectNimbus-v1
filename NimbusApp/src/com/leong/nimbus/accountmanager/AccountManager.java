@@ -29,10 +29,10 @@ import org.xml.sax.SAXException;
  *
  * @author henry
  */
-public class AccountManagerModel
+public class AccountManager
 {
-    private static final Logit Log = Logit.create(AccountManagerModel.class.getName());
-    private static AccountManagerModel m_singleton = null;
+    private static final Logit Log = Logit.create(AccountManager.class.getName());
+    private static AccountManager m_singleton = null;
     private static boolean m_createdSingleton = false;
 
     private final String FILE_ACCOUNTS = "accounts";
@@ -43,7 +43,7 @@ public class AccountManagerModel
 
     private final Map<String, AccountInfo> m_accounts;
 
-    protected AccountManagerModel() throws ParserConfigurationException
+    protected AccountManager() throws ParserConfigurationException
     {
         m_accounts = new HashMap<>();
 
@@ -53,7 +53,7 @@ public class AccountManagerModel
         parseCredsFile();
     }
 
-    static public AccountManagerModel getInstance()
+    static public AccountManager getInstance()
     {
         if (!m_createdSingleton && (m_singleton == null))
         {
@@ -61,7 +61,7 @@ public class AccountManagerModel
             m_createdSingleton = true;
             try
             {
-                m_singleton = new AccountManagerModel();
+                m_singleton = new AccountManager();
             }
             catch (ParserConfigurationException ex)
             {
