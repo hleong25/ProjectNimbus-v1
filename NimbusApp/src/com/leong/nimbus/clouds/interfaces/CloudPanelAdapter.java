@@ -35,7 +35,7 @@ import javax.swing.JPanel;
  */
 public abstract class CloudPanelAdapter<T, CC extends ICloudController<T>>
     extends javax.swing.JPanel
-    implements ICloudPanel<T>,
+    implements ICloudPanel<T, CC>,
                ILayoutToCloudPanelProxy
 {
     private static final Logit Log = Logit.create(CloudPanelAdapter.class.getName());

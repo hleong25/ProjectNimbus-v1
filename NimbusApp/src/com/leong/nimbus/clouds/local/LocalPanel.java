@@ -73,10 +73,11 @@ public class LocalPanel
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void initPanel()
+    public void initPanel(ICloudController<?> controller)
+    //public void initPanel(LocalController controller)
     {
         Log.entering("initPanel");
-        m_controller = new LocalController();
+        m_controller = (LocalController) controller;
 
         pnlFiles.setProxy(this);
         pnlFiles.setView(AllCardsPanel.ViewType.LARGE_ICONS);
@@ -93,13 +94,6 @@ public class LocalPanel
                 return LocalPanel.this.onAction_drop(tc);
             }
         });
-    }
-
-    @Override
-    public boolean login(String uniqueid)
-    {
-        Log.entering("login");
-        return true;
     }
 
     @Override

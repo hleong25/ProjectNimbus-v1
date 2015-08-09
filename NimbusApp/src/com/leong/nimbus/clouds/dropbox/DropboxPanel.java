@@ -86,37 +86,26 @@ public class DropboxPanel
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void initPanel()
+    public void initPanel(ICloudController<?> controller)
+    //public void initPanel(DropboxController controller)
     {
-        Log.entering("initPanel");
-        m_controller = new DropboxController();
+        Log.entering("initPanel", new Object[]{controller});
+        m_controller = (DropboxController) controller;
 
         pnlFiles.setProxy(this);
 
         txtPath.setText("");
-    }
 
-    @Override
-    public boolean login(String uniqueid)
-    {
-        Log.entering("login", new Object[]{uniqueid});
-
-        if (m_controller.login(DropboxPanel.this, uniqueid))
+        new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
         {
-            new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
+            @Override
+            public boolean onAction_drop(TransferableContainer tc)
             {
-                @Override
-                public boolean onAction_drop(TransferableContainer tc)
-                {
-                    return DropboxPanel.this.onAction_drop(tc);
-                }
-            });
+                return DropboxPanel.this.onAction_drop(tc);
+            }
+        });
 
-            showFiles(m_controller.getRoot(), false);
-            return true;
-        }
-
-        return false;
+        showFiles(m_controller.getRoot(), false);
     }
 
     @Override

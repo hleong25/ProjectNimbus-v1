@@ -192,9 +192,26 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
         if (isLogin)
         {
+            NimbusFrame frame = NimbusFrame.setupMainPanel(cloudType, controller);
+
+            if (frame != null)
+            {
+                Log.info("Showing "+cloudType.toString());
+
+                // show it
+                frame.runLater();
+            }
+            else
+            {
+                //Log.warning(MessageFormat.format("Unknown type: {0}", type.toString()));
+            }
 
             // kill me since we're good now
             dispose();
+        }
+        else
+        {
+            Log.severe("Failed to login");
         }
     }
 

@@ -6,6 +6,7 @@
 package com.leong.nimbus.gui;
 
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
 import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
@@ -28,7 +29,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
     private final Runnable m_run;
 
-    private final List<ICloudPanel<?>> m_cloudPanels = new ArrayList<>();
+    private final List<ICloudPanel<?, ?>> m_cloudPanels = new ArrayList<>();
 
     /**
      * Creates new form NimbusFrame
@@ -52,10 +53,9 @@ public class NimbusFrame extends javax.swing.JFrame
         };
     }
 
-    public static NimbusFrame setupMainPanel(CloudType type)
+    public static NimbusFrame setupMainPanel(CloudType type, ICloudController<?> controller)
     {
         Log.entering("setupMainPanel");
-        // TODO: param userid to pass to pnl.login
 
         NimbusFrame frame = new NimbusFrame();
 
@@ -64,20 +64,8 @@ public class NimbusFrame extends javax.swing.JFrame
         frame.setTitle(cardName);
         ((CardLayout)frame.pnlCards.getLayout()).show(frame.pnlCards, cardName);
 
-        final ICloudPanel<?> pnl = frame.getCurrentCloudPanel();
-        pnl.initPanel();
-
-        BusyTaskCursor.doTask(frame, new BusyTaskCursor.IBusyTask()
-        {
-            @Override
-            public void run()
-            {
-                //if (!pnl.login("henry"))
-                {
-                    Log.severe("Failed to login");
-                }
-            }
-        });
+        final ICloudPanel<?, ?> pnl = frame.getCurrentCloudPanel();
+        pnl.initPanel(controller);
 
         return frame;
     }
@@ -186,7 +174,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
     private void mnuOpenNewCloudActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuOpenNewCloudActionPerformed
     {//GEN-HEADEREND:event_mnuOpenNewCloudActionPerformed
-        PickCloudFrame.showMe();
+        NimbusAccountManagerFrame.showMe();
     }//GEN-LAST:event_mnuOpenNewCloudActionPerformed
 
     private void mnuViewLargeIconsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuViewLargeIconsActionPerformed
@@ -201,7 +189,7 @@ public class NimbusFrame extends javax.swing.JFrame
 
     private void mnuViewRefreshActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_mnuViewRefreshActionPerformed
     {//GEN-HEADEREND:event_mnuViewRefreshActionPerformed
-        ICloudPanel<?> pnl = getCurrentCloudPanel();
+        ICloudPanel<?, ?> pnl = getCurrentCloudPanel();
         ILayoutToCloudPanelProxy proxy = (ILayoutToCloudPanelProxy)pnl;
 
         proxy.refreshCurrentView();
@@ -261,11 +249,11 @@ public class NimbusFrame extends javax.swing.JFrame
     private javax.swing.JPanel pnlMain;
     // End of variables declaration//GEN-END:variables
 
-    private ICloudPanel<?> getCurrentCloudPanel()
+    private ICloudPanel<?, ?> getCurrentCloudPanel()
     {
         for (Component comp : pnlCards.getComponents() ) {
             if (comp.isVisible() == true) {
-                return (ICloudPanel<?>)comp;
+                return (ICloudPanel<?, ?>)comp;
             }
         }
         return null;

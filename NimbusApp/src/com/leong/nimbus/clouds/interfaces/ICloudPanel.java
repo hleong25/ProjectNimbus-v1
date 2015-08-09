@@ -18,14 +18,12 @@ import java.util.List;
  *
  * @author henry
  */
-public interface ICloudPanel<T>
+public interface ICloudPanel<T, CC extends ICloudController<T>>
 {
-    void initPanel();
+    void initPanel(ICloudController<?> controller);
     void disposePanel();
 
     void setPanelView(ViewType type);
-
-    boolean login(String uniqueid);
 
     String getAbsolutePath(T item);
     void setCurrentPath(T path);
