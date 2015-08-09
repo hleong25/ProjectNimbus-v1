@@ -105,7 +105,7 @@ public class GDrivePanel
     {
         Log.entering("login", new Object[]{userid});
 
-        if (m_controller.login(GDrivePanel.this, userid))
+        if (false ) //m_controller.login(GDrivePanel.this, userid))
         {
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {

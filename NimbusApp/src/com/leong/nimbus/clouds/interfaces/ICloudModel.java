@@ -17,8 +17,6 @@ public interface ICloudModel<T>
 {
     GlobalCacheKey getGlobalCacheKey();
 
-    boolean login(String userid);
-    boolean login(String userid, String authCode);
     String getAuthUrl();
 
     boolean loginViaAuthCode(String authCode);

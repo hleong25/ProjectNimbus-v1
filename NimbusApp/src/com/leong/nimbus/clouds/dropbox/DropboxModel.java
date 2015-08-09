@@ -78,104 +78,6 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     }
 
     @Override
-    public boolean login(String userid)
-    {
-        Log.entering("login", new Object[]{userid});
-
-        if (Tools.isNullOrEmpty(userid))
-        {
-            return false;
-        }
-
-        String accessToken = null;
-
-        try
-        {
-            BufferedReader reader = NimbusDatastore.getReader("creds", "dropbox_"+userid);
-
-            accessToken = reader.readLine();
-        }
-        catch (IOException ex)
-        {
-            Log.throwing("login", ex);
-        }
-
-        if (Tools.isNullOrEmpty(accessToken))
-        {
-            Log.warning("Access token is emtpy");
-            return false;
-        }
-
-        Log.fine("Using stored credentials");
-
-        // getting the client
-        m_client = new DbxClient(m_config, accessToken);
-
-        try
-        {
-            Log.info("Linked account: "+m_client.getAccountInfo().displayName);
-        }
-        catch (DbxException ex)
-        {
-            Log.throwing("login", ex);
-            m_client = null;
-            return false;
-        }
-
-        getRoot();
-
-        return true;
-    }
-
-    @Override
-    public boolean login(String userid, String authCode)
-    {
-        Log.entering("login", new Object[]{userid, authCode});
-
-        m_client = null; // make sure the previous object is released
-
-        if (Tools.isNullOrEmpty(authCode))
-        {
-            Log.severe("Auth code not valid");
-            return false;
-        }
-
-        String accessToken;
-        try
-        {
-            // This will fail if the user enters an invalid authorization code.
-            Log.fine("Getting access token");
-            DbxAuthFinish authFinish = m_webAuth.finish(authCode);
-            accessToken = authFinish.accessToken;
-
-            Log.info("Access token: "+ accessToken);
-        }
-        catch (DbxException ex)
-        {
-            Log.throwing("login", ex);
-            return false;
-        }
-
-        // save the access token for reuse
-        try
-        {
-            BufferedWriter writer = NimbusDatastore.getWriter("creds", "dropbox_"+userid);
-
-            writer.write(accessToken, 0, accessToken.length());
-            writer.newLine();
-            writer.flush();
-            writer.close();
-        }
-        catch (IOException ex)
-        {
-            Log.throwing("login", ex);
-            return false;
-        }
-
-        return login(userid);
-    }
-
-    @Override
     public boolean loginViaAuthCode(String authCode)
     {
         Log.entering("loginViaAuthCode", new Object[]{authCode});
@@ -188,23 +90,22 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             return false;
         }
 
-        String accessToken;
         try
         {
             // This will fail if the user enters an invalid authorization code.
             Log.fine("Getting access token");
             DbxAuthFinish authFinish = m_webAuth.finish(authCode);
-            accessToken = authFinish.accessToken;
+            String accessToken = authFinish.accessToken;
 
             Log.info("Access token: "+ accessToken);
+
+            return loginViaAccessToken(accessToken);
         }
         catch (DbxException ex)
         {
             Log.throwing("login", ex);
             return false;
         }
-
-        return loginViaAccessToken(accessToken);
     }
 
     protected boolean loginViaAccessToken(String accesstoken)

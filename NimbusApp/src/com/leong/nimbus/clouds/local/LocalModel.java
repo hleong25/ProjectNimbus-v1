@@ -46,18 +46,6 @@ public class LocalModel implements ICloudModel<java.io.File>
     }
 
     @Override
-    public boolean login(String userid)
-    {
-        return true;
-    }
-
-    @Override
-    public boolean login(String userid, String authCode)
-    {
-        return true;
-    }
-
-    @Override
     public boolean loginViaAuthCode(String authCode)
     {
         return true;

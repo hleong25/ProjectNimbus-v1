@@ -101,7 +101,7 @@ public class DropboxPanel
     {
         Log.entering("login", new Object[]{userid});
 
-        if (m_controller.login(DropboxPanel.this, userid))
+        if (false) //m_controller.login(DropboxPanel.this, userid))
         {
             new DropTarget(pnlFiles, new DefaultDropTargetAdapter()
             {

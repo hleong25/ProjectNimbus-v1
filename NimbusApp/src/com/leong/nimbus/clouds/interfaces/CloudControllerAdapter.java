@@ -81,55 +81,6 @@ public abstract class CloudControllerAdapter<T>
         };
     }
 
-    @Override
-    public boolean login(Component parentComponent, String userid)
-    {
-        Log.entering("login", new Object[]{"parentComponent", userid});
-
-        if (m_model.login(userid))
-        {
-            Log.info("Login successful for '"+userid+"'");
-            GlobalCache.getInstance().put(m_gcprops, userid, this);
-            return true;
-        }
-
-        try
-        {
-            final String authUrl = m_model.getAuthUrl();
-
-            // For OSX, must set mrj.version to 3.1 or above in commandline
-            // example: java -Dmrj.version="10.10" app.jar
-
-            BrowserLauncher launcher = new BrowserLauncher();
-            launcher.setNewWindowPolicy(true);
-
-            Log.fine("Opening new browser to "+authUrl);
-            launcher.openURLinBrowser(authUrl);
-        }
-        catch (BrowserLaunchingInitializingException | UnsupportedOperatingSystemException ex)
-        {
-            Log.throwing("login", ex);
-        }
-
-        String authCode = JOptionPane.showInputDialog(parentComponent, "Input the authentication code here");
-
-        if (Tools.isNullOrEmpty(authCode))
-        {
-            Log.severe("Auth code not valid.");
-            return false;
-        }
-
-        authCode = authCode.trim();
-        Log.info("Auth code: "+authCode);
-
-        boolean successLogin = m_model.login(userid, authCode);
-        if (successLogin)
-        {
-            GlobalCache.getInstance().put(m_gcprops, userid, this);
-        }
-        return successLogin;
-    }
-
     public boolean login2(Component parentComponent, String uniqueid)
     {
         Log.entering("login", new Object[]{"parentComponent", uniqueid});
