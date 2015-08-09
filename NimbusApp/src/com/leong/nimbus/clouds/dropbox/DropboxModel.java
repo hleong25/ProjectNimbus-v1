@@ -47,6 +47,8 @@ public class DropboxModel implements ICloudModel<DbxEntry>
     private static final String APP_KEY = "954i1xyd8mu6o7m";
     private static final String APP_SECRET = "htc1ejxcr081hjg";
 
+    private static final String SECRET_ACCESS = "access";
+
     private final DbxAppInfo m_appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
     private final DbxRequestConfig m_config = new DbxRequestConfig(AppInfo.Name, Locale.getDefault().toString());
     private final DbxWebAuthNoRedirect m_webAuth = new DbxWebAuthNoRedirect(m_config, m_appInfo);
@@ -133,7 +135,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
             {
                 AccountInfo info = AccountInfo.createInstance(CloudType.DROPBOX, getUniqueId());
                 info.setName(getDisplayName());
-                info.setSecret(new String[]{accesstoken});
+                info.addSecret(SECRET_ACCESS, accesstoken);
 
                 manager.addAccountInfo(info);
             }
@@ -158,8 +160,7 @@ public class DropboxModel implements ICloudModel<DbxEntry>
 
         AccountInfo info = manager.getAccountInfo(uniqueid);
 
-        String[] secrets = info.getSecret();
-        String accesstoken = secrets[0];
+        String accesstoken = info.getSecret(SECRET_ACCESS);
 
         return loginViaAccessToken(accesstoken);
     }

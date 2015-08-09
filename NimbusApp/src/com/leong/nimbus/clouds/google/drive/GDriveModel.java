@@ -34,17 +34,12 @@ import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.GlobalCacheKey;
 import com.leong.nimbus.utils.Logit;
-import com.leong.nimbus.utils.NimbusDatastore;
 import com.leong.nimbus.utils.Tools;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -58,6 +53,9 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
     private static final String CLIENT_SECRET = "-ezNN3hvssAwm6Ewgmrg69pI";
 
     private static final String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+
+    private static final String SECRET_ACCESS = "access";
+    private static final String SECRET_REFRESH = "refresh";
 
     private final GoogleAuthorizationCodeFlow m_flow;
     private Drive m_service;
@@ -188,7 +186,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
             {
                 AccountInfo info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE, getUniqueId());
                 info.setName(getDisplayName());
-                info.setSecret(new String[]{accesstoken, refreshtoken});
+                info.addSecret(SECRET_ACCESS, accesstoken);
+                info.addSecret(SECRET_REFRESH, refreshtoken);
 
                 manager.addAccountInfo(info);
             }
@@ -213,9 +212,8 @@ public class GDriveModel implements ICloudModel<com.google.api.services.drive.mo
 
         AccountInfo info = manager.getAccountInfo(uniqueid);
 
-        String[] secrets = info.getSecret();
-        String accesstoken = secrets[0];
-        String refreshtoken = secrets[1];
+        String accesstoken = info.getSecret(SECRET_ACCESS);
+        String refreshtoken = info.getSecret(SECRET_REFRESH);
 
         return loginViaAccessToken(accesstoken, refreshtoken);
     }

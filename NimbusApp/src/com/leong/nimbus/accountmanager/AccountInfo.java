@@ -10,7 +10,9 @@ import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,14 +39,14 @@ public class AccountInfo
     private final CloudType m_type;
     private String m_id;
     private String m_name;
-    private List<String> m_secret;
+    private Map<String, String> m_secret;
 
     protected AccountInfo(CloudType type, String id)
     {
         m_type = type;
         m_id = id;
         m_name = "";
-        m_secret = new ArrayList<>();
+        m_secret = new HashMap<>();
     }
 
     public static AccountInfo createInstance(CloudType type, String id)
@@ -131,7 +133,7 @@ public class AccountInfo
             }
             else if (nodeName.equals(ELEM_SECRET))
             {
-                NodeList secrets = elem.getElementsByTagName(ELEM_ITEM);
+                NodeList secrets = elem.getChildNodes();
 
                 for (int idx_secrets = 0, end_secrets = secrets.getLength();
                      idx_secrets < end_secrets;
@@ -144,14 +146,16 @@ public class AccountInfo
                     }
 
                     Element elem_secret = (Element) secret;
-                    data = elem_secret.getTextContent();
 
-                    if (Tools.isNullOrEmpty(data))
+                    String key = elem_secret.getNodeName();
+                    String value = elem_secret.getTextContent();
+
+                    if (Tools.isNullOrEmpty(key) || Tools.isNullOrEmpty(value))
                     {
                         continue;
                     }
 
-                    info.addSecret(data);
+                    info.addSecret(key, value);
                 }
             }
         }
@@ -189,19 +193,14 @@ public class AccountInfo
         return m_name;
     }
 
-    public void setSecret(String[] secret)
+    public void addSecret(String key, String secret)
     {
-        m_secret = Arrays.asList(secret);
+        m_secret.put(key, secret);
     }
 
-    public void addSecret(String secret)
+    public String getSecret(String key)
     {
-        m_secret.add(secret);
-    }
-
-    public String[] getSecret()
-    {
-        return m_secret.toArray(new String[0]);
+        return m_secret.get(key);
     }
 
     public Element serialize(Document doc)
@@ -228,16 +227,12 @@ public class AccountInfo
             child = doc.createElement(ELEM_SECRET);
             fragment.appendChild(child);
 
-            int idx = 0;
-            for (String value : getSecret())
+            for (Map.Entry<String, String> entry : m_secret.entrySet())
             {
-                Element item = doc.createElement(ELEM_ITEM);
-                child.appendChild(item);
+                Element secret = doc.createElement(entry.getKey());
+                secret.setTextContent(entry.getValue());
 
-                item.setAttribute("index", String.valueOf(idx));
-                item.setTextContent(value);
-
-                idx++;
+                child.appendChild(secret);
             }
         }
 

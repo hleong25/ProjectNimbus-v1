@@ -117,34 +117,6 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 frame.setVisible(true);
             }
         });
-
-
-        {
-            AccountManagerModel acctmgr = AccountManagerModel.getInstance();
-            if (false && acctmgr != null)
-            {
-                AccountInfo info;
-
-                info = AccountInfo.createInstance(CloudType.GOOGLE_DRIVE, "testgoogle");
-                info.setName("hleong25@gmail.com");
-                info.setSecret(new String[]{"token", "refresh"});
-                acctmgr.addAccountInfo(info);
-
-                info = AccountInfo.createInstance(CloudType.DROPBOX, "testdropbox");
-                info.setName("hleong25+dropbox@gmail.com");
-                info.setSecret(new String[]{"token"});
-                acctmgr.addAccountInfo(info);
-
-                //Log.info(acctmgr.toString());
-
-                acctmgr.exportAsFile();
-
-            }
-            else
-            {
-                Log.info("Parsed: " + acctmgr.toString());
-            }
-        }
     }
 
     /**
