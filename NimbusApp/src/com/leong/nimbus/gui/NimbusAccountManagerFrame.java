@@ -231,6 +231,13 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
     {
         List<AccountInfo> accounts = AccountManager.getInstance().getAccounts();
 
+        // add the local storage
+        {
+            AccountInfo localacct = AccountInfo.createInstance(CloudType.LOCAL_FILE_SYSTEM, "localhost");
+            localacct.setName(CloudType.LOCAL_FILE_SYSTEM.toString());
+            accounts.add(0, localacct);
+        }
+
         GridBagConstraints gridbag = new GridBagConstraints();
         gridbag.fill = GridBagConstraints.HORIZONTAL;
         gridbag.anchor = GridBagConstraints.NORTH;
@@ -255,17 +262,6 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
             pnlExistingAccounts.add(btn, gridbag);
         }
-
-
-        /*
-        jButton1.setText("jButton1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        pnlExistingAccounts.add(jButton1, gridBagConstraints);
-        */
 
         return true;
     }

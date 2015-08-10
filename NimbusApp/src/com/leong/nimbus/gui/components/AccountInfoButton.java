@@ -78,7 +78,7 @@ public class AccountInfoButton extends javax.swing.JButton
         switch (m_account.getType())
         {
             case LOCAL_FILE_SYSTEM:
-                path = "resources/icons/google/drive-64.png";
+                path = "resources/icons/local/local-64.png";
                 break;
             case GOOGLE_DRIVE:
                 path = "resources/icons/google/drive-64.png";
