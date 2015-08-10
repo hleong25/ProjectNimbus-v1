@@ -6,6 +6,7 @@
 package com.leong.nimbus.gui.components;
 
 import com.leong.nimbus.accountmanager.AccountInfo;
+import com.leong.nimbus.gui.helpers.IconFactory;
 import com.leong.nimbus.utils.Logit;
 import javax.swing.ImageIcon;
 
@@ -73,24 +74,7 @@ public class AccountInfoButton extends javax.swing.JButton
 
     protected void setupIcon()
     {
-        String path;
-
-        switch (m_account.getType())
-        {
-            case LOCAL_FILE_SYSTEM:
-                path = "resources/icons/local/local-64.png";
-                break;
-            case GOOGLE_DRIVE:
-                path = "resources/icons/google/drive-64.png";
-                break;
-            case DROPBOX:
-                path = "resources/icons/dropbox/dropbox-64.png";
-                break;
-            default:
-                return;
-        }
-
-        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(path));
+        ImageIcon icon = IconFactory.get(m_account.getType(), IconFactory.IconSize.LARGE);
 
         lblIcon.setIcon(icon);
         lblIcon.setText(null);
