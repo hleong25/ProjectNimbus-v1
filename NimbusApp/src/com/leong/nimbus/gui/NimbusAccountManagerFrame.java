@@ -11,11 +11,13 @@ import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.DropboxController;
 import com.leong.nimbus.clouds.google.drive.GDriveController;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.clouds.local.LocalController;
 import com.leong.nimbus.gui.components.AccountInfoButton;
 import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 /**
@@ -180,10 +182,71 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
     {
         Log.entering("addAccount", new Object[] {cloudType});
 
+        AccountInfo newacct = AccountInfo.createInstance(cloudType, AppInfo.NewAccount);
+
+        showAccountAndDispose(newacct);
+    }
+
+    protected boolean loadAccounts()
+    {
+        List<AccountInfo> accounts = AccountManager.getInstance().getAccounts();
+
+        // add the local storage
+        {
+            AccountInfo localacct = AccountInfo.createInstance(CloudType.LOCAL_FILE_SYSTEM, "localhost");
+            localacct.setName(CloudType.LOCAL_FILE_SYSTEM.toString());
+            accounts.add(0, localacct);
+        }
+
+        GridBagConstraints gridbag = new GridBagConstraints();
+        gridbag.fill = GridBagConstraints.HORIZONTAL;
+        gridbag.anchor = GridBagConstraints.NORTH;
+        gridbag.weightx = 1.0;
+        gridbag.insets = new Insets(3,3,3,3);
+
+        final int size = accounts.size();
+        int idx = 0;
+
+        for (final AccountInfo account : accounts)
+        {
+            //Log.fine("Account: "+account.getId());
+
+            AccountInfoButton btn = new AccountInfoButton(account);
+            gridbag.gridy++;
+
+            if ((++idx) == size)
+            {
+                // make last button to have weight 1, so push everything to top
+                gridbag.weighty = 1.0;
+            }
+
+            btn.addActionListener(new java.awt.event.ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    //Log.fine("Clicked:" +account.getId());
+
+                    NimbusAccountManagerFrame.this.showAccountAndDispose(account);
+                }
+            });
+
+            pnlExistingAccounts.add(btn, gridbag);
+        }
+
+        return true;
+    }
+
+    protected void showAccountAndDispose(final AccountInfo account)
+    {
         ICloudController<?> controller = null;
+        CloudType cloudType = account.getType();
 
         switch (cloudType)
         {
+            case LOCAL_FILE_SYSTEM:
+                controller = new LocalController();
+                break;
             case GOOGLE_DRIVE:
                 controller = new GDriveController();
                 break;
@@ -196,11 +259,8 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 return;
         }
 
-        String uniqueid = AppInfo.NewAccount;
-        boolean isLogin = controller.login(this, uniqueid);
-
-        uniqueid = controller.getUniqueId();
-        Log.fine("Account name = "+uniqueid);
+        String uniqueid = account.getId();
+        boolean isLogin = controller.login(NimbusAccountManagerFrame.this, uniqueid);
 
         if (isLogin)
         {
@@ -225,45 +285,6 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         {
             Log.severe("Failed to login");
         }
-    }
-
-    protected boolean loadAccounts()
-    {
-        List<AccountInfo> accounts = AccountManager.getInstance().getAccounts();
-
-        // add the local storage
-        {
-            AccountInfo localacct = AccountInfo.createInstance(CloudType.LOCAL_FILE_SYSTEM, "localhost");
-            localacct.setName(CloudType.LOCAL_FILE_SYSTEM.toString());
-            accounts.add(0, localacct);
-        }
-
-        GridBagConstraints gridbag = new GridBagConstraints();
-        gridbag.fill = GridBagConstraints.HORIZONTAL;
-        gridbag.anchor = GridBagConstraints.NORTH;
-        gridbag.weightx = 1.0;
-        gridbag.insets = new Insets(3,3,3,3);
-
-        final int size = accounts.size();
-        int idx = 0;
-
-        for (AccountInfo account : accounts)
-        {
-            Log.fine("Account: "+account.getId());
-
-            AccountInfoButton btn = new AccountInfoButton(account);
-            gridbag.gridy++;
-
-            if ((++idx) == size)
-            {
-                // make last button to have weight 1, so push everything to top
-                gridbag.weighty = 1.0;
-            }
-
-            pnlExistingAccounts.add(btn, gridbag);
-        }
-
-        return true;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
