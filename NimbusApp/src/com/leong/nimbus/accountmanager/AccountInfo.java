@@ -6,6 +6,7 @@
 package com.leong.nimbus.accountmanager;
 
 import com.leong.nimbus.clouds.CloudType;
+import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.util.HashMap;
@@ -23,11 +24,12 @@ public class AccountInfo
 {
     private static final Logit Log = Logit.create(AccountInfo.class.getName());
 
+    public static final String NEW_ACCOUNT = "@@newacount@@";
+
     public static final String ELEM_ROOT = "account";
     private static final String ELEM_TYPE = "type";
     private static final String ELEM_NAME = "name";
     private static final String ELEM_SECRET = "secret";
-    private static final String ELEM_ITEM = "item";
 
     private static final String ATTR_VERSION = "version";
     private static final String ATTR_ID = "id";
@@ -44,6 +46,11 @@ public class AccountInfo
         m_id = id;
         m_name = "";
         m_secret = new HashMap<>();
+    }
+
+    public static AccountInfo createNewAccount(CloudType type)
+    {
+        return createInstance(type, NEW_ACCOUNT);
     }
 
     public static AccountInfo createInstance(CloudType type, String id)

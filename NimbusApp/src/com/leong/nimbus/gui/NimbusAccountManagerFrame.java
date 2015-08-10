@@ -290,13 +290,20 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         });
     }
 
-    protected void addAccount(CloudType cloudType)
+    protected void addAccount(final CloudType cloudType)
     {
         Log.entering("addAccount", new Object[] {cloudType});
 
-        AccountInfo newacct = AccountInfo.createInstance(cloudType, AppInfo.NewAccount);
+        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                AccountInfo newacct = AccountInfo.createNewAccount(cloudType);
 
-        connectToAccount(newacct);
+                connectToAccount(newacct);
+            }
+        });
     }
 
     protected boolean loadAccounts()

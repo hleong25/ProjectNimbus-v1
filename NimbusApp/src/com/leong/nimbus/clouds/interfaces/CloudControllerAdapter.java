@@ -5,6 +5,7 @@
  */
 package com.leong.nimbus.clouds.interfaces;
 
+import com.leong.nimbus.accountmanager.AccountInfo;
 import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
@@ -86,7 +87,7 @@ public abstract class CloudControllerAdapter<T>
     {
         Log.entering("login", new Object[]{"parentComponent", uniqueid});
 
-        if (uniqueid.equals(AppInfo.NewAccount))
+        if (uniqueid.equals(AccountInfo.NEW_ACCOUNT))
         {
             String authCode = getAuthCode(parentComponent);
             return m_model.loginViaAuthCode(authCode);
