@@ -5,12 +5,18 @@
  */
 package com.leong.nimbus.gui;
 
+import com.leong.nimbus.accountmanager.AccountInfo;
+import com.leong.nimbus.accountmanager.AccountManager;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.dropbox.DropboxController;
 import com.leong.nimbus.clouds.google.drive.GDriveController;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
+import com.leong.nimbus.gui.components.AccountInfoButton;
 import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.util.List;
 
 /**
  *
@@ -56,6 +62,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
         pnlExistingAccounts.setMinimumSize(new java.awt.Dimension(200, 10));
         pnlExistingAccounts.setPreferredSize(new java.awt.Dimension(200, 100));
+        pnlExistingAccounts.setLayout(new java.awt.GridBagLayout());
         pnlAccounts.setLeftComponent(pnlExistingAccounts);
         pnlAccounts.setRightComponent(pnlAccountDetails);
 
@@ -112,6 +119,9 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
             public void run()
             {
                 NimbusAccountManagerFrame frame = new NimbusAccountManagerFrame();
+
+                frame.loadAccounts();
+
                 frame.setVisible(true);
             }
         });
@@ -168,6 +178,8 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
     protected void addAccount(CloudType cloudType)
     {
+        Log.entering("addAccount", new Object[] {cloudType});
+
         ICloudController<?> controller = null;
 
         switch (cloudType)
@@ -213,6 +225,49 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         {
             Log.severe("Failed to login");
         }
+    }
+
+    protected boolean loadAccounts()
+    {
+        List<AccountInfo> accounts = AccountManager.getInstance().getAccounts();
+
+        GridBagConstraints gridbag = new GridBagConstraints();
+        gridbag.fill = GridBagConstraints.HORIZONTAL;
+        gridbag.anchor = GridBagConstraints.NORTH;
+        gridbag.weightx = 1.0;
+        gridbag.insets = new Insets(3,3,3,3);
+
+        final int size = accounts.size();
+        int idx = 0;
+
+        for (AccountInfo account : accounts)
+        {
+            Log.fine("Account: "+account.getId());
+
+            AccountInfoButton btn = new AccountInfoButton(account);
+            gridbag.gridy++;
+
+            if ((++idx) == size)
+            {
+                // make last button to have weight 1, so push everything to top
+                gridbag.weighty = 1.0;
+            }
+
+            pnlExistingAccounts.add(btn, gridbag);
+        }
+
+
+        /*
+        jButton1.setText("jButton1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlExistingAccounts.add(jButton1, gridBagConstraints);
+        */
+
+        return true;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

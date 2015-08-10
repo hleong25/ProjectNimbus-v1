@@ -8,7 +8,6 @@ package com.leong.nimbus.gui;
 import com.leong.nimbus.clouds.CloudType;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.interfaces.ICloudPanel;
-import com.leong.nimbus.gui.helpers.BusyTaskCursor;
 import com.leong.nimbus.gui.interfaces.ILayoutToCloudPanelProxy;
 import com.leong.nimbus.gui.layout.AllCardsPanel.ViewType;
 import com.leong.nimbus.mainapp.AppInfo;

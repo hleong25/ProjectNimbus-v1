@@ -14,7 +14,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -146,6 +148,12 @@ public class AccountManager
         AccountInfo info = m_accounts.get(id);
         return info;
 
+    }
+
+    public List<AccountInfo> getAccounts()
+    {
+        List<AccountInfo> list = new ArrayList<>(m_accounts.values());
+        return list;
     }
 
     @Override
