@@ -13,12 +13,16 @@ import com.leong.nimbus.clouds.google.drive.GDriveController;
 import com.leong.nimbus.clouds.interfaces.ICloudController;
 import com.leong.nimbus.clouds.local.LocalController;
 import com.leong.nimbus.gui.components.AccountInfoButton;
+import com.leong.nimbus.gui.helpers.BusyTaskCursor;
+import com.leong.nimbus.gui.helpers.IconFactory;
 import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -27,6 +31,8 @@ import java.util.List;
 public class NimbusAccountManagerFrame extends javax.swing.JFrame
 {
     private static final Logit Log = Logit.create(NimbusAccountManagerFrame.class.getName());
+
+    protected AccountInfo m_account = null;
 
     /**
      * Creates new form NimbusAccountManagerFrame
@@ -50,7 +56,16 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
         pnlAccounts = new javax.swing.JSplitPane();
         pnlExistingAccounts = new javax.swing.JPanel();
+        pnlAccount = new javax.swing.JPanel();
         pnlAccountDetails = new javax.swing.JPanel();
+        lblIconType = new javax.swing.JLabel();
+        lblName = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        lblAccountId = new javax.swing.JLabel();
+        txtAccountId = new javax.swing.JTextField();
+        pnlAccountActions = new javax.swing.JPanel();
+        btnDelete = new javax.swing.JButton();
+        btnConnect = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         mnuAddAccount = new javax.swing.JMenu();
         mnuAddGoogleDrive = new javax.swing.JMenuItem();
@@ -66,7 +81,87 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         pnlExistingAccounts.setPreferredSize(new java.awt.Dimension(200, 100));
         pnlExistingAccounts.setLayout(new java.awt.GridBagLayout());
         pnlAccounts.setLeftComponent(pnlExistingAccounts);
-        pnlAccounts.setRightComponent(pnlAccountDetails);
+
+        pnlAccount.setLayout(new java.awt.BorderLayout());
+
+        pnlAccountDetails.setLayout(new java.awt.GridBagLayout());
+
+        lblIconType.setText("Icon & Type");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 10, 3);
+        pnlAccountDetails.add(lblIconType, gridBagConstraints);
+
+        lblName.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblName.setText("Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlAccountDetails.add(lblName, gridBagConstraints);
+
+        txtName.setEditable(false);
+        txtName.setText("Account Name");
+        txtName.setMinimumSize(new java.awt.Dimension(100, 19));
+        txtName.setName(""); // NOI18N
+        txtName.setPreferredSize(new java.awt.Dimension(200, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlAccountDetails.add(txtName, gridBagConstraints);
+
+        lblAccountId.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblAccountId.setText("Account ID:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlAccountDetails.add(lblAccountId, gridBagConstraints);
+
+        txtAccountId.setEditable(false);
+        txtAccountId.setText("ID");
+        txtAccountId.setMinimumSize(new java.awt.Dimension(100, 19));
+        txtAccountId.setName(""); // NOI18N
+        txtAccountId.setPreferredSize(new java.awt.Dimension(200, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlAccountDetails.add(txtAccountId, gridBagConstraints);
+
+        pnlAccount.add(pnlAccountDetails, java.awt.BorderLayout.CENTER);
+
+        pnlAccountActions.setLayout(new java.awt.GridBagLayout());
+
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlAccountActions.add(btnDelete, gridBagConstraints);
+
+        btnConnect.setText("Connect");
+        btnConnect.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnConnectActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        pnlAccountActions.add(btnConnect, gridBagConstraints);
+
+        pnlAccount.add(pnlAccountActions, java.awt.BorderLayout.SOUTH);
+
+        pnlAccounts.setRightComponent(pnlAccount);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -112,6 +207,23 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_mnuAddDropboxActionPerformed
         addAccount(CloudType.DROPBOX);
     }//GEN-LAST:event_mnuAddDropboxActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnDeleteActionPerformed
+    {//GEN-HEADEREND:event_btnDeleteActionPerformed
+        JOptionPane.showConfirmDialog(this, "Deleting account not supported");
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnConnectActionPerformed
+    {//GEN-HEADEREND:event_btnConnectActionPerformed
+        BusyTaskCursor.doTask(this, new BusyTaskCursor.IBusyTask()
+        {
+            @Override
+            public void run()
+            {
+                connectToAccount(m_account);
+            }
+        });
+    }//GEN-LAST:event_btnConnectActionPerformed
 
     public static void showMe()
     {
@@ -184,7 +296,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
 
         AccountInfo newacct = AccountInfo.createInstance(cloudType, AppInfo.NewAccount);
 
-        showAccountAndDispose(newacct);
+        connectToAccount(newacct);
     }
 
     protected boolean loadAccounts()
@@ -196,6 +308,8 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
             AccountInfo localacct = AccountInfo.createInstance(CloudType.LOCAL_FILE_SYSTEM, "localhost");
             localacct.setName(CloudType.LOCAL_FILE_SYSTEM.toString());
             accounts.add(0, localacct);
+
+            showAccount(localacct);
         }
 
         GridBagConstraints gridbag = new GridBagConstraints();
@@ -227,7 +341,7 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
                 {
                     //Log.fine("Clicked:" +account.getId());
 
-                    NimbusAccountManagerFrame.this.showAccountAndDispose(account);
+                    NimbusAccountManagerFrame.this.showAccount(account);
                 }
             });
 
@@ -237,7 +351,22 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
         return true;
     }
 
-    protected void showAccountAndDispose(final AccountInfo account)
+    protected void showAccount(final AccountInfo account)
+    {
+        m_account = account;
+
+        CloudType type = account.getType();
+        ImageIcon icon = IconFactory.get(type, IconFactory.IconSize.LARGE);
+
+        lblIconType.setIcon(icon);
+        lblIconType.setText(type.toString());
+
+        txtName.setText(account.getName());
+        txtAccountId.setText(account.getId());
+
+    }
+
+    protected void connectToAccount(final AccountInfo account)
     {
         ICloudController<?> controller = null;
         CloudType cloudType = account.getType();
@@ -288,12 +417,21 @@ public class NimbusAccountManagerFrame extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnConnect;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JLabel lblAccountId;
+    private javax.swing.JLabel lblIconType;
+    private javax.swing.JLabel lblName;
     private javax.swing.JMenu mnuAddAccount;
     private javax.swing.JMenuItem mnuAddDropbox;
     private javax.swing.JMenuItem mnuAddGoogleDrive;
+    private javax.swing.JPanel pnlAccount;
+    private javax.swing.JPanel pnlAccountActions;
     private javax.swing.JPanel pnlAccountDetails;
     private javax.swing.JSplitPane pnlAccounts;
     private javax.swing.JPanel pnlExistingAccounts;
+    private javax.swing.JTextField txtAccountId;
+    private javax.swing.JTextField txtName;
     // End of variables declaration//GEN-END:variables
 }
