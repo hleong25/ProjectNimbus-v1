@@ -6,7 +6,6 @@
 package com.leong.nimbus.accountmanager;
 
 import com.leong.nimbus.clouds.CloudType;
-import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
 import java.util.HashMap;

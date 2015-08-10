@@ -6,7 +6,6 @@
 package com.leong.nimbus.clouds.interfaces;
 
 import com.leong.nimbus.accountmanager.AccountInfo;
-import com.leong.nimbus.mainapp.AppInfo;
 import com.leong.nimbus.utils.GlobalCache;
 import com.leong.nimbus.utils.Logit;
 import com.leong.nimbus.utils.Tools;
