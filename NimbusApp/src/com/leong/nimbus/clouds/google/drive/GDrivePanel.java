@@ -183,10 +183,10 @@ public class GDrivePanel
     }
 
     @Override
-    public XferHolder<?, com.google.api.services.drive.model.File> createXferHolder(GlobalCacheKey globalCacheKey, Object input)
+    public XferHolder<?, com.google.api.services.drive.model.File> createXferHolder(GlobalCacheKey sourceCacheKey, Object input)
     {
         final GlobalCacheKey targetCacheKey = GlobalCache.getInstance().getKey(m_controller);
-        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(globalCacheKey);
+        final ICloudController genericInputController = (ICloudController) GlobalCache.getInstance().get(sourceCacheKey);
         switch (genericInputController.getCloudType())
         {
             case LOCAL_FILE_SYSTEM:
@@ -198,7 +198,7 @@ public class GDrivePanel
                 pnl.showProgress(true);
 
                 XferHolder<java.io.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
-                holder.xfer = new LocalToGDriveTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new LocalToGDriveTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -213,7 +213,7 @@ public class GDrivePanel
                 pnl.showProgress(true);
 
                 XferHolder<com.google.api.services.drive.model.File, com.google.api.services.drive.model.File> holder = new XferHolder<>();
-                holder.xfer = new GDriveToGDriveTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new GDriveToGDriveTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
@@ -228,7 +228,7 @@ public class GDrivePanel
                 pnl.showProgress(true);
 
                 XferHolder<com.dropbox.core.DbxEntry, com.google.api.services.drive.model.File> holder = new XferHolder<>();
-                holder.xfer = new DropboxToGDriveTransferAdapter(globalCacheKey, inputFile, targetCacheKey, outputFile);
+                holder.xfer = new DropboxToGDriveTransferAdapter(sourceCacheKey, inputFile, targetCacheKey, outputFile);
                 holder.pnl = pnl;
 
                 return holder;
