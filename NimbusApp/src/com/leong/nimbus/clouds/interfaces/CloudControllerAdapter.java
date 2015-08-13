@@ -85,16 +85,24 @@ public abstract class CloudControllerAdapter<T>
     public boolean login(Component parentComponent, String uniqueid)
     {
         Log.entering("login", new Object[]{"parentComponent", uniqueid});
+        boolean login_ok = false;
 
         if (uniqueid.equals(AccountInfo.NEW_ACCOUNT))
         {
             String authCode = getAuthCode(parentComponent);
-            return m_model.loginViaAuthCode(authCode);
+            login_ok = m_model.loginViaAuthCode(authCode);
         }
         else
         {
-            return m_model.loginViaStoredId(uniqueid);
+            login_ok = m_model.loginViaStoredId(uniqueid);
         }
+
+        if (login_ok)
+        {
+            GlobalCache.getInstance().put(m_gcprops, m_model.getUniqueId(), this);
+        }
+
+        return login_ok;
     }
 
     @Override
