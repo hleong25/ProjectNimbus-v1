@@ -63,7 +63,7 @@ public class MainGuiApp
             System.setProperty("apple.awt.application.name", AppInfo.Name);
 
             //to show the menu bar at the top of the screen:
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            //System.setProperty("apple.laf.useScreenMenuBar", "true");
 
             // to show a more mac-like file dialog box
             //System.setProperty("apple.awt.fileDialogForDirectories", "true");
